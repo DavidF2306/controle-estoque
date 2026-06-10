@@ -60,7 +60,7 @@ export default function Saidas() {
     const novaQuantidade =
       produtoSelecionado.quantidade - Number(quantidade);
 
-    await supabase
+    const { error: erroSaida } = await supabase
       .from("saidas")
       .insert([
         {
@@ -71,16 +71,26 @@ export default function Saidas() {
         },
       ]);
 
-    await supabase
+    if (erroSaida) {
+      alert("Erro ao registrar saída: " + erroSaida.message);
+      return;
+    }
+
+    const { error: erroProduto } = await supabase
       .from("produtos")
       .update({
         quantidade: novaQuantidade,
       })
       .eq("id", produtoId);
 
+    if (erroProduto) {
+      alert("Erro ao atualizar estoque: " + erroProduto.message);
+      return;
+    }
+
     alert("Saída registrada com sucesso!");
 
-    router.push("/produtos");
+    router.push("/historico");
   }
 
   const clientes = [
@@ -99,7 +109,6 @@ export default function Saidas() {
     <div className="text-gray-800 w-full overflow-x-hidden">
 
       <div className="pt-14 md:pt-0 mb-8">
-
         <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
           Saída de Estoque
         </h1>
@@ -107,67 +116,39 @@ export default function Saidas() {
         <p className="text-gray-500 mt-2">
           Registre uma saída para cliente e local
         </p>
-
       </div>
 
       <form
         onSubmit={registrarSaida}
-        className="
-          bg-white
-          p-4 md:p-8
-          rounded-2xl
-          shadow-sm
-          border border-gray-200
-          space-y-6
-          w-full
-          max-w-2xl
-        "
+        className="bg-white p-4 md:p-8 rounded-2xl shadow-sm border border-gray-200 space-y-6 w-full max-w-2xl"
       >
-
         <div>
-
           <label className="block text-sm font-medium mb-2">
             Produto
           </label>
 
           <select
             value={produtoId}
-            onChange={(e) =>
-              setProdutoId(e.target.value)
-            }
-            className="
-              w-full
-              border border-gray-300
-              rounded-xl
-              px-4 py-3
-              outline-none
-              focus:ring-2
-              focus:ring-blue-500
-            "
+            onChange={(e) => setProdutoId(e.target.value)}
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
-
             <option value="">
               Selecione um produto
             </option>
 
             {produtos.map((produto) => (
-
               <option
                 key={produto.id}
                 value={produto.id}
               >
                 {produto.nome}
               </option>
-
             ))}
-
           </select>
-
         </div>
 
         <div>
-
           <label className="block text-sm font-medium mb-2">
             Quantidade
           </label>
@@ -175,27 +156,15 @@ export default function Saidas() {
           <input
             type="number"
             value={quantidade}
-            onChange={(e) =>
-              setQuantidade(e.target.value)
-            }
-            className="
-              w-full
-              border border-gray-300
-              rounded-xl
-              px-4 py-3
-              outline-none
-              focus:ring-2
-              focus:ring-blue-500
-            "
+            onChange={(e) => setQuantidade(e.target.value)}
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="0"
             min="1"
             required
           />
-
         </div>
 
         <div>
-
           <label className="block text-sm font-medium mb-2">
             Cliente
           </label>
@@ -206,61 +175,36 @@ export default function Saidas() {
               setCliente(e.target.value);
               setLocal("");
             }}
-            className="
-              w-full
-              border border-gray-300
-              rounded-xl
-              px-4 py-3
-              outline-none
-              focus:ring-2
-              focus:ring-blue-500
-            "
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
-
             <option value="">
               Selecione o cliente
             </option>
 
             {clientes.map((clienteNome) => (
-
               <option
                 key={clienteNome}
                 value={clienteNome}
               >
                 {clienteNome}
               </option>
-
             ))}
-
           </select>
-
         </div>
 
         <div>
-
           <label className="block text-sm font-medium mb-2">
             Local
           </label>
 
           <select
             value={local}
-            onChange={(e) =>
-              setLocal(e.target.value)
-            }
-            className="
-              w-full
-              border border-gray-300
-              rounded-xl
-              px-4 py-3
-              outline-none
-              focus:ring-2
-              focus:ring-blue-500
-            "
+            onChange={(e) => setLocal(e.target.value)}
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
             required
             disabled={!cliente}
           >
-
             <option value="">
               {cliente
                 ? "Selecione o local"
@@ -268,56 +212,29 @@ export default function Saidas() {
             </option>
 
             {locaisFiltrados.map((item) => (
-
               <option
                 key={item.id}
                 value={item.nome}
               >
                 {item.nome}
               </option>
-
             ))}
-
           </select>
-
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">
-
-          <button
-            className="
-              bg-red-600
-              text-white
-              px-6 py-3
-              rounded-xl
-              font-medium
-              hover:bg-red-700
-              transition
-            "
-          >
+          <button className="bg-red-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-red-700 transition">
             Registrar Saída
           </button>
 
           <button
             type="button"
-            onClick={() =>
-              router.push("/produtos")
-            }
-            className="
-              bg-gray-800
-              text-white
-              px-6 py-3
-              rounded-xl
-              font-medium
-              hover:bg-black
-              transition
-            "
+            onClick={() => router.push("/produtos")}
+            className="bg-gray-800 text-white px-6 py-3 rounded-xl font-medium hover:bg-black transition"
           >
             Voltar
           </button>
-
         </div>
-
       </form>
 
     </div>
