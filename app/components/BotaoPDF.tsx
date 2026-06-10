@@ -1,7 +1,6 @@
 "use client";
 
 import jsPDF from "jspdf";
-
 import autoTable from "jspdf-autotable";
 
 export default function BotaoPDF({
@@ -9,7 +8,6 @@ export default function BotaoPDF({
 }: any) {
 
   function gerarPDF() {
-
     const doc = new jsPDF();
 
     doc.setFontSize(20);
@@ -29,30 +27,27 @@ export default function BotaoPDF({
     );
 
     autoTable(doc, {
-
       startY: 40,
 
       head: [[
         "Produto",
-        "Código",
+        "Tipo",
         "Quantidade",
         "Categoria",
       ]],
 
       body: produtos.map((produto: any) => ([
         produto.nome,
-        produto.codigo,
+        produto.tipo || "-",
         produto.quantidade,
-        produto.categoria,
+        produto.categoria || "-",
       ])),
-
     });
 
     doc.save("relatorio-estoque.pdf");
   }
 
   return (
-
     <button
       onClick={gerarPDF}
       className="
@@ -67,6 +62,5 @@ export default function BotaoPDF({
     >
       Exportar PDF
     </button>
-
   );
 }

@@ -9,7 +9,7 @@ export default function EditarProduto() {
   const router = useRouter();
 
   const [nome, setNome] = useState("");
-  const [codigo, setCodigo] = useState("");
+  const [tipo, setTipo] = useState("");
   const [quantidade, setQuantidade] = useState("");
   const [categoria, setCategoria] = useState("");
 
@@ -26,24 +26,29 @@ export default function EditarProduto() {
 
     if (data) {
       setNome(data.nome);
-      setCodigo(data.codigo);
+      setTipo(data.tipo || "");
       setQuantidade(String(data.quantidade));
-      setCategoria(data.categoria);
+      setCategoria(data.categoria || "");
     }
   }
 
   async function atualizarProduto(e: React.FormEvent) {
     e.preventDefault();
 
-    await supabase
+    const { error } = await supabase
       .from("produtos")
       .update({
         nome,
-        codigo,
+        tipo: tipo || null,
         quantidade: Number(quantidade),
         categoria,
       })
       .eq("id", params.id);
+
+    if (error) {
+      alert("Erro ao atualizar produto: " + error.message);
+      return;
+    }
 
     alert("Produto atualizado!");
 
@@ -83,16 +88,26 @@ export default function EditarProduto() {
 
         <div>
           <label className="block text-sm font-medium mb-2">
-            Código
+            Tipo
           </label>
 
-          <input
-            type="text"
-            value={codigo}
-            onChange={(e) => setCodigo(e.target.value)}
+          <select
+            value={tipo}
+            onChange={(e) => setTipo(e.target.value)}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
+          >
+            <option value="">
+              Selecione o tipo (opcional)
+            </option>
+
+            <option value="Original">
+              Original
+            </option>
+
+            <option value="Compatível">
+              Compatível
+            </option>
+          </select>
         </div>
 
         <div>
@@ -106,6 +121,7 @@ export default function EditarProduto() {
             onChange={(e) => setQuantidade(e.target.value)}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
             required
+            min="0"
           />
         </div>
 
@@ -119,6 +135,7 @@ export default function EditarProduto() {
             value={categoria}
             onChange={(e) => setCategoria(e.target.value)}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Ex: Toner, Cartucho, Cilindro"
           />
         </div>
 
