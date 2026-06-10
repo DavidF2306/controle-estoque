@@ -6,7 +6,7 @@ import BotaoPDFHistorico from "../components/BotaoPDFHistorico";
 
 export default function Historico() {
   const [movimentacoes, setMovimentacoes] = useState<any[]>([]);
-  const [dataFiltro, setDataFiltro] = useState("");
+  const [mesFiltro, setMesFiltro] = useState("");
 
   useEffect(() => {
     buscarMovimentacoes();
@@ -61,11 +61,11 @@ export default function Historico() {
   }
 
   const movimentacoesFiltradas =
-    dataFiltro === ""
+    mesFiltro === ""
       ? movimentacoes
       : movimentacoes.filter(
           (movimentacao) =>
-            movimentacao.data.slice(0, 10) === dataFiltro
+            movimentacao.data.slice(0, 7) === mesFiltro
         );
 
   return (
@@ -84,7 +84,10 @@ export default function Historico() {
         </div>
 
         <div className="w-full md:w-auto">
-          <BotaoPDFHistorico movimentacoes={movimentacoesFiltradas} />
+          <BotaoPDFHistorico
+            movimentacoes={movimentacoesFiltradas}
+            mesFiltro={mesFiltro}
+          />
         </div>
 
       </div>
@@ -95,14 +98,14 @@ export default function Historico() {
 
           <div className="w-full md:w-auto">
             <label className="block text-sm font-medium mb-2">
-              Filtrar por data
+              Filtrar por mês
             </label>
 
             <input
-              type="date"
-              value={dataFiltro}
+              type="month"
+              value={mesFiltro}
               onChange={(e) =>
-                setDataFiltro(e.target.value)
+                setMesFiltro(e.target.value)
               }
               className="w-full md:w-auto border border-gray-300 rounded-xl px-4 py-3"
             />
@@ -110,7 +113,7 @@ export default function Historico() {
 
           <button
             onClick={() =>
-              setDataFiltro("")
+              setMesFiltro("")
             }
             className="bg-gray-800 text-white px-5 py-3 rounded-xl hover:bg-black transition"
           >

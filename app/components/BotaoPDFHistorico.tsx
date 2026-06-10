@@ -1,21 +1,24 @@
 "use client";
 
 import jsPDF from "jspdf";
-
 import autoTable from "jspdf-autotable";
 
 export default function BotaoPDFHistorico({
   movimentacoes,
+  mesFiltro,
 }: any) {
 
   function gerarPDF() {
-
     const doc = new jsPDF();
+
+    const tituloMes = mesFiltro
+      ? mesFiltro.split("-").reverse().join("/")
+      : "Todos os períodos";
 
     doc.setFontSize(20);
 
     doc.text(
-      "Relatório de Movimentações",
+      "Relatório Mensal de Movimentações",
       14,
       20
     );
@@ -23,44 +26,47 @@ export default function BotaoPDFHistorico({
     doc.setFontSize(11);
 
     doc.text(
-      `Gerado em: ${new Date().toLocaleDateString("pt-BR")}`,
+      `Período: ${tituloMes}`,
       14,
       30
     );
 
-    autoTable(doc, {
+    doc.text(
+      `Gerado em: ${new Date().toLocaleDateString("pt-BR")}`,
+      14,
+      38
+    );
 
-      startY: 40,
+    autoTable(doc, {
+      startY: 48,
 
       head: [[
         "Tipo",
         "Produto",
         "Quantidade",
-        "Origem/Destino",
+        "Cliente",
+        "Local/Origem",
         "Data",
       ]],
 
-      body: movimentacoes.map(
-        (mov: any) => ([
-          mov.tipo,
-          mov.produto,
-          mov.quantidade,
-          mov.local,
-          new Date(
-            mov.data
-          ).toLocaleDateString("pt-BR"),
-        ])
-      ),
-
+      body: movimentacoes.map((mov: any) => ([
+        mov.tipo,
+        mov.produto,
+        mov.quantidade,
+        mov.cliente,
+        mov.local,
+        new Date(mov.data).toLocaleDateString("pt-BR"),
+      ])),
     });
 
-    doc.save(
-      "historico-movimentacoes.pdf"
-    );
+    const nomeArquivo = mesFiltro
+      ? `historico-${mesFiltro}.pdf`
+      : "historico-movimentacoes.pdf";
+
+    doc.save(nomeArquivo);
   }
 
   return (
-
     <button
       onClick={gerarPDF}
       className="
@@ -71,10 +77,11 @@ export default function BotaoPDFHistorico({
         py-3
         rounded-xl
         transition
+        w-full
+        md:w-auto
       "
     >
-      Exportar Histórico PDF
+      Exportar PDF Mensal
     </button>
-
   );
 }
