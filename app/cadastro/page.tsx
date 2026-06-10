@@ -3,14 +3,24 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Cadastro() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
 
   async function criarConta(e: React.FormEvent) {
     e.preventDefault();
+
+    if (senha !== confirmarSenha) {
+      alert("As senhas não coincidem.");
+      return;
+    }
 
     setLoading(true);
 
@@ -31,6 +41,10 @@ export default function Cadastro() {
     }
 
     alert("Conta criada! Verifique seu email para confirmar o cadastro.");
+
+    setEmail("");
+    setSenha("");
+    setConfirmarSenha("");
   }
 
   return (
@@ -95,24 +109,105 @@ export default function Cadastro() {
               Senha
             </label>
 
-            <input
-              type="password"
-              value={senha}
-              onChange={(e) =>
-                setSenha(e.target.value)
-              }
-              className="
-                w-full
-                border border-gray-300
-                rounded-xl
-                px-4 py-3
-                outline-none
-                focus:ring-2
-                focus:ring-blue-500
-              "
-              required
-              minLength={6}
-            />
+            <div className="relative">
+
+              <input
+                type={mostrarSenha ? "text" : "password"}
+                value={senha}
+                onChange={(e) =>
+                  setSenha(e.target.value)
+                }
+                className="
+                  w-full
+                  border border-gray-300
+                  rounded-xl
+                  px-4 py-3 pr-12
+                  outline-none
+                  focus:ring-2
+                  focus:ring-blue-500
+                "
+                required
+                minLength={6}
+              />
+
+              <button
+                type="button"
+                onClick={() =>
+                  setMostrarSenha(!mostrarSenha)
+                }
+                className="
+                  absolute
+                  right-4
+                  top-1/2
+                  -translate-y-1/2
+                  text-gray-500
+                "
+              >
+                {mostrarSenha ? (
+                  <EyeOff size={20} />
+                ) : (
+                  <Eye size={20} />
+                )}
+              </button>
+
+            </div>
+
+          </div>
+
+          <div>
+
+            <label className="block text-sm font-medium mb-2">
+              Confirmar senha
+            </label>
+
+            <div className="relative">
+
+              <input
+                type={
+                  mostrarConfirmarSenha
+                    ? "text"
+                    : "password"
+                }
+                value={confirmarSenha}
+                onChange={(e) =>
+                  setConfirmarSenha(e.target.value)
+                }
+                className="
+                  w-full
+                  border border-gray-300
+                  rounded-xl
+                  px-4 py-3 pr-12
+                  outline-none
+                  focus:ring-2
+                  focus:ring-blue-500
+                "
+                required
+                minLength={6}
+              />
+
+              <button
+                type="button"
+                onClick={() =>
+                  setMostrarConfirmarSenha(
+                    !mostrarConfirmarSenha
+                  )
+                }
+                className="
+                  absolute
+                  right-4
+                  top-1/2
+                  -translate-y-1/2
+                  text-gray-500
+                "
+              >
+                {mostrarConfirmarSenha ? (
+                  <EyeOff size={20} />
+                ) : (
+                  <Eye size={20} />
+                )}
+              </button>
+
+            </div>
 
           </div>
 
@@ -132,7 +227,9 @@ export default function Cadastro() {
             transition
           "
         >
-          {loading ? "Criando conta..." : "Criar Conta"}
+          {loading
+            ? "Criando conta..."
+            : "Criar Conta"}
         </button>
 
         <div className="mt-6 text-center">
