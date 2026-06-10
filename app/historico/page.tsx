@@ -38,6 +38,8 @@ export default function Historico() {
         quantidade: entrada.quantidade,
         cliente: "-",
         local: entrada.origem || "-",
+        notaFiscal: entrada.nota_fiscal || "-",
+        contador: entrada.contador || "-",
         data: entrada.created_at,
       })),
 
@@ -47,6 +49,8 @@ export default function Historico() {
         quantidade: saida.quantidade,
         cliente: saida.cliente || "-",
         local: saida.local || saida.destino || "-",
+        notaFiscal: "-",
+        contador: "-",
         data: saida.created_at,
       })),
     ];
@@ -72,7 +76,6 @@ export default function Historico() {
     <div className="text-gray-800 w-full overflow-x-hidden">
 
       <div className="pt-14 md:pt-0 mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-
         <div>
           <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
             Histórico
@@ -89,13 +92,10 @@ export default function Historico() {
             mesFiltro={mesFiltro}
           />
         </div>
-
       </div>
 
       <div className="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-gray-200 mb-6">
-
         <div className="flex flex-col md:flex-row md:items-end gap-4">
-
           <div className="w-full md:w-auto">
             <label className="block text-sm font-medium mb-2">
               Filtrar por mês
@@ -104,73 +104,43 @@ export default function Historico() {
             <input
               type="month"
               value={mesFiltro}
-              onChange={(e) =>
-                setMesFiltro(e.target.value)
-              }
+              onChange={(e) => setMesFiltro(e.target.value)}
               className="w-full md:w-auto border border-gray-300 rounded-xl px-4 py-3"
             />
           </div>
 
           <button
-            onClick={() =>
-              setMesFiltro("")
-            }
+            onClick={() => setMesFiltro("")}
             className="bg-gray-800 text-white px-5 py-3 rounded-xl hover:bg-black transition"
           >
             Limpar
           </button>
-
         </div>
-
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-x-auto">
-
-        <table className="w-full min-w-[900px]">
+        <table className="w-full min-w-[1200px]">
 
           <thead className="bg-gray-100">
-
             <tr className="text-left">
-
-              <th className="p-4 text-gray-800">
-                Tipo
-              </th>
-
-              <th className="p-4 text-gray-800">
-                Produto
-              </th>
-
-              <th className="p-4 text-gray-800">
-                Quantidade
-              </th>
-
-              <th className="p-4 text-gray-800">
-                Cliente
-              </th>
-
-              <th className="p-4 text-gray-800">
-                Local / Origem
-              </th>
-
-              <th className="p-4 text-gray-800">
-                Data
-              </th>
-
+              <th className="p-4 text-gray-800">Tipo</th>
+              <th className="p-4 text-gray-800">Produto</th>
+              <th className="p-4 text-gray-800">Quantidade</th>
+              <th className="p-4 text-gray-800">Cliente</th>
+              <th className="p-4 text-gray-800">Local / Origem</th>
+              <th className="p-4 text-gray-800">Nota Fiscal</th>
+              <th className="p-4 text-gray-800">Contador</th>
+              <th className="p-4 text-gray-800">Data</th>
             </tr>
-
           </thead>
 
           <tbody>
-
             {movimentacoesFiltradas.map((movimentacao, index) => (
-
               <tr
                 key={index}
                 className="border-t border-gray-200 hover:bg-gray-50"
               >
-
                 <td className="p-4">
-
                   <span
                     className={
                       movimentacao.tipo === "Entrada"
@@ -180,7 +150,6 @@ export default function Historico() {
                   >
                     {movimentacao.tipo}
                   </span>
-
                 </td>
 
                 <td className="p-4 text-gray-800">
@@ -200,19 +169,23 @@ export default function Historico() {
                 </td>
 
                 <td className="p-4 text-gray-800 whitespace-nowrap">
+                  {movimentacao.notaFiscal}
+                </td>
+
+                <td className="p-4 text-gray-800 whitespace-nowrap">
+                  {movimentacao.contador}
+                </td>
+
+                <td className="p-4 text-gray-800 whitespace-nowrap">
                   {new Date(
                     movimentacao.data
                   ).toLocaleDateString("pt-BR")}
                 </td>
-
               </tr>
-
             ))}
-
           </tbody>
 
         </table>
-
       </div>
 
     </div>

@@ -9,7 +9,9 @@ export default function BotaoPDFHistorico({
 }: any) {
 
   function gerarPDF() {
-    const doc = new jsPDF();
+    const doc = new jsPDF({
+      orientation: "landscape",
+    });
 
     const tituloMes = mesFiltro
       ? mesFiltro.split("-").reverse().join("/")
@@ -43,9 +45,11 @@ export default function BotaoPDFHistorico({
       head: [[
         "Tipo",
         "Produto",
-        "Quantidade",
+        "Qtd",
         "Cliente",
         "Local/Origem",
+        "Nota Fiscal",
+        "Contador",
         "Data",
       ]],
 
@@ -55,8 +59,18 @@ export default function BotaoPDFHistorico({
         mov.quantidade,
         mov.cliente,
         mov.local,
+        mov.notaFiscal,
+        mov.contador,
         new Date(mov.data).toLocaleDateString("pt-BR"),
       ])),
+
+      styles: {
+        fontSize: 8,
+      },
+
+      headStyles: {
+        fontSize: 8,
+      },
     });
 
     const nomeArquivo = mesFiltro
