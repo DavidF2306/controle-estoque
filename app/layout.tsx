@@ -124,11 +124,10 @@ export default function RootLayout({
 
               <Sidebar />
 
-              <main className="flex-1 bg-gray-100 p-4 md:p-10 min-h-screen">
-
-                {children}
-
-              </main>
+              <main className="flex-1 bg-gray-100 p-4 md:p-10 min-h-screen overflow-x-hidden">
+  {children}
+  
+</main>
 
             </div>
 

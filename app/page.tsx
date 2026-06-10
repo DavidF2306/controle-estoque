@@ -1,19 +1,10 @@
 import { supabase } from "@/lib/supabase";
-
 import GraficoEstoque from "./components/GraficoEstoque";
 
 export default async function Home() {
-  const { data: produtos } = await supabase
-    .from("produtos")
-    .select("*");
-
-  const { data: entradas } = await supabase
-    .from("entradas")
-    .select("*");
-
-  const { data: saidas } = await supabase
-    .from("saidas")
-    .select("*");
+  const { data: produtos } = await supabase.from("produtos").select("*");
+  const { data: entradas } = await supabase.from("entradas").select("*");
+  const { data: saidas } = await supabase.from("saidas").select("*");
 
   const totalProdutos = produtos?.length || 0;
 
@@ -30,10 +21,10 @@ export default async function Home() {
     produtos?.filter((produto) => produto.quantidade <= 5) || [];
 
   return (
-    <div className="text-gray-800">
+    <div className="text-gray-800 w-full overflow-x-hidden">
 
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-800">
+      <div className="mb-8 pt-14 md:pt-0">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
           Dashboard
         </h1>
 
@@ -42,51 +33,41 @@ export default async function Home() {
         </p>
       </div>
 
-      <div className="grid grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6">
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-          <p className="text-gray-500">Produtos</p>
-          <h2 className="text-4xl font-bold mt-4 text-gray-800">
-            {totalProdutos}
-          </h2>
-        </div>
+        {[
+          ["Produtos", totalProdutos],
+          ["Itens em Estoque", totalEstoque],
+          ["Entradas", entradas?.length || 0],
+          ["Saídas", saidas?.length || 0],
+          ["Estoque Baixo", estoqueBaixo],
+        ].map(([titulo, valor]) => (
+          <div
+            key={titulo}
+            className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200"
+          >
+            <p className="text-gray-500">{titulo}</p>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-          <p className="text-gray-500">Itens em Estoque</p>
-          <h2 className="text-4xl font-bold mt-4 text-gray-800">
-            {totalEstoque}
-          </h2>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-          <p className="text-gray-500">Entradas</p>
-          <h2 className="text-4xl font-bold mt-4 text-gray-800">
-            {entradas?.length || 0}
-          </h2>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-          <p className="text-gray-500">Saídas</p>
-          <h2 className="text-4xl font-bold mt-4 text-gray-800">
-            {saidas?.length || 0}
-          </h2>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-          <p className="text-gray-500">Estoque Baixo</p>
-          <h2 className="text-4xl font-bold mt-4 text-red-600">
-            {estoqueBaixo}
-          </h2>
-        </div>
+            <h2
+              className={`text-4xl font-bold mt-4 ${
+                titulo === "Estoque Baixo"
+                  ? "text-red-600"
+                  : "text-gray-800"
+              }`}
+            >
+              {valor}
+            </h2>
+          </div>
+        ))}
 
       </div>
 
-      <div className="mt-10">
+      <div className="mt-8 md:mt-10 overflow-x-auto">
         <GraficoEstoque />
       </div>
 
-      <div className="mt-10 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-2xl font-bold mb-6 text-red-600">
+      <div className="mt-8 md:mt-10 bg-white rounded-2xl shadow-sm border border-gray-200 p-4 md:p-6">
+        <h2 className="text-xl md:text-2xl font-bold mb-6 text-red-600">
           Produtos com Estoque Baixo
         </h2>
 
@@ -99,7 +80,7 @@ export default async function Home() {
             {produtosBaixoEstoque.map((produto) => (
               <div
                 key={produto.id}
-                className="flex items-center justify-between bg-red-50 border border-red-200 rounded-xl p-4"
+                className="flex items-center justify-between bg-red-50 border border-red-200 rounded-xl p-4 gap-4"
               >
                 <div>
                   <h3 className="font-semibold text-gray-800">
@@ -111,7 +92,7 @@ export default async function Home() {
                   </p>
                 </div>
 
-                <div className="text-red-600 font-bold text-lg">
+                <div className="text-red-600 font-bold text-lg whitespace-nowrap">
                   {produto.quantidade} un.
                 </div>
               </div>
@@ -120,46 +101,37 @@ export default async function Home() {
         )}
       </div>
 
-      <div className="mt-10 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800">
+      <div className="mt-8 md:mt-10 bg-white rounded-2xl shadow-sm border border-gray-200 p-4 md:p-6">
+        <h2 className="text-xl md:text-2xl font-bold mb-6 text-gray-800">
           Últimos Produtos
         </h2>
 
-        <table className="w-full">
-          <thead className="bg-gray-100">
-            <tr className="text-left">
-              <th className="p-4 text-gray-800">Nome</th>
-              <th className="p-4 text-gray-800">Código</th>
-              <th className="p-4 text-gray-800">Quantidade</th>
-              <th className="p-4 text-gray-800">Categoria</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {produtos?.map((produto) => (
-              <tr
-                key={produto.id}
-                className="border-t border-gray-200 hover:bg-gray-50"
-              >
-                <td className="p-4 text-gray-800">
-                  {produto.nome}
-                </td>
-
-                <td className="p-4 text-gray-800">
-                  {produto.codigo}
-                </td>
-
-                <td className="p-4 text-gray-800">
-                  {produto.quantidade}
-                </td>
-
-                <td className="p-4 text-gray-800">
-                  {produto.categoria}
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[600px]">
+            <thead className="bg-gray-100">
+              <tr className="text-left">
+                <th className="p-4 text-gray-800">Nome</th>
+                <th className="p-4 text-gray-800">Código</th>
+                <th className="p-4 text-gray-800">Quantidade</th>
+                <th className="p-4 text-gray-800">Categoria</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {produtos?.map((produto) => (
+                <tr
+                  key={produto.id}
+                  className="border-t border-gray-200 hover:bg-gray-50"
+                >
+                  <td className="p-4 text-gray-800">{produto.nome}</td>
+                  <td className="p-4 text-gray-800">{produto.codigo}</td>
+                  <td className="p-4 text-gray-800">{produto.quantidade}</td>
+                  <td className="p-4 text-gray-800">{produto.categoria}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
     </div>
