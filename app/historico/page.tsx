@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import BotaoPDFHistorico from "../components/BotaoPDFHistorico";
 
-export default function Movimentacoes() {
+export default function Historico() {
   const [movimentacoes, setMovimentacoes] = useState<any[]>([]);
   const [dataFiltro, setDataFiltro] = useState("");
 
@@ -31,12 +31,13 @@ export default function Movimentacoes() {
         )
       `);
 
-    let todasMovimentacoes = [
+    const todasMovimentacoes = [
       ...(entradas || []).map((entrada) => ({
         tipo: "Entrada",
         produto: entrada.produtos?.nome,
         quantidade: entrada.quantidade,
-        local: entrada.origem,
+        cliente: "-",
+        local: entrada.origem || "-",
         data: entrada.created_at,
       })),
 
@@ -44,7 +45,8 @@ export default function Movimentacoes() {
         tipo: "Saída",
         produto: saida.produtos?.nome,
         quantidade: saida.quantidade,
-        local: saida.destino,
+        cliente: saida.cliente || "-",
+        local: saida.local || saida.destino || "-",
         data: saida.created_at,
       })),
     ];
@@ -73,11 +75,11 @@ export default function Movimentacoes() {
 
         <div>
           <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
-            Movimentações
+            Histórico
           </h1>
 
           <p className="text-gray-500 mt-2">
-            Histórico completo do estoque
+            Histórico completo de entradas e saídas
           </p>
         </div>
 
@@ -99,13 +101,17 @@ export default function Movimentacoes() {
             <input
               type="date"
               value={dataFiltro}
-              onChange={(e) => setDataFiltro(e.target.value)}
+              onChange={(e) =>
+                setDataFiltro(e.target.value)
+              }
               className="w-full md:w-auto border border-gray-300 rounded-xl px-4 py-3"
             />
           </div>
 
           <button
-            onClick={() => setDataFiltro("")}
+            onClick={() =>
+              setDataFiltro("")
+            }
             className="bg-gray-800 text-white px-5 py-3 rounded-xl hover:bg-black transition"
           >
             Limpar
@@ -117,25 +123,51 @@ export default function Movimentacoes() {
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-x-auto">
 
-        <table className="w-full min-w-[750px]">
+        <table className="w-full min-w-[900px]">
 
           <thead className="bg-gray-100">
+
             <tr className="text-left">
-              <th className="p-4 text-gray-800">Tipo</th>
-              <th className="p-4 text-gray-800">Produto</th>
-              <th className="p-4 text-gray-800">Quantidade</th>
-              <th className="p-4 text-gray-800">Origem/Destino</th>
-              <th className="p-4 text-gray-800">Data</th>
+
+              <th className="p-4 text-gray-800">
+                Tipo
+              </th>
+
+              <th className="p-4 text-gray-800">
+                Produto
+              </th>
+
+              <th className="p-4 text-gray-800">
+                Quantidade
+              </th>
+
+              <th className="p-4 text-gray-800">
+                Cliente
+              </th>
+
+              <th className="p-4 text-gray-800">
+                Local / Origem
+              </th>
+
+              <th className="p-4 text-gray-800">
+                Data
+              </th>
+
             </tr>
+
           </thead>
 
           <tbody>
+
             {movimentacoesFiltradas.map((movimentacao, index) => (
+
               <tr
                 key={index}
                 className="border-t border-gray-200 hover:bg-gray-50"
               >
+
                 <td className="p-4">
+
                   <span
                     className={
                       movimentacao.tipo === "Entrada"
@@ -145,6 +177,7 @@ export default function Movimentacoes() {
                   >
                     {movimentacao.tipo}
                   </span>
+
                 </td>
 
                 <td className="p-4 text-gray-800">
@@ -156,14 +189,23 @@ export default function Movimentacoes() {
                 </td>
 
                 <td className="p-4 text-gray-800 whitespace-nowrap">
+                  {movimentacao.cliente}
+                </td>
+
+                <td className="p-4 text-gray-800 whitespace-nowrap">
                   {movimentacao.local}
                 </td>
 
                 <td className="p-4 text-gray-800 whitespace-nowrap">
-                  {new Date(movimentacao.data).toLocaleDateString("pt-BR")}
+                  {new Date(
+                    movimentacao.data
+                  ).toLocaleDateString("pt-BR")}
                 </td>
+
               </tr>
+
             ))}
+
           </tbody>
 
         </table>
