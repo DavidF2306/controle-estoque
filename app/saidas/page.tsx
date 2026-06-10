@@ -8,12 +8,16 @@ export default function Saidas() {
   const router = useRouter();
 
   const [produtos, setProdutos] = useState<any[]>([]);
+  const [locais, setLocais] = useState<any[]>([]);
+
   const [produtoId, setProdutoId] = useState("");
   const [quantidade, setQuantidade] = useState("");
-  const [destino, setDestino] = useState("");
+  const [cliente, setCliente] = useState("");
+  const [local, setLocal] = useState("");
 
   useEffect(() => {
     buscarProdutos();
+    buscarLocais();
   }, []);
 
   async function buscarProdutos() {
@@ -23,6 +27,16 @@ export default function Saidas() {
 
     if (data) {
       setProdutos(data);
+    }
+  }
+
+  async function buscarLocais() {
+    const { data } = await supabase
+      .from("locais")
+      .select("*");
+
+    if (data) {
+      setLocais(data);
     }
   }
 
@@ -38,17 +52,13 @@ export default function Saidas() {
       return;
     }
 
-    if (
-      Number(quantidade) >
-      produtoSelecionado.quantidade
-    ) {
+    if (Number(quantidade) > produtoSelecionado.quantidade) {
       alert("Quantidade maior que o estoque.");
       return;
     }
 
     const novaQuantidade =
-      produtoSelecionado.quantidade -
-      Number(quantidade);
+      produtoSelecionado.quantidade - Number(quantidade);
 
     await supabase
       .from("saidas")
@@ -56,7 +66,8 @@ export default function Saidas() {
         {
           produto_id: Number(produtoId),
           quantidade: Number(quantidade),
-          destino,
+          cliente,
+          local,
         },
       ]);
 
@@ -72,6 +83,18 @@ export default function Saidas() {
     router.push("/produtos");
   }
 
+  const clientes = [
+    ...new Set(
+      locais
+        .map((item) => item.cliente)
+        .filter(Boolean)
+    ),
+  ];
+
+  const locaisFiltrados = locais.filter(
+    (item) => item.cliente === cliente
+  );
+
   return (
     <div className="text-gray-800 w-full overflow-x-hidden">
 
@@ -82,7 +105,7 @@ export default function Saidas() {
         </h1>
 
         <p className="text-gray-500 mt-2">
-          Registre uma saída de produto
+          Registre uma saída para cliente e local
         </p>
 
       </div>
@@ -174,14 +197,56 @@ export default function Saidas() {
         <div>
 
           <label className="block text-sm font-medium mb-2">
-            Destino
+            Cliente
           </label>
 
-          <input
-            type="text"
-            value={destino}
+          <select
+            value={cliente}
+            onChange={(e) => {
+              setCliente(e.target.value);
+              setLocal("");
+            }}
+            className="
+              w-full
+              border border-gray-300
+              rounded-xl
+              px-4 py-3
+              outline-none
+              focus:ring-2
+              focus:ring-blue-500
+            "
+            required
+          >
+
+            <option value="">
+              Selecione o cliente
+            </option>
+
+            {clientes.map((clienteNome) => (
+
+              <option
+                key={clienteNome}
+                value={clienteNome}
+              >
+                {clienteNome}
+              </option>
+
+            ))}
+
+          </select>
+
+        </div>
+
+        <div>
+
+          <label className="block text-sm font-medium mb-2">
+            Local
+          </label>
+
+          <select
+            value={local}
             onChange={(e) =>
-              setDestino(e.target.value)
+              setLocal(e.target.value)
             }
             className="
               w-full
@@ -192,9 +257,28 @@ export default function Saidas() {
               focus:ring-2
               focus:ring-blue-500
             "
-            placeholder="Ex: Hospital Municipal"
             required
-          />
+            disabled={!cliente}
+          >
+
+            <option value="">
+              {cliente
+                ? "Selecione o local"
+                : "Selecione um cliente primeiro"}
+            </option>
+
+            {locaisFiltrados.map((item) => (
+
+              <option
+                key={item.id}
+                value={item.nome}
+              >
+                {item.nome}
+              </option>
+
+            ))}
+
+          </select>
 
         </div>
 
