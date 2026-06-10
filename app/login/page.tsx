@@ -4,6 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
   const router = useRouter();
@@ -11,6 +12,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
+  const [mostrarSenha, setMostrarSenha] = useState(false);
 
   async function fazerLogin(
     e: React.FormEvent
@@ -97,23 +99,53 @@ export default function Login() {
               Senha
             </label>
 
-            <input
-              type="password"
-              value={senha}
-              onChange={(e) =>
-                setSenha(e.target.value)
-              }
-              className="
-                w-full
-                border border-gray-300
-                rounded-xl
-                px-4 py-3
-                outline-none
-                focus:ring-2
-                focus:ring-blue-500
-              "
-              required
-            />
+            <div className="relative">
+
+              <input
+                type={
+                  mostrarSenha
+                    ? "text"
+                    : "password"
+                }
+                value={senha}
+                onChange={(e) =>
+                  setSenha(e.target.value)
+                }
+                className="
+                  w-full
+                  border border-gray-300
+                  rounded-xl
+                  px-4 py-3 pr-12
+                  outline-none
+                  focus:ring-2
+                  focus:ring-blue-500
+                "
+                required
+              />
+
+              <button
+                type="button"
+                onClick={() =>
+                  setMostrarSenha(
+                    !mostrarSenha
+                  )
+                }
+                className="
+                  absolute
+                  right-4
+                  top-1/2
+                  -translate-y-1/2
+                  text-gray-500
+                "
+              >
+                {mostrarSenha ? (
+                  <EyeOff size={20} />
+                ) : (
+                  <Eye size={20} />
+                )}
+              </button>
+
+            </div>
 
           </div>
 
@@ -133,7 +165,9 @@ export default function Login() {
             transition
           "
         >
-          {loading ? "Entrando..." : "Entrar"}
+          {loading
+            ? "Entrando..."
+            : "Entrar"}
         </button>
 
         <div className="flex flex-col gap-3 mt-6 text-center">
