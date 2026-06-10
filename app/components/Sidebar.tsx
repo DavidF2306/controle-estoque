@@ -25,7 +25,7 @@ export default function Sidebar() {
   const [aberto, setAberto] = useState(false);
 
   const menu = [
-    { name: "Dashboard", icon: LayoutDashboard, path: "/" },
+    { name: "Início", icon: LayoutDashboard, path: "/",},
     { name: "Produtos", icon: Package, path: "/produtos" },
     { name: "Locais", icon: MapPin, path: "/locais" },
     { name: "Entradas", icon: ArrowDownCircle, path: "/entradas" },
