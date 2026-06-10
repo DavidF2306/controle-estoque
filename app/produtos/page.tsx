@@ -38,7 +38,8 @@ export default function Produtos() {
   const produtosFiltrados = produtos.filter(
     (produto) =>
       produto.nome?.toLowerCase().includes(busca.toLowerCase()) ||
-      produto.codigo?.toLowerCase().includes(busca.toLowerCase())
+      produto.categoria?.toLowerCase().includes(busca.toLowerCase()) ||
+      produto.tipo?.toLowerCase().includes(busca.toLowerCase())
   );
 
   return (
@@ -72,7 +73,7 @@ export default function Produtos() {
       <div className="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-gray-200 mb-6">
         <input
           type="text"
-          placeholder="Buscar por nome ou código..."
+          placeholder="Buscar por nome, categoria ou tipo..."
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
@@ -86,7 +87,7 @@ export default function Produtos() {
           <thead className="bg-gray-100">
             <tr className="text-left">
               <th className="p-4 text-gray-800">Nome</th>
-              <th className="p-4 text-gray-800">Código</th>
+              <th className="p-4 text-gray-800">Tipo</th>
               <th className="p-4 text-gray-800">Quantidade</th>
               <th className="p-4 text-gray-800">Categoria</th>
               <th className="p-4 text-gray-800">Ações</th>
@@ -107,7 +108,7 @@ export default function Produtos() {
                 </td>
 
                 <td className="p-4 text-gray-800">
-                  {produto.codigo}
+                  {produto.tipo || "-"}
                 </td>
 
                 <td
