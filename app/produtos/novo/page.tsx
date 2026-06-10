@@ -5,7 +5,6 @@ import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
 export default function NovoProduto() {
-
   const router = useRouter();
 
   const [nome, setNome] = useState("");
@@ -16,10 +15,9 @@ export default function NovoProduto() {
   async function salvarProduto(
     e: React.FormEvent
   ) {
-
     e.preventDefault();
 
-    const { error } = await supabase
+    await supabase
       .from("produtos")
       .insert([
         {
@@ -30,31 +28,44 @@ export default function NovoProduto() {
         },
       ]);
 
-    if (!error) {
-      router.push("/produtos");
-      router.refresh();
-    }
+    alert("Produto cadastrado!");
+
+    router.push("/produtos");
   }
 
   return (
-    <div className="max-w-2xl">
+    <div className="text-gray-800 w-full overflow-x-hidden">
 
-      <h1 className="text-4xl font-bold text-gray-800 mb-2">
-        Novo Produto
-      </h1>
+      <div className="pt-14 md:pt-0 mb-8">
 
-      <p className="text-gray-500 mb-8">
-        Cadastre um novo produto no estoque
-      </p>
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
+          Novo Produto
+        </h1>
+
+        <p className="text-gray-500 mt-2">
+          Cadastre um novo produto no estoque
+        </p>
+
+      </div>
 
       <form
         onSubmit={salvarProduto}
-        className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 space-y-6"
+        className="
+          bg-white
+          p-4 md:p-8
+          rounded-2xl
+          shadow-sm
+          border border-gray-200
+          space-y-6
+          w-full
+          max-w-2xl
+        "
       >
 
         <div>
+
           <label className="block text-sm font-medium mb-2">
-            Nome do Produto
+            Nome
           </label>
 
           <input
@@ -63,12 +74,22 @@ export default function NovoProduto() {
             onChange={(e) =>
               setNome(e.target.value)
             }
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Digite o nome"
+            className="
+              w-full
+              border border-gray-300
+              rounded-xl
+              px-4 py-3
+              outline-none
+              focus:ring-2
+              focus:ring-blue-500
+            "
+            required
           />
+
         </div>
 
         <div>
+
           <label className="block text-sm font-medium mb-2">
             Código
           </label>
@@ -79,12 +100,22 @@ export default function NovoProduto() {
             onChange={(e) =>
               setCodigo(e.target.value)
             }
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Ex: NBK-001"
+            className="
+              w-full
+              border border-gray-300
+              rounded-xl
+              px-4 py-3
+              outline-none
+              focus:ring-2
+              focus:ring-blue-500
+            "
+            required
           />
+
         </div>
 
         <div>
+
           <label className="block text-sm font-medium mb-2">
             Quantidade
           </label>
@@ -95,12 +126,22 @@ export default function NovoProduto() {
             onChange={(e) =>
               setQuantidade(e.target.value)
             }
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="0"
+            className="
+              w-full
+              border border-gray-300
+              rounded-xl
+              px-4 py-3
+              outline-none
+              focus:ring-2
+              focus:ring-blue-500
+            "
+            required
           />
+
         </div>
 
         <div>
+
           <label className="block text-sm font-medium mb-2">
             Categoria
           </label>
@@ -111,14 +152,54 @@ export default function NovoProduto() {
             onChange={(e) =>
               setCategoria(e.target.value)
             }
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Ex: Energia"
+            className="
+              w-full
+              border border-gray-300
+              rounded-xl
+              px-4 py-3
+              outline-none
+              focus:ring-2
+              focus:ring-blue-500
+            "
           />
+
         </div>
 
-        <button className="bg-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-700 transition">
-          Salvar Produto
-        </button>
+        <div className="flex flex-col sm:flex-row gap-3">
+
+          <button
+            className="
+              bg-blue-600
+              text-white
+              px-6 py-3
+              rounded-xl
+              font-medium
+              hover:bg-blue-700
+              transition
+            "
+          >
+            Salvar Produto
+          </button>
+
+          <button
+            type="button"
+            onClick={() =>
+              router.push("/produtos")
+            }
+            className="
+              bg-gray-800
+              text-white
+              px-6 py-3
+              rounded-xl
+              font-medium
+              hover:bg-black
+              transition
+            "
+          >
+            Voltar
+          </button>
+
+        </div>
 
       </form>
 
