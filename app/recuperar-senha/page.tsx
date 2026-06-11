@@ -16,7 +16,7 @@ export default function RecuperarSenha() {
     const { error } =
       await supabase.auth.resetPasswordForEmail(email, {
         redirectTo:
-          "https://controle-estoque-three-olive.vercel.app/login",
+          "https://controle-estoque-three-olive.vercel.app/atualizar-senha",
       });
 
     setLoading(false);

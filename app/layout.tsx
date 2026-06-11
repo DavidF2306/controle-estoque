@@ -21,6 +21,7 @@ export default function RootLayout({
     "/login",
     "/cadastro",
     "/recuperar-senha",
+    "/atualizar-senha",
   ];
 
   const rotaPublica = rotasPublicas.includes(pathname);
