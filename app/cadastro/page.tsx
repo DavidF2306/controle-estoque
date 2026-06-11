@@ -17,6 +17,8 @@ export default function Cadastro() {
   async function criarConta(e: React.FormEvent) {
     e.preventDefault();
 
+    const emailFormatado = email.trim().toLowerCase();
+
     if (senha !== confirmarSenha) {
       alert("As senhas não coincidem.");
       return;
@@ -24,8 +26,20 @@ export default function Cadastro() {
 
     setLoading(true);
 
+    const { data: usuarioAutorizado } = await supabase
+      .from("usuarios_autorizados")
+      .select("email")
+      .eq("email", emailFormatado)
+      .single();
+
+    if (!usuarioAutorizado) {
+      setLoading(false);
+      alert("Este email não possui autorização para cadastro.");
+      return;
+    }
+
     const { error } = await supabase.auth.signUp({
-      email,
+      email: emailFormatado,
       password: senha,
       options: {
         emailRedirectTo:
@@ -225,10 +239,11 @@ export default function Cadastro() {
             font-medium
             hover:bg-blue-700
             transition
+            disabled:opacity-70
           "
         >
           {loading
-            ? "Criando conta..."
+            ? "Verificando..."
             : "Criar Conta"}
         </button>
 
