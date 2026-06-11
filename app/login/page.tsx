@@ -14,9 +14,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [mostrarSenha, setMostrarSenha] = useState(false);
 
-  async function fazerLogin(
-    e: React.FormEvent
-  ) {
+  async function fazerLogin(e: React.FormEvent) {
     e.preventDefault();
 
     setLoading(true);
@@ -35,6 +33,21 @@ export default function Login() {
     }
 
     router.push("/");
+  }
+
+  async function loginGoogle() {
+    const { error } =
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo:
+            "https://controle-estoque-three-olive.vercel.app",
+        },
+      });
+
+    if (error) {
+      alert("Erro ao entrar com Google: " + error.message);
+    }
   }
 
   return (
@@ -126,9 +139,7 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() =>
-                  setMostrarSenha(
-                    !mostrarSenha
-                  )
+                  setMostrarSenha(!mostrarSenha)
                 }
                 className="
                   absolute
@@ -168,6 +179,32 @@ export default function Login() {
           {loading
             ? "Entrando..."
             : "Entrar"}
+        </button>
+
+        <div className="flex items-center gap-3 my-6">
+          <div className="flex-1 h-px bg-gray-200" />
+          <span className="text-sm text-gray-400">
+            ou
+          </span>
+          <div className="flex-1 h-px bg-gray-200" />
+        </div>
+
+        <button
+          type="button"
+          onClick={loginGoogle}
+          className="
+            w-full
+            bg-white
+            text-gray-700
+            py-3
+            rounded-xl
+            font-medium
+            border border-gray-300
+            hover:bg-gray-50
+            transition
+          "
+        >
+          Entrar com Google
         </button>
 
         <div className="flex flex-col gap-3 mt-6 text-center">
