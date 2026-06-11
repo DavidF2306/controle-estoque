@@ -11,6 +11,7 @@ import {
   ArrowDownCircle,
   ArrowUpCircle,
   History,
+  Settings,
   LogOut,
   Menu,
   X,
@@ -25,12 +26,41 @@ export default function Sidebar() {
   const [aberto, setAberto] = useState(false);
 
   const menu = [
-    { name: "Início", icon: LayoutDashboard, path: "/",},
-    { name: "Produtos", icon: Package, path: "/produtos" },
-    { name: "Locais", icon: MapPin, path: "/locais" },
-    { name: "Entradas", icon: ArrowDownCircle, path: "/entradas" },
-    { name: "Saídas", icon: ArrowUpCircle, path: "/saidas" },
-    { name: "Histórico", icon: History, path: "/historico" },
+    {
+      name: "Início",
+      icon: LayoutDashboard,
+      path: "/",
+    },
+    {
+      name: "Produtos",
+      icon: Package,
+      path: "/produtos",
+    },
+    {
+      name: "Locais",
+      icon: MapPin,
+      path: "/locais",
+    },
+    {
+      name: "Entradas",
+      icon: ArrowDownCircle,
+      path: "/entradas",
+    },
+    {
+      name: "Saídas",
+      icon: ArrowUpCircle,
+      path: "/saidas",
+    },
+    {
+      name: "Histórico",
+      icon: History,
+      path: "/historico",
+    },
+    {
+      name: "Configurações",
+      icon: Settings,
+      path: "/configuracoes",
+    },
   ];
 
   async function sair() {
