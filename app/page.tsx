@@ -1,10 +1,27 @@
 import { supabase } from "@/lib/supabase";
-import GraficoEstoque from "./components/GraficoEstoque";
 
 export default async function Home() {
-  const { data: produtos } = await supabase.from("produtos").select("*");
-  const { data: entradas } = await supabase.from("entradas").select("*");
-  const { data: saidas } = await supabase.from("saidas").select("*");
+  const { data: produtos } = await supabase
+    .from("produtos")
+    .select("*");
+
+  const { data: entradas } = await supabase
+    .from("entradas")
+    .select(`
+      *,
+      produtos (
+        nome
+      )
+    `);
+
+  const { data: saidas } = await supabase
+    .from("saidas")
+    .select(`
+      *,
+      produtos (
+        nome
+      )
+    `);
 
   const totalProdutos = produtos?.length || 0;
 
@@ -19,6 +36,32 @@ export default async function Home() {
 
   const produtosBaixoEstoque =
     produtos?.filter((produto) => produto.quantidade <= 5) || [];
+
+  const movimentacoesRecentes = [
+    ...(entradas || []).map((entrada) => ({
+      tipo: "Entrada",
+      produto: entrada.produtos?.nome || "-",
+      quantidade: entrada.quantidade,
+      cliente: "-",
+      local: entrada.origem || "-",
+      data: entrada.created_at,
+    })),
+
+    ...(saidas || []).map((saida) => ({
+      tipo: "Saída",
+      produto: saida.produtos?.nome || "-",
+      quantidade: saida.quantidade,
+      cliente: saida.cliente || "-",
+      local: saida.local || saida.destino || "-",
+      data: saida.created_at,
+    })),
+  ]
+    .sort(
+      (a, b) =>
+        new Date(b.data).getTime() -
+        new Date(a.data).getTime()
+    )
+    .slice(0, 5);
 
   return (
     <div className="text-gray-800 w-full overflow-x-hidden">
@@ -77,8 +120,62 @@ export default async function Home() {
 
       </div>
 
-      <div className="mt-8 md:mt-10 overflow-x-auto">
-        <GraficoEstoque />
+      <div className="mt-8 md:mt-10 bg-white rounded-2xl shadow-sm border border-gray-200 p-4 md:p-6">
+
+        <h2 className="text-xl md:text-2xl font-bold mb-6 text-gray-800">
+          Movimentações Recentes
+        </h2>
+
+        {movimentacoesRecentes.length === 0 ? (
+          <p className="text-gray-500">
+            Nenhuma movimentação registrada.
+          </p>
+        ) : (
+          <div className="space-y-4">
+            {movimentacoesRecentes.map((movimentacao, index) => (
+              <div
+                key={index}
+                className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border border-gray-200 rounded-xl p-4 hover:bg-gray-50"
+              >
+                <div>
+                  <span
+                    className={
+                      movimentacao.tipo === "Entrada"
+                        ? "text-green-600 font-semibold"
+                        : "text-red-600 font-semibold"
+                    }
+                  >
+                    {movimentacao.tipo}
+                  </span>
+
+                  <h3 className="font-semibold text-gray-800 mt-1">
+                    {movimentacao.produto}
+                  </h3>
+
+                  <p className="text-sm text-gray-500">
+                    {movimentacao.tipo === "Entrada"
+                      ? `Origem: ${movimentacao.local}`
+                      : `Cliente: ${movimentacao.cliente} | Local: ${movimentacao.local}`}
+                  </p>
+                </div>
+
+                <div className="text-left md:text-right">
+                  <p className="font-bold text-gray-800">
+                    {movimentacao.tipo === "Entrada" ? "+" : "-"}
+                    {movimentacao.quantidade} un.
+                  </p>
+
+                  <p className="text-sm text-gray-500">
+                    {new Date(
+                      movimentacao.data
+                    ).toLocaleDateString("pt-BR")}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
       </div>
 
       <div className="mt-8 md:mt-10 bg-white rounded-2xl shadow-sm border border-gray-200 p-4 md:p-6">
