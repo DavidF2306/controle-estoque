@@ -40,6 +40,29 @@ export default function RootLayout({
         return;
       }
 
+      if (session) {
+        const emailUsuario = session.user.email;
+
+        const { data: usuarioAutorizado } = await supabase
+          .from("usuarios_autorizados")
+          .select("email")
+          .eq("email", emailUsuario)
+          .single();
+
+        if (!usuarioAutorizado) {
+          await supabase.auth.signOut();
+
+          alert(
+            "Seu email não possui autorização para acessar o sistema."
+          );
+
+          setAutorizado(false);
+          router.replace("/login");
+          setLoading(false);
+          return;
+        }
+      }
+
       if (session && rotaPublica) {
         setAutorizado(false);
         router.replace("/");
@@ -72,13 +95,13 @@ export default function RootLayout({
         {rotaPublica ? (
           children
         ) : (
-         <div className="flex w-full max-w-full overflow-x-hidden">
-  <Sidebar />
+          <div className="flex w-full max-w-full overflow-x-hidden">
+            <Sidebar />
 
-  <main className="flex-1 min-w-0 bg-gray-100 p-4 md:p-10 min-h-screen overflow-x-hidden">
-    {children}
-  </main>
-</div>
+            <main className="flex-1 min-w-0 bg-gray-100 p-4 md:p-10 min-h-screen overflow-x-hidden">
+              {children}
+            </main>
+          </div>
         )}
       </body>
     </html>
