@@ -9,10 +9,14 @@ import {
   Activity,
 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function Home() {
   const { data: produtos } = await supabase
     .from("produtos")
-    .select("*");
+    .select("*")
+    .order("id", { ascending: false });
 
   const { data: entradas } = await supabase
     .from("entradas")
@@ -21,7 +25,8 @@ export default async function Home() {
       produtos (
         nome
       )
-    `);
+    `)
+    .order("created_at", { ascending: false });
 
   const { data: saidas } = await supabase
     .from("saidas")
@@ -30,26 +35,26 @@ export default async function Home() {
       produtos (
         nome
       )
-    `);
+    `)
+    .order("created_at", { ascending: false });
 
   const totalProdutos = produtos?.length || 0;
 
   const totalEstoque =
     produtos?.reduce(
       (total, produto) =>
-        total + produto.quantidade,
+        total + Number(produto.quantidade || 0),
       0
     ) || 0;
 
-  const estoqueBaixo =
-    produtos?.filter(
-      (produto) => produto.quantidade <= 5
-    ).length || 0;
-
   const produtosBaixoEstoque =
     produtos?.filter(
-      (produto) => produto.quantidade <= 5
+      (produto) =>
+        Number(produto.quantidade) <= 5
     ) || [];
+
+  const estoqueBaixo =
+    produtosBaixoEstoque.length;
 
   const movimentacoesRecentes = [
     ...(entradas || []).map((entrada) => ({
@@ -76,6 +81,9 @@ export default async function Home() {
         new Date(a.data).getTime()
     )
     .slice(0, 5);
+
+  const ultimosProdutos =
+    produtos?.slice(0, 5) || [];
 
   const cards = [
     {
@@ -114,7 +122,6 @@ export default async function Home() {
     <div className="text-gray-900 w-full overflow-x-hidden">
 
       <div className="mb-8 pt-14 md:pt-0">
-
         <div className="flex items-center gap-3 mb-3">
           <div className="w-11 h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center">
             <Activity size={22} />
@@ -130,29 +137,18 @@ export default async function Home() {
             </p>
           </div>
         </div>
-
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 md:gap-5">
-
         {cards.map((card) => {
           const Icon = card.icon;
 
           return (
             <div
               key={card.titulo}
-              className="
-                bg-white
-                border border-gray-200
-                rounded-3xl
-                p-6
-                shadow-sm
-                hover:shadow-md
-                transition
-              "
+              className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm hover:shadow-md transition"
             >
               <div className="flex items-center justify-between">
-
                 <div>
                   <p className="text-sm text-gray-500">
                     {card.titulo}
@@ -164,38 +160,26 @@ export default async function Home() {
                 </div>
 
                 <div
-                  className={`
-                    w-12 h-12
-                    rounded-2xl
-                    flex items-center justify-center
-                    ${card.cor}
-                  `}
+                  className={`w-12 h-12 rounded-2xl flex items-center justify-center ${card.cor}`}
                 >
                   <Icon size={24} />
                 </div>
-
               </div>
             </div>
           );
         })}
-
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
 
         <div className="bg-white border border-gray-200 rounded-3xl p-4 md:p-6 shadow-sm">
+          <h2 className="text-xl md:text-2xl font-bold mb-2">
+            Movimentações Recentes
+          </h2>
 
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl md:text-2xl font-bold">
-                Movimentações Recentes
-              </h2>
-
-              <p className="text-sm text-gray-500 mt-1">
-                Últimas entradas e saídas registradas
-              </p>
-            </div>
-          </div>
+          <p className="text-sm text-gray-500 mb-6">
+            Últimas entradas e saídas registradas
+          </p>
 
           {movimentacoesRecentes.length === 0 ? (
             <p className="text-gray-500">
@@ -203,20 +187,10 @@ export default async function Home() {
             </p>
           ) : (
             <div className="space-y-3">
-
               {movimentacoesRecentes.map((mov, index) => (
                 <div
                   key={index}
-                  className="
-                    flex flex-col md:flex-row
-                    md:items-center md:justify-between
-                    gap-3
-                    border border-gray-100
-                    rounded-2xl
-                    p-4
-                    hover:bg-gray-50
-                    transition
-                  "
+                  className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border border-gray-100 rounded-2xl p-4 hover:bg-gray-50 transition"
                 >
                   <div>
                     <span
@@ -252,14 +226,11 @@ export default async function Home() {
                   </div>
                 </div>
               ))}
-
             </div>
           )}
-
         </div>
 
         <div className="bg-white border border-gray-200 rounded-3xl p-4 md:p-6 shadow-sm">
-
           <h2 className="text-xl md:text-2xl font-bold text-red-600 mb-2">
             Produtos com Estoque Baixo
           </h2>
@@ -274,18 +245,10 @@ export default async function Home() {
             </p>
           ) : (
             <div className="space-y-3">
-
               {produtosBaixoEstoque.map((produto) => (
                 <div
                   key={produto.id}
-                  className="
-                    flex items-center justify-between
-                    bg-red-50
-                    border border-red-100
-                    rounded-2xl
-                    p-4
-                    gap-4
-                  "
+                  className="flex items-center justify-between bg-red-50 border border-red-100 rounded-2xl p-4 gap-4"
                 >
                   <div>
                     <h3 className="font-semibold">
@@ -302,10 +265,8 @@ export default async function Home() {
                   </div>
                 </div>
               ))}
-
             </div>
           )}
-
         </div>
 
       </div>
@@ -317,12 +278,11 @@ export default async function Home() {
         </h2>
 
         <p className="text-sm text-gray-500 mb-6">
-          Lista rápida dos produtos cadastrados no estoque
+          Últimos produtos cadastrados no estoque
         </p>
 
         <div className="overflow-x-auto">
           <table className="w-full min-w-[650px]">
-
             <thead>
               <tr className="text-left bg-gray-50">
                 <th className="p-4 text-sm text-gray-600 font-semibold rounded-l-2xl">
@@ -344,7 +304,7 @@ export default async function Home() {
             </thead>
 
             <tbody>
-              {produtos?.map((produto) => (
+              {ultimosProdutos.map((produto) => (
                 <tr
                   key={produto.id}
                   className="border-b border-gray-100 hover:bg-gray-50"
@@ -359,7 +319,7 @@ export default async function Home() {
 
                   <td
                     className={
-                      produto.quantidade <= 5
+                      Number(produto.quantidade) <= 5
                         ? "p-4 font-semibold text-red-600"
                         : "p-4 text-gray-600"
                     }
@@ -373,7 +333,6 @@ export default async function Home() {
                 </tr>
               ))}
             </tbody>
-
           </table>
         </div>
 
