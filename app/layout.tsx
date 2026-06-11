@@ -68,14 +68,14 @@ export default function RootLayout({
 
   return (
     <html lang="pt-BR">
-      <body>
+      <body className="overflow-x-hidden">
         {rotaPublica ? (
           children
         ) : (
           <div className="flex">
             <Sidebar />
 
-            <main className="flex-1 bg-gray-100 p-4 md:p-10 min-h-screen overflow-x-hidden">
+            <main className="flex-1 bg-gray-100 p-4 md:p-10 min-h-screen overflow-x-hidden w-full">
               {children}
             </main>
           </div>
