@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 import {
@@ -9,55 +12,66 @@ import {
   Activity,
 } from "lucide-react";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export default function Home() {
+  const [produtos, setProdutos] = useState<any[]>([]);
+  const [entradas, setEntradas] = useState<any[]>([]);
+  const [saidas, setSaidas] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default async function Home() {
-  const { data: produtos } = await supabase
-    .from("produtos")
-    .select("*")
-    .order("id", { ascending: false });
+  useEffect(() => {
+    buscarDados();
+  }, []);
 
-  const { data: entradas } = await supabase
-    .from("entradas")
-    .select(`
-      *,
-      produtos (
-        nome
-      )
-    `)
-    .order("created_at", { ascending: false });
+  async function buscarDados() {
+    setLoading(true);
 
-  const { data: saidas } = await supabase
-    .from("saidas")
-    .select(`
-      *,
-      produtos (
-        nome
-      )
-    `)
-    .order("created_at", { ascending: false });
+    const { data: produtosData } = await supabase
+      .from("produtos")
+      .select("*")
+      .order("id", { ascending: false });
 
-  const totalProdutos = produtos?.length || 0;
+    const { data: entradasData } = await supabase
+      .from("entradas")
+      .select(`
+        *,
+        produtos (
+          nome
+        )
+      `)
+      .order("created_at", { ascending: false });
 
-  const totalEstoque =
-    produtos?.reduce(
-      (total, produto) =>
-        total + Number(produto.quantidade || 0),
-      0
-    ) || 0;
+    const { data: saidasData } = await supabase
+      .from("saidas")
+      .select(`
+        *,
+        produtos (
+          nome
+        )
+      `)
+      .order("created_at", { ascending: false });
 
-  const produtosBaixoEstoque =
-    produtos?.filter(
-      (produto) =>
-        Number(produto.quantidade) <= 5
-    ) || [];
+    setProdutos(produtosData || []);
+    setEntradas(entradasData || []);
+    setSaidas(saidasData || []);
+    setLoading(false);
+  }
 
-  const estoqueBaixo =
-    produtosBaixoEstoque.length;
+  const totalProdutos = produtos.length;
+
+  const totalEstoque = produtos.reduce(
+    (total, produto) =>
+      total + Number(produto.quantidade || 0),
+    0
+  );
+
+  const produtosBaixoEstoque = produtos.filter(
+    (produto) => Number(produto.quantidade || 0) <= 5
+  );
+
+  const estoqueBaixo = produtosBaixoEstoque.length;
 
   const movimentacoesRecentes = [
-    ...(entradas || []).map((entrada) => ({
+    ...entradas.map((entrada) => ({
       tipo: "Entrada",
       produto: entrada.produtos?.nome || "-",
       quantidade: entrada.quantidade,
@@ -66,7 +80,7 @@ export default async function Home() {
       data: entrada.created_at,
     })),
 
-    ...(saidas || []).map((saida) => ({
+    ...saidas.map((saida) => ({
       tipo: "Saída",
       produto: saida.produtos?.nome || "-",
       quantidade: saida.quantidade,
@@ -82,8 +96,7 @@ export default async function Home() {
     )
     .slice(0, 5);
 
-  const ultimosProdutos =
-    produtos?.slice(0, 5) || [];
+  const ultimosProdutos = produtos.slice(0, 5);
 
   const cards = [
     {
@@ -100,13 +113,13 @@ export default async function Home() {
     },
     {
       titulo: "Entradas",
-      valor: entradas?.length || 0,
+      valor: entradas.length,
       icon: ArrowDownCircle,
       cor: "bg-green-50 text-green-600",
     },
     {
       titulo: "Saídas",
-      valor: saidas?.length || 0,
+      valor: saidas.length,
       icon: ArrowUpCircle,
       cor: "bg-red-50 text-red-600",
     },
@@ -117,6 +130,14 @@ export default async function Home() {
       cor: "bg-orange-50 text-orange-600",
     },
   ];
+
+  if (loading) {
+    return (
+      <div className="text-gray-500">
+        Carregando página inicial...
+      </div>
+    );
+  }
 
   return (
     <div className="text-gray-900 w-full overflow-x-hidden">
