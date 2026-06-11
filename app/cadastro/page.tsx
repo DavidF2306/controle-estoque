@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
-import { Eye, EyeOff, Printer, UserPlus } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Cadastro() {
   const [email, setEmail] = useState("");
@@ -62,81 +62,84 @@ export default function Cadastro() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
 
       <form
         onSubmit={criarConta}
-        className="w-full max-w-md bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-200"
+        className="
+          w-full
+          max-w-md
+          bg-white
+          p-6 md:p-8
+          rounded-2xl
+          shadow-sm
+          border border-gray-200
+        "
       >
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 w-14 h-14 rounded-3xl bg-blue-600 text-white flex items-center justify-center">
-            <Printer size={28} />
-          </div>
 
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+        <div className="mb-8">
+
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
             Cadastro
           </h1>
 
           <p className="text-gray-500 mt-2">
-            Crie sua conta autorizada
+            Crie sua conta no sistema
           </p>
+
         </div>
 
         <div className="space-y-5">
 
           <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700">
+
+            <label className="block text-sm font-medium mb-2">
               Email
             </label>
 
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="seuemail@empresa.com"
-              className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) =>
+                setEmail(e.target.value)
+              }
+              className="
+                w-full
+                border border-gray-300
+                rounded-xl
+                px-4 py-3
+                outline-none
+                focus:ring-2
+                focus:ring-blue-500
+              "
               required
             />
+
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700">
+
+            <label className="block text-sm font-medium mb-2">
               Senha
             </label>
 
             <div className="relative">
+
               <input
                 type={mostrarSenha ? "text" : "password"}
                 value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-                placeholder="Digite sua senha"
-                className="w-full border border-gray-300 rounded-2xl px-4 py-3 pr-12 outline-none focus:ring-2 focus:ring-blue-500"
-                required
-                minLength={6}
-              />
-
-              <button
-                type="button"
-                onClick={() => setMostrarSenha(!mostrarSenha)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
-              >
-                {mostrarSenha ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700">
-              Confirmar senha
-            </label>
-
-            <div className="relative">
-              <input
-                type={mostrarConfirmarSenha ? "text" : "password"}
-                value={confirmarSenha}
-                onChange={(e) => setConfirmarSenha(e.target.value)}
-                placeholder="Confirme sua senha"
-                className="w-full border border-gray-300 rounded-2xl px-4 py-3 pr-12 outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) =>
+                  setSenha(e.target.value)
+                }
+                className="
+                  w-full
+                  border border-gray-300
+                  rounded-xl
+                  px-4 py-3 pr-12
+                  outline-none
+                  focus:ring-2
+                  focus:ring-blue-500
+                "
                 required
                 minLength={6}
               />
@@ -144,9 +147,72 @@ export default function Cadastro() {
               <button
                 type="button"
                 onClick={() =>
-                  setMostrarConfirmarSenha(!mostrarConfirmarSenha)
+                  setMostrarSenha(!mostrarSenha)
                 }
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
+                className="
+                  absolute
+                  right-4
+                  top-1/2
+                  -translate-y-1/2
+                  text-gray-500
+                "
+              >
+                {mostrarSenha ? (
+                  <EyeOff size={20} />
+                ) : (
+                  <Eye size={20} />
+                )}
+              </button>
+
+            </div>
+
+          </div>
+
+          <div>
+
+            <label className="block text-sm font-medium mb-2">
+              Confirmar senha
+            </label>
+
+            <div className="relative">
+
+              <input
+                type={
+                  mostrarConfirmarSenha
+                    ? "text"
+                    : "password"
+                }
+                value={confirmarSenha}
+                onChange={(e) =>
+                  setConfirmarSenha(e.target.value)
+                }
+                className="
+                  w-full
+                  border border-gray-300
+                  rounded-xl
+                  px-4 py-3 pr-12
+                  outline-none
+                  focus:ring-2
+                  focus:ring-blue-500
+                "
+                required
+                minLength={6}
+              />
+
+              <button
+                type="button"
+                onClick={() =>
+                  setMostrarConfirmarSenha(
+                    !mostrarConfirmarSenha
+                  )
+                }
+                className="
+                  absolute
+                  right-4
+                  top-1/2
+                  -translate-y-1/2
+                  text-gray-500
+                "
               >
                 {mostrarConfirmarSenha ? (
                   <EyeOff size={20} />
@@ -154,28 +220,44 @@ export default function Cadastro() {
                   <Eye size={20} />
                 )}
               </button>
+
             </div>
+
           </div>
 
         </div>
 
         <button
           disabled={loading}
-          className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-2xl font-medium transition disabled:opacity-70 flex items-center justify-center gap-2"
+          className="
+            w-full
+            mt-6
+            bg-blue-600
+            text-white
+            py-3
+            rounded-xl
+            font-medium
+            hover:bg-blue-700
+            transition
+            disabled:opacity-70
+          "
         >
-          <UserPlus size={20} />
-
-          {loading ? "Verificando..." : "Criar Conta"}
+          {loading
+            ? "Verificando..."
+            : "Criar Conta"}
         </button>
 
         <div className="mt-6 text-center">
+
           <Link
             href="/login"
             className="text-blue-600 hover:underline"
           >
             Voltar para login
           </Link>
+
         </div>
+
       </form>
 
     </div>
