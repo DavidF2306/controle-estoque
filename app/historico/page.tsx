@@ -3,10 +3,17 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import BotaoPDFHistorico from "../components/BotaoPDFHistorico";
+import {
+  History,
+  Search,
+  Calendar,
+  RotateCcw,
+} from "lucide-react";
 
 export default function Historico() {
   const [movimentacoes, setMovimentacoes] = useState<any[]>([]);
   const [mesFiltro, setMesFiltro] = useState("");
+  const [busca, setBusca] = useState("");
 
   useEffect(() => {
     buscarMovimentacoes();
@@ -34,7 +41,7 @@ export default function Historico() {
     const todasMovimentacoes = [
       ...(entradas || []).map((entrada) => ({
         tipo: "Entrada",
-        produto: entrada.produtos?.nome,
+        produto: entrada.produtos?.nome || "-",
         quantidade: entrada.quantidade,
         cliente: "-",
         local: entrada.origem || "-",
@@ -45,7 +52,7 @@ export default function Historico() {
 
       ...(saidas || []).map((saida) => ({
         tipo: "Saída",
-        produto: saida.produtos?.nome,
+        produto: saida.produtos?.nome || "-",
         quantidade: saida.quantidade,
         cliente: saida.cliente || "-",
         local: saida.local || saida.destino || "-",
@@ -64,128 +71,216 @@ export default function Historico() {
     setMovimentacoes(todasMovimentacoes);
   }
 
-  const movimentacoesFiltradas =
-    mesFiltro === ""
-      ? movimentacoes
-      : movimentacoes.filter(
-          (movimentacao) =>
-            movimentacao.data.slice(0, 7) === mesFiltro
-        );
+  const movimentacoesFiltradas = movimentacoes.filter((mov) => {
+    const filtroMes =
+      mesFiltro === "" ||
+      mov.data.slice(0, 7) === mesFiltro;
+
+    const textoBusca = `
+      ${mov.tipo}
+      ${mov.produto}
+      ${mov.cliente}
+      ${mov.local}
+      ${mov.notaFiscal}
+      ${mov.contador}
+    `.toLowerCase();
+
+    const filtroBusca =
+      busca === "" ||
+      textoBusca.includes(busca.toLowerCase());
+
+    return filtroMes && filtroBusca;
+  });
 
   return (
-    <div className="text-gray-800 w-full overflow-x-hidden">
+    <div className="text-gray-900 w-full overflow-x-hidden">
 
-      <div className="pt-14 md:pt-0 mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
-            Histórico
-          </h1>
+      <div className="pt-14 md:pt-0 mb-8 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
 
-          <p className="text-gray-500 mt-2">
-            Histórico completo de entradas e saídas
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center">
+            <History size={22} />
+          </div>
+
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold">
+              Histórico
+            </h1>
+
+            <p className="text-gray-500 mt-1">
+              Entradas, saídas e movimentações do estoque
+            </p>
+          </div>
         </div>
 
-        <div className="w-full md:w-auto">
+        <div className="w-full xl:w-auto">
           <BotaoPDFHistorico
             movimentacoes={movimentacoesFiltradas}
             mesFiltro={mesFiltro}
           />
         </div>
+
       </div>
 
-      <div className="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-gray-200 mb-6">
-        <div className="flex flex-col md:flex-row md:items-end gap-4">
-          <div className="w-full md:w-auto">
+      <div className="bg-white border border-gray-200 rounded-3xl p-4 md:p-6 shadow-sm mb-6">
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium mb-2">
+              Buscar
+            </label>
+
+            <div className="relative">
+              <Search
+                size={20}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+
+              <input
+                type="text"
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                placeholder="Buscar por produto, cliente, local, nota fiscal..."
+                className="w-full border border-gray-300 rounded-2xl pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <div>
             <label className="block text-sm font-medium mb-2">
               Filtrar por mês
             </label>
 
-            <input
-              type="month"
-              value={mesFiltro}
-              onChange={(e) => setMesFiltro(e.target.value)}
-              className="w-full md:w-auto border border-gray-300 rounded-xl px-4 py-3"
-            />
+            <div className="relative">
+              <Calendar
+                size={20}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+              />
+
+              <input
+                type="month"
+                value={mesFiltro}
+                onChange={(e) => setMesFiltro(e.target.value)}
+                className="w-full border border-gray-300 rounded-2xl pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
           </div>
 
-          <button
-            onClick={() => setMesFiltro("")}
-            className="bg-gray-800 text-white px-5 py-3 rounded-xl hover:bg-black transition"
-          >
-            Limpar
-          </button>
         </div>
+
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+
+          <p className="text-sm text-gray-500">
+            {movimentacoesFiltradas.length} movimentação(ões) encontrada(s)
+          </p>
+
+          <button
+            onClick={() => {
+              setMesFiltro("");
+              setBusca("");
+            }}
+            className="bg-gray-900 hover:bg-black text-white px-5 py-3 rounded-2xl transition flex items-center justify-center gap-2"
+          >
+            <RotateCcw size={18} />
+            Limpar filtros
+          </button>
+
+        </div>
+
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-x-auto">
+      <div className="bg-white border border-gray-200 rounded-3xl shadow-sm overflow-x-auto">
+
         <table className="w-full min-w-[1200px]">
 
-          <thead className="bg-gray-100">
-            <tr className="text-left">
-              <th className="p-4 text-gray-800">Tipo</th>
-              <th className="p-4 text-gray-800">Produto</th>
-              <th className="p-4 text-gray-800">Quantidade</th>
-              <th className="p-4 text-gray-800">Cliente</th>
-              <th className="p-4 text-gray-800">Local / Origem</th>
-              <th className="p-4 text-gray-800">Nota Fiscal</th>
-              <th className="p-4 text-gray-800">Contador</th>
-              <th className="p-4 text-gray-800">Data</th>
+          <thead>
+            <tr className="text-left bg-gray-50">
+              <th className="p-4 text-sm text-gray-600 font-semibold">
+                Tipo
+              </th>
+
+              <th className="p-4 text-sm text-gray-600 font-semibold">
+                Produto
+              </th>
+
+              <th className="p-4 text-sm text-gray-600 font-semibold">
+                Quantidade
+              </th>
+
+              <th className="p-4 text-sm text-gray-600 font-semibold">
+                Cliente
+              </th>
+
+              <th className="p-4 text-sm text-gray-600 font-semibold">
+                Local / Origem
+              </th>
+
+              <th className="p-4 text-sm text-gray-600 font-semibold">
+                Nota Fiscal
+              </th>
+
+              <th className="p-4 text-sm text-gray-600 font-semibold">
+                Contador
+              </th>
+
+              <th className="p-4 text-sm text-gray-600 font-semibold">
+                Data
+              </th>
             </tr>
           </thead>
 
           <tbody>
-            {movimentacoesFiltradas.map((movimentacao, index) => (
+            {movimentacoesFiltradas.map((mov, index) => (
               <tr
                 key={index}
-                className="border-t border-gray-200 hover:bg-gray-50"
+                className="border-t border-gray-100 hover:bg-gray-50 transition"
               >
                 <td className="p-4">
                   <span
                     className={
-                      movimentacao.tipo === "Entrada"
-                        ? "text-green-600 font-medium"
-                        : "text-red-600 font-medium"
+                      mov.tipo === "Entrada"
+                        ? "bg-green-50 text-green-600 px-3 py-1 rounded-full text-sm font-medium"
+                        : "bg-red-50 text-red-600 px-3 py-1 rounded-full text-sm font-medium"
                     }
                   >
-                    {movimentacao.tipo}
+                    {mov.tipo}
                   </span>
                 </td>
 
-                <td className="p-4 text-gray-800">
-                  {movimentacao.produto}
+                <td className="p-4 font-medium text-gray-900">
+                  {mov.produto}
                 </td>
 
-                <td className="p-4 text-gray-800">
-                  {movimentacao.quantidade}
+                <td className="p-4 text-gray-600">
+                  {mov.quantidade}
                 </td>
 
-                <td className="p-4 text-gray-800 whitespace-nowrap">
-                  {movimentacao.cliente}
+                <td className="p-4 text-gray-600 whitespace-nowrap">
+                  {mov.cliente}
                 </td>
 
-                <td className="p-4 text-gray-800 whitespace-nowrap">
-                  {movimentacao.local}
+                <td className="p-4 text-gray-600 whitespace-nowrap">
+                  {mov.local}
                 </td>
 
-                <td className="p-4 text-gray-800 whitespace-nowrap">
-                  {movimentacao.notaFiscal}
+                <td className="p-4 text-gray-600 whitespace-nowrap">
+                  {mov.notaFiscal}
                 </td>
 
-                <td className="p-4 text-gray-800 whitespace-nowrap">
-                  {movimentacao.contador}
+                <td className="p-4 text-gray-600 whitespace-nowrap">
+                  {mov.contador}
                 </td>
 
-                <td className="p-4 text-gray-800 whitespace-nowrap">
-                  {new Date(
-                    movimentacao.data
-                  ).toLocaleDateString("pt-BR")}
+                <td className="p-4 text-gray-600 whitespace-nowrap">
+                  {new Date(mov.data).toLocaleDateString("pt-BR")}
                 </td>
               </tr>
             ))}
           </tbody>
 
         </table>
+
       </div>
 
     </div>
