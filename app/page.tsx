@@ -323,7 +323,70 @@ export default function Home() {
           Últimos produtos cadastrados no estoque
         </p>
 
-        <div className="overflow-x-auto">
+        <div className="xl:hidden space-y-3">
+          {ultimosProdutos.map((produto) => {
+            const baixo = Number(produto.quantidade) <= 5;
+
+            return (
+              <div
+                key={produto.id}
+                className="border border-gray-100 rounded-2xl p-4"
+              >
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div>
+                    <h3 className="font-bold">
+                      {produto.nome}
+                    </h3>
+
+                    <p className="text-sm text-gray-500 mt-1">
+                      {produto.categoria || "Sem categoria"}
+                    </p>
+                  </div>
+
+                  {baixo ? (
+                    <span className="bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
+                      Baixo
+                    </span>
+                  ) : (
+                    <span className="bg-green-50 text-green-600 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
+                      Normal
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <p className="text-gray-500">
+                      Tipo
+                    </p>
+
+                    <p className="font-medium">
+                      {produto.tipo || "-"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-gray-500">
+                      Quantidade
+                    </p>
+
+                    <p
+                      className={
+                        baixo
+                          ? "font-bold text-red-600"
+                          : "font-bold text-gray-900"
+                      }
+                    >
+                      {produto.quantidade} un.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="hidden xl:block overflow-x-auto">
           <table className="w-full min-w-[650px]">
             <thead>
               <tr className="text-left bg-gray-50">
