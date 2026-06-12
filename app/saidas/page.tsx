@@ -20,6 +20,7 @@ export default function Saidas() {
   const [cliente, setCliente] = useState("");
   const [local, setLocal] = useState("");
   const [contador, setContador] = useState("");
+  const [observacoes, setObservacoes] = useState("");
 
   useEffect(() => {
     buscarProdutos();
@@ -73,6 +74,7 @@ export default function Saidas() {
           cliente,
           local,
           contador: contador || null,
+          observacoes: observacoes || null,
           destino: `${cliente} - ${local}`,
         },
       ]);
@@ -240,6 +242,20 @@ export default function Saidas() {
             onChange={(e) => setContador(e.target.value)}
             className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-red-500"
             placeholder="Opcional"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            Observações
+          </label>
+
+          <textarea
+            value={observacoes}
+            onChange={(e) => setObservacoes(e.target.value)}
+            placeholder="Opcional"
+            rows={4}
+            className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-red-500 resize-none"
           />
         </div>
 
