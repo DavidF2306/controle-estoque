@@ -78,7 +78,7 @@ export default function Cadastro() {
           </h1>
 
           <p className="text-gray-500 mt-2">
-            Crie sua conta autorizada
+            Crie sua conta autorizada aqui
           </p>
         </div>
 
