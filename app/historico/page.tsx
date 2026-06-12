@@ -11,6 +11,25 @@ import {
 } from "lucide-react";
 
 export default function Historico() {
+  function formatarDataHora(data: string) {
+  const dataCorrigida = new Date(data);
+
+  dataCorrigida.setHours(
+    dataCorrigida.getHours() - 3
+  );
+
+  return dataCorrigida.toLocaleString(
+    "pt-BR",
+    {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    }
+  );
+}
   const [movimentacoes, setMovimentacoes] = useState<any[]>([]);
   const [mesFiltro, setMesFiltro] = useState("");
   const [busca, setBusca] = useState("");
@@ -225,8 +244,8 @@ export default function Historico() {
               </th>
 
               <th className="p-4 text-sm text-gray-600 font-semibold">
-                Data
-              </th>
+  Data / Hora
+</th>
             </tr>
           </thead>
 
@@ -273,12 +292,8 @@ export default function Historico() {
                 </td>
 
                 <td className="p-4 text-gray-600 whitespace-nowrap">
-                  {new Date(mov.data).toLocaleString("pt-BR", {
-  timeZone: "America/Sao_Paulo",
-  dateStyle: "short",
-  timeStyle: "short",
-})}
-                </td>
+  {formatarDataHora(mov.data)}
+</td>
               </tr>
             ))}
           </tbody>
