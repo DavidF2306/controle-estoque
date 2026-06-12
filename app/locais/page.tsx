@@ -8,6 +8,7 @@ import {
   X,
   Pencil,
   Trash2,
+  Search,
 } from "lucide-react";
 
 export default function Locais() {
@@ -15,6 +16,7 @@ export default function Locais() {
   const [cliente, setCliente] = useState("");
   const [locais, setLocais] = useState<any[]>([]);
   const [editandoId, setEditandoId] = useState<number | null>(null);
+  const [busca, setBusca] = useState("");
 
   useEffect(() => {
     buscarLocais();
@@ -93,6 +95,12 @@ export default function Locais() {
     buscarLocais();
   }
 
+  const locaisFiltrados = locais.filter(
+    (local) =>
+      local.cliente?.toLowerCase().includes(busca.toLowerCase()) ||
+      local.nome?.toLowerCase().includes(busca.toLowerCase())
+  );
+
   return (
     <div className="text-gray-900 w-full overflow-x-hidden">
 
@@ -169,7 +177,73 @@ export default function Locais() {
         </div>
       </form>
 
-      <div className="bg-white border border-gray-200 rounded-3xl shadow-sm overflow-x-auto">
+      <div className="bg-white border border-gray-200 rounded-3xl p-4 md:p-6 shadow-sm mb-6">
+        <div className="relative">
+          <Search
+            size={20}
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+          />
+
+          <input
+            type="text"
+            placeholder="Buscar por cliente ou local..."
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            className="w-full border border-gray-300 rounded-2xl pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+      </div>
+
+      <div className="xl:hidden space-y-4">
+
+        {locaisFiltrados.map((local) => (
+          <div
+            key={local.id}
+            className="bg-white border border-gray-200 rounded-3xl p-4 shadow-sm"
+          >
+            <div className="mb-4">
+              <p className="text-sm text-gray-500">
+                Cliente
+              </p>
+
+              <h2 className="font-bold text-lg text-gray-900">
+                {local.cliente || "-"}
+              </h2>
+            </div>
+
+            <div className="mb-4">
+              <p className="text-sm text-gray-500">
+                Local
+              </p>
+
+              <p className="font-medium text-gray-900">
+                {local.nome}
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2">
+              <button
+                onClick={() => editarLocal(local)}
+                className="bg-yellow-50 text-yellow-700 px-4 py-3 rounded-2xl hover:bg-yellow-100 transition flex items-center justify-center gap-2 font-medium"
+              >
+                <Pencil size={16} />
+                Editar
+              </button>
+
+              <button
+                onClick={() => excluirLocal(local.id)}
+                className="bg-red-50 text-red-600 px-4 py-3 rounded-2xl hover:bg-red-100 transition flex items-center justify-center gap-2 font-medium"
+              >
+                <Trash2 size={16} />
+                Excluir
+              </button>
+            </div>
+          </div>
+        ))}
+
+      </div>
+
+      <div className="hidden xl:block bg-white border border-gray-200 rounded-3xl shadow-sm overflow-x-auto">
 
         <table className="w-full min-w-[750px]">
 
@@ -190,7 +264,7 @@ export default function Locais() {
           </thead>
 
           <tbody>
-            {locais.map((local) => (
+            {locaisFiltrados.map((local) => (
               <tr
                 key={local.id}
                 className="border-t border-gray-100 hover:bg-gray-50 transition"
