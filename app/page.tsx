@@ -56,6 +56,19 @@ export default function Home() {
     setLoading(false);
   }
 
+  function formatarDataHora(data: string) {
+    const dataCorrigida = new Date(data);
+    dataCorrigida.setHours(dataCorrigida.getHours() - 3);
+
+    return dataCorrigida.toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
   const totalProdutos = produtos.length;
 
   const totalEstoque = produtos.reduce(
@@ -77,6 +90,7 @@ export default function Home() {
       quantidade: entrada.quantidade,
       cliente: "-",
       local: entrada.origem || "-",
+      observacoes: entrada.observacoes || "-",
       data: entrada.created_at,
     })),
 
@@ -86,6 +100,7 @@ export default function Home() {
       quantidade: saida.quantidade,
       cliente: saida.cliente || "-",
       local: saida.local || saida.destino || "-",
+      observacoes: saida.observacoes || "-",
       data: saida.created_at,
     })),
   ]
@@ -233,6 +248,12 @@ export default function Home() {
                         ? `Origem: ${mov.local}`
                         : `Cliente: ${mov.cliente} • Local: ${mov.local}`}
                     </p>
+
+                    {mov.observacoes !== "-" && (
+                      <p className="text-sm text-gray-500 mt-1">
+                        Observações: {mov.observacoes}
+                      </p>
+                    )}
                   </div>
 
                   <div className="md:text-right">
@@ -242,7 +263,7 @@ export default function Home() {
                     </p>
 
                     <p className="text-sm text-gray-500">
-                      {new Date(mov.data).toLocaleDateString("pt-BR")}
+                      {formatarDataHora(mov.data)}
                     </p>
                   </div>
                 </div>
