@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
@@ -7,7 +8,6 @@ import Link from "next/link";
 import {
   Eye,
   EyeOff,
-  Printer,
   LogIn,
 } from "lucide-react";
 
@@ -70,19 +70,25 @@ export default function Login() {
           border border-gray-200
         "
       >
-
         <div className="mb-8 text-center">
 
-          <div className="mx-auto mb-4 w-14 h-14 rounded-3xl bg-blue-600 text-white flex items-center justify-center">
-            <Printer size={28} />
+          <div className="mx-auto mb-4 w-24 h-24 rounded-3xl bg-white border border-gray-200 shadow-sm flex items-center justify-center overflow-hidden">
+            <Image
+              src="/logo.png"
+              alt="Logo"
+              width={86}
+              height={86}
+              className="object-contain"
+              priority
+            />
           </div>
 
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-            EstoquePro
+            Controle de Estoque
           </h1>
 
           <p className="text-gray-500 mt-2">
-            Acesse o sistema de estoque
+            Acesse o sistema de impressoras e suprimentos
           </p>
 
         </div>
@@ -121,11 +127,7 @@ export default function Login() {
 
             <div className="relative">
               <input
-                type={
-                  mostrarSenha
-                    ? "text"
-                    : "password"
-                }
+                type={mostrarSenha ? "text" : "password"}
                 value={senha}
                 onChange={(e) =>
                   setSenha(e.target.value)
@@ -188,18 +190,14 @@ export default function Login() {
         >
           <LogIn size={20} />
 
-          {loading
-            ? "Entrando..."
-            : "Entrar"}
+          {loading ? "Entrando..." : "Entrar"}
         </button>
 
         <div className="flex items-center gap-3 my-6">
           <div className="flex-1 h-px bg-gray-200" />
-
           <span className="text-sm text-gray-400">
             ou
           </span>
-
           <div className="flex-1 h-px bg-gray-200" />
         </div>
 
