@@ -273,7 +273,7 @@ export default function Historico() {
                 </td>
 
                 <td className="p-4 text-gray-600 whitespace-nowrap">
-                  {new Date(mov.data).toLocaleDateString("pt-B")}
+                  {new Date(mov.data).toLocaleDateString("pt-BR")}
                 </td>
               </tr>
             ))}
