@@ -19,6 +19,7 @@ export default function Saidas() {
   const [quantidade, setQuantidade] = useState("");
   const [cliente, setCliente] = useState("");
   const [local, setLocal] = useState("");
+  const [contador, setContador] = useState("");
 
   useEffect(() => {
     buscarProdutos();
@@ -31,9 +32,7 @@ export default function Saidas() {
       .select("*")
       .order("nome");
 
-    if (data) {
-      setProdutos(data);
-    }
+    if (data) setProdutos(data);
   }
 
   async function buscarLocais() {
@@ -42,9 +41,7 @@ export default function Saidas() {
       .select("*")
       .order("cliente");
 
-    if (data) {
-      setLocais(data);
-    }
+    if (data) setLocais(data);
   }
 
   async function registrarSaida(e: React.FormEvent) {
@@ -75,6 +72,7 @@ export default function Saidas() {
           quantidade: Number(quantidade),
           cliente,
           local,
+          contador: contador || null,
           destino: `${cliente} - ${local}`,
         },
       ]);
@@ -134,16 +132,7 @@ export default function Saidas() {
 
       <form
         onSubmit={registrarSaida}
-        className="
-          bg-white
-          border border-gray-200
-          rounded-3xl
-          p-4 md:p-8
-          shadow-sm
-          space-y-6
-          w-full
-          max-w-3xl
-        "
+        className="bg-white border border-gray-200 rounded-3xl p-4 md:p-8 shadow-sm space-y-6 w-full max-w-3xl"
       >
         <div>
           <label className="block text-sm font-medium mb-2">
@@ -153,15 +142,7 @@ export default function Saidas() {
           <select
             value={produtoId}
             onChange={(e) => setProdutoId(e.target.value)}
-            className="
-              w-full
-              border border-gray-300
-              rounded-2xl
-              px-4 py-3
-              outline-none
-              focus:ring-2
-              focus:ring-red-500
-            "
+            className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-red-500"
             required
           >
             <option value="">
@@ -169,10 +150,7 @@ export default function Saidas() {
             </option>
 
             {produtos.map((produto) => (
-              <option
-                key={produto.id}
-                value={produto.id}
-              >
+              <option key={produto.id} value={produto.id}>
                 {produto.nome} — Estoque: {produto.quantidade}
               </option>
             ))}
@@ -188,15 +166,7 @@ export default function Saidas() {
             type="number"
             value={quantidade}
             onChange={(e) => setQuantidade(e.target.value)}
-            className="
-              w-full
-              border border-gray-300
-              rounded-2xl
-              px-4 py-3
-              outline-none
-              focus:ring-2
-              focus:ring-red-500
-            "
+            className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-red-500"
             placeholder="0"
             min="1"
             required
@@ -216,15 +186,7 @@ export default function Saidas() {
                 setCliente(e.target.value);
                 setLocal("");
               }}
-              className="
-                w-full
-                border border-gray-300
-                rounded-2xl
-                px-4 py-3
-                outline-none
-                focus:ring-2
-                focus:ring-red-500
-              "
+              className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-red-500"
               required
             >
               <option value="">
@@ -232,10 +194,7 @@ export default function Saidas() {
               </option>
 
               {clientes.map((clienteNome) => (
-                <option
-                  key={clienteNome}
-                  value={clienteNome}
-                >
+                <option key={clienteNome} value={clienteNome}>
                   {clienteNome}
                 </option>
               ))}
@@ -250,15 +209,7 @@ export default function Saidas() {
             <select
               value={local}
               onChange={(e) => setLocal(e.target.value)}
-              className="
-                w-full
-                border border-gray-300
-                rounded-2xl
-                px-4 py-3
-                outline-none
-                focus:ring-2
-                focus:ring-red-500
-              "
+              className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-red-500"
               required
               disabled={!cliente}
             >
@@ -269,10 +220,7 @@ export default function Saidas() {
               </option>
 
               {locaisFiltrados.map((item) => (
-                <option
-                  key={item.id}
-                  value={item.nome}
-                >
+                <option key={item.id} value={item.nome}>
                   {item.nome}
                 </option>
               ))}
@@ -281,22 +229,22 @@ export default function Saidas() {
 
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            Contador
+          </label>
 
-          <button
-            className="
-              bg-red-600
-              hover:bg-red-700
-              text-white
-              px-6 py-3
-              rounded-2xl
-              font-medium
-              transition
-              flex items-center
-              justify-center
-              gap-2
-            "
-          >
+          <input
+            type="text"
+            value={contador}
+            onChange={(e) => setContador(e.target.value)}
+            className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-red-500"
+            placeholder="Opcional"
+          />
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-2xl font-medium transition flex items-center justify-center gap-2">
             <Save size={20} />
             Registrar Saída
           </button>
@@ -304,23 +252,11 @@ export default function Saidas() {
           <button
             type="button"
             onClick={() => router.push("/produtos")}
-            className="
-              bg-gray-900
-              hover:bg-black
-              text-white
-              px-6 py-3
-              rounded-2xl
-              font-medium
-              transition
-              flex items-center
-              justify-center
-              gap-2
-            "
+            className="bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-2xl font-medium transition flex items-center justify-center gap-2"
           >
             <ArrowLeft size={20} />
             Voltar
           </button>
-
         </div>
       </form>
 
