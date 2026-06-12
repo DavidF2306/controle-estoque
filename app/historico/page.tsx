@@ -51,15 +51,15 @@ export default function Historico() {
       })),
 
       ...(saidas || []).map((saida) => ({
-        tipo: "Saída",
-        produto: saida.produtos?.nome || "-",
-        quantidade: saida.quantidade,
-        cliente: saida.cliente || "-",
-        local: saida.local || saida.destino || "-",
-        notaFiscal: "-",
-        contador: "-",
-        data: saida.created_at,
-      })),
+  tipo: "Saída",
+  produto: saida.produtos?.nome || "-",
+  quantidade: saida.quantidade,
+  cliente: saida.cliente || "-",
+  local: saida.local || saida.destino || "-",
+  notaFiscal: "-",
+  contador: saida.contador || "-",
+  data: saida.created_at,
+})),
     ];
 
     todasMovimentacoes.sort(
