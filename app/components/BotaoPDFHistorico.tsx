@@ -9,6 +9,22 @@ export default function BotaoPDFHistorico({
 }: any) {
 
   function gerarPDF() {
+    function formatarDataHora(data: string) {
+  const dataCorrigida = new Date(data);
+
+  dataCorrigida.setHours(
+    dataCorrigida.getHours() - 3
+  );
+
+  return dataCorrigida.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+}
     const doc = new jsPDF({
       orientation: "landscape",
     });
@@ -50,7 +66,7 @@ export default function BotaoPDFHistorico({
         "Local/Origem",
         "Nota Fiscal",
         "Contador",
-        "Data",
+        "Data/Hora",
       ]],
 
       body: movimentacoes.map((mov: any) => ([
@@ -61,11 +77,7 @@ export default function BotaoPDFHistorico({
         mov.local,
         mov.notaFiscal,
         mov.contador,
-        new Date(mov.data).toLocaleString("pt-BR", {
-  timeZone: "America/Sao_Paulo",
-  dateStyle: "short",
-  timeStyle: "short",
-}),
+        formatarDataHora(mov.data),
       ])),
 
       styles: {
