@@ -17,7 +17,6 @@ export default function Historico() {
 
   function formatarDataHora(data: string) {
     const dataCorrigida = new Date(data);
-
     dataCorrigida.setHours(dataCorrigida.getHours() - 3);
 
     return dataCorrigida.toLocaleString("pt-BR", {
@@ -61,6 +60,7 @@ export default function Historico() {
         local: entrada.origem || "-",
         notaFiscal: entrada.nota_fiscal || "-",
         contador: entrada.contador || "-",
+        observacoes: entrada.observacoes || "-",
         data: entrada.created_at,
       })),
 
@@ -72,6 +72,7 @@ export default function Historico() {
         local: saida.local || saida.destino || "-",
         notaFiscal: "-",
         contador: saida.contador || "-",
+        observacoes: saida.observacoes || "-",
         data: saida.created_at,
       })),
     ];
@@ -97,6 +98,7 @@ export default function Historico() {
       ${mov.local}
       ${mov.notaFiscal}
       ${mov.contador}
+      ${mov.observacoes}
     `.toLowerCase();
 
     const filtroBusca =
@@ -155,7 +157,7 @@ export default function Historico() {
                 type="text"
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                placeholder="Buscar por produto, cliente, local, nota fiscal..."
+                placeholder="Buscar por produto, cliente, local, nota fiscal, observação..."
                 className="w-full border border-gray-300 rounded-2xl pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -256,6 +258,13 @@ export default function Historico() {
                 <p className="text-gray-500">Contador</p>
                 <p className="font-medium">{mov.contador}</p>
               </div>
+
+              <div className="sm:col-span-2">
+                <p className="text-gray-500">Observações</p>
+                <p className="font-medium whitespace-pre-wrap">
+                  {mov.observacoes}
+                </p>
+              </div>
             </div>
           </div>
         ))}
@@ -264,7 +273,7 @@ export default function Historico() {
 
       <div className="hidden xl:block bg-white border border-gray-200 rounded-3xl shadow-sm overflow-x-auto">
 
-        <table className="w-full min-w-[1100px]">
+        <table className="w-full min-w-[1250px]">
 
           <thead>
             <tr className="text-left bg-gray-50">
@@ -294,6 +303,10 @@ export default function Historico() {
 
               <th className="p-4 text-sm text-gray-600 font-semibold">
                 Contador
+              </th>
+
+              <th className="p-4 text-sm text-gray-600 font-semibold">
+                Observações
               </th>
 
               <th className="p-4 text-sm text-gray-600 font-semibold">
@@ -342,6 +355,12 @@ export default function Historico() {
 
                 <td className="p-4 text-gray-600 whitespace-nowrap">
                   {mov.contador}
+                </td>
+
+                <td className="p-4 text-gray-600 max-w-[260px]">
+                  <span className="line-clamp-2">
+                    {mov.observacoes}
+                  </span>
                 </td>
 
                 <td className="p-4 text-gray-600 whitespace-nowrap">
