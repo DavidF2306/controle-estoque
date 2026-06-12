@@ -7,24 +7,20 @@ export default function BotaoPDFHistorico({
   movimentacoes,
   mesFiltro,
 }: any) {
+  function formatarDataHora(data: string) {
+    const dataCorrigida = new Date(data);
+    dataCorrigida.setHours(dataCorrigida.getHours() - 3);
+
+    return dataCorrigida.toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
 
   function gerarPDF() {
-    function formatarDataHora(data: string) {
-  const dataCorrigida = new Date(data);
-
-  dataCorrigida.setHours(
-    dataCorrigida.getHours() - 3
-  );
-
-  return dataCorrigida.toLocaleString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
-}
     const doc = new jsPDF({
       orientation: "landscape",
     });
@@ -33,7 +29,7 @@ export default function BotaoPDFHistorico({
       ? mesFiltro.split("-").reverse().join("/")
       : "Todos os períodos";
 
-    doc.setFontSize(20);
+    doc.setFontSize(18);
 
     doc.text(
       "Relatório Mensal de Movimentações",
@@ -41,7 +37,7 @@ export default function BotaoPDFHistorico({
       20
     );
 
-    doc.setFontSize(11);
+    doc.setFontSize(10);
 
     doc.text(
       `Período: ${tituloMes}`,
@@ -52,11 +48,11 @@ export default function BotaoPDFHistorico({
     doc.text(
       `Gerado em: ${new Date().toLocaleDateString("pt-BR")}`,
       14,
-      38
+      37
     );
 
     autoTable(doc, {
-      startY: 48,
+      startY: 46,
 
       head: [[
         "Tipo",
@@ -64,8 +60,9 @@ export default function BotaoPDFHistorico({
         "Qtd",
         "Cliente",
         "Local/Origem",
-        "Nota Fiscal",
+        "NF",
         "Contador",
+        "Observações",
         "Data/Hora",
       ]],
 
@@ -77,15 +74,26 @@ export default function BotaoPDFHistorico({
         mov.local,
         mov.notaFiscal,
         mov.contador,
+        mov.observacoes,
         formatarDataHora(mov.data),
       ])),
 
       styles: {
-        fontSize: 8,
+        fontSize: 7,
+        cellPadding: 2,
+        overflow: "linebreak",
       },
 
       headStyles: {
-        fontSize: 8,
+        fontSize: 7,
+      },
+
+      columnStyles: {
+        1: { cellWidth: 42 },
+        3: { cellWidth: 35 },
+        4: { cellWidth: 35 },
+        7: { cellWidth: 45 },
+        8: { cellWidth: 28 },
       },
     });
 
@@ -105,10 +113,11 @@ export default function BotaoPDFHistorico({
         text-white
         px-5
         py-3
-        rounded-xl
+        rounded-2xl
         transition
         w-full
         md:w-auto
+        font-medium
       "
     >
       Exportar PDF Mensal
