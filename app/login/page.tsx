@@ -234,7 +234,7 @@ export default function Login() {
             href="/recuperar-senha"
             className="text-gray-500 hover:text-gray-800 hover:underline"
           >
-            Esqueci minha senha
+            Esqueci a senha
           </Link>
 
         </div>

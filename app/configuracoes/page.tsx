@@ -163,7 +163,7 @@ export default function Configuracoes() {
             "
           >
             <UserPlus size={20} />
-            Adicionar novousuário
+            Adicionar usuário
           </button>
 
         </form>
