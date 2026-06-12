@@ -274,6 +274,7 @@ export default function Historico() {
 
                 <td className="p-4 text-gray-600 whitespace-nowrap">
                   {new Date(mov.data).toLocaleString("pt-BR", {
+  timeZone: "America/Sao_Paulo",
   dateStyle: "short",
   timeStyle: "short",
 })}
