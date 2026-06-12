@@ -61,7 +61,10 @@ export default function BotaoPDFHistorico({
         mov.local,
         mov.notaFiscal,
         mov.contador,
-        new Date(mov.data).toLocaleDateString("pt-BR"),
+        new Date(mov.data).toLocaleString("pt-BR", {
+  dateStyle: "short",
+  timeStyle: "short",
+}),
       ])),
 
       styles: {
