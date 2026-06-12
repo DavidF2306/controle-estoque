@@ -11,28 +11,23 @@ import {
 } from "lucide-react";
 
 export default function Historico() {
+  const [movimentacoes, setMovimentacoes] = useState<any[]>([]);
+  const [mesFiltro, setMesFiltro] = useState("");
+  const [busca, setBusca] = useState("");
+
   function formatarDataHora(data: string) {
-  const dataCorrigida = new Date(data);
+    const dataCorrigida = new Date(data);
 
-  dataCorrigida.setHours(
-    dataCorrigida.getHours() - 3
-  );
+    dataCorrigida.setHours(dataCorrigida.getHours() - 3);
 
-  return dataCorrigida.toLocaleString(
-    "pt-BR",
-    {
+    return dataCorrigida.toLocaleString("pt-BR", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-      second: "2-digit",
-    }
-  );
-}
-  const [movimentacoes, setMovimentacoes] = useState<any[]>([]);
-  const [mesFiltro, setMesFiltro] = useState("");
-  const [busca, setBusca] = useState("");
+    });
+  }
 
   useEffect(() => {
     buscarMovimentacoes();
@@ -70,15 +65,15 @@ export default function Historico() {
       })),
 
       ...(saidas || []).map((saida) => ({
-  tipo: "Saída",
-  produto: saida.produtos?.nome || "-",
-  quantidade: saida.quantidade,
-  cliente: saida.cliente || "-",
-  local: saida.local || saida.destino || "-",
-  notaFiscal: "-",
-  contador: saida.contador || "-",
-  data: saida.created_at,
-})),
+        tipo: "Saída",
+        produto: saida.produtos?.nome || "-",
+        quantidade: saida.quantidade,
+        cliente: saida.cliente || "-",
+        local: saida.local || saida.destino || "-",
+        notaFiscal: "-",
+        contador: saida.contador || "-",
+        data: saida.created_at,
+      })),
     ];
 
     todasMovimentacoes.sort(
@@ -209,9 +204,67 @@ export default function Historico() {
 
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-3xl shadow-sm overflow-x-auto">
+      <div className="xl:hidden space-y-4">
 
-        <table className="w-full min-w-[1200px]">
+        {movimentacoesFiltradas.map((mov, index) => (
+          <div
+            key={index}
+            className="bg-white border border-gray-200 rounded-3xl p-4 shadow-sm"
+          >
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <span
+                className={
+                  mov.tipo === "Entrada"
+                    ? "bg-green-50 text-green-600 px-3 py-1 rounded-full text-sm font-medium"
+                    : "bg-red-50 text-red-600 px-3 py-1 rounded-full text-sm font-medium"
+                }
+              >
+                {mov.tipo}
+              </span>
+
+              <span className="text-sm text-gray-500">
+                {formatarDataHora(mov.data)}
+              </span>
+            </div>
+
+            <h3 className="font-bold text-lg mb-3">
+              {mov.produto}
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+              <div>
+                <p className="text-gray-500">Quantidade</p>
+                <p className="font-medium">{mov.quantidade}</p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Cliente</p>
+                <p className="font-medium">{mov.cliente}</p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Local / Origem</p>
+                <p className="font-medium">{mov.local}</p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Nota Fiscal</p>
+                <p className="font-medium">{mov.notaFiscal}</p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Contador</p>
+                <p className="font-medium">{mov.contador}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+
+      </div>
+
+      <div className="hidden xl:block bg-white border border-gray-200 rounded-3xl shadow-sm overflow-x-auto">
+
+        <table className="w-full min-w-[1100px]">
 
           <thead>
             <tr className="text-left bg-gray-50">
@@ -224,7 +277,7 @@ export default function Historico() {
               </th>
 
               <th className="p-4 text-sm text-gray-600 font-semibold">
-                Quantidade
+                Qtd
               </th>
 
               <th className="p-4 text-sm text-gray-600 font-semibold">
@@ -236,7 +289,7 @@ export default function Historico() {
               </th>
 
               <th className="p-4 text-sm text-gray-600 font-semibold">
-                Nota Fiscal
+                NF
               </th>
 
               <th className="p-4 text-sm text-gray-600 font-semibold">
@@ -244,8 +297,8 @@ export default function Historico() {
               </th>
 
               <th className="p-4 text-sm text-gray-600 font-semibold">
-  Data / Hora
-</th>
+                Data / Hora
+              </th>
             </tr>
           </thead>
 
@@ -292,8 +345,8 @@ export default function Historico() {
                 </td>
 
                 <td className="p-4 text-gray-600 whitespace-nowrap">
-  {formatarDataHora(mov.data)}
-</td>
+                  {formatarDataHora(mov.data)}
+                </td>
               </tr>
             ))}
           </tbody>
