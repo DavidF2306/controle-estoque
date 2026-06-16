@@ -16,6 +16,7 @@ export default function Home() {
   const [produtos, setProdutos] = useState<any[]>([]);
   const [entradas, setEntradas] = useState<any[]>([]);
   const [saidas, setSaidas] = useState<any[]>([]);
+  const [usuarios, setUsuarios] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -50,9 +51,14 @@ export default function Home() {
       `)
       .order("created_at", { ascending: false });
 
+    const { data: usuariosData } = await supabase
+      .from("usuarios_autorizados")
+      .select("nome, email");
+
     setProdutos(produtosData || []);
     setEntradas(entradasData || []);
     setSaidas(saidasData || []);
+    setUsuarios(usuariosData || []);
     setLoading(false);
   }
 
@@ -67,6 +73,18 @@ export default function Home() {
       hour: "2-digit",
       minute: "2-digit",
     });
+  }
+
+  function buscarNomeUsuario(email: string) {
+    if (!email) return "-";
+
+    const usuario = usuarios.find(
+      (u) =>
+        u.email?.toLowerCase() ===
+        email.toLowerCase()
+    );
+
+    return usuario?.nome || email;
   }
 
   const totalProdutos = produtos.length;
@@ -91,7 +109,7 @@ export default function Home() {
       cliente: "-",
       local: entrada.origem || "-",
       observacoes: entrada.observacoes || "-",
-      usuario: entrada.usuario_email || "-",
+      usuario: buscarNomeUsuario(entrada.usuario_email),
       data: entrada.created_at,
     })),
 
@@ -102,7 +120,7 @@ export default function Home() {
       cliente: saida.cliente || "-",
       local: saida.local || saida.destino || "-",
       observacoes: saida.observacoes || "-",
-      usuario: saida.usuario_email || "-",
+      usuario: buscarNomeUsuario(saida.usuario_email),
       data: saida.created_at,
     })),
   ]
@@ -251,7 +269,7 @@ export default function Home() {
                         : `Cliente: ${mov.cliente} • Local: ${mov.local}`}
                     </p>
 
-                    <p className="text-sm text-gray-500 mt-1 break-all">
+                    <p className="text-sm text-gray-500 mt-1">
                       Realizado por: {mov.usuario}
                     </p>
 
