@@ -61,6 +61,7 @@ export default function Historico() {
         notaFiscal: entrada.nota_fiscal || "-",
         contador: entrada.contador || "-",
         observacoes: entrada.observacoes || "-",
+        usuario: entrada.usuario_email || "-",
         data: entrada.created_at,
       })),
 
@@ -73,6 +74,7 @@ export default function Historico() {
         notaFiscal: "-",
         contador: saida.contador || "-",
         observacoes: saida.observacoes || "-",
+        usuario: saida.usuario_email || "-",
         data: saida.created_at,
       })),
     ];
@@ -99,6 +101,7 @@ export default function Historico() {
       ${mov.notaFiscal}
       ${mov.contador}
       ${mov.observacoes}
+      ${mov.usuario}
     `.toLowerCase();
 
     const filtroBusca =
@@ -157,7 +160,7 @@ export default function Historico() {
                 type="text"
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                placeholder="Buscar por produto, cliente, local, nota fiscal, observação..."
+                placeholder="Buscar por produto, cliente, local, usuário, observação..."
                 className="w-full border border-gray-300 rounded-2xl pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -259,6 +262,11 @@ export default function Historico() {
                 <p className="font-medium">{mov.contador}</p>
               </div>
 
+              <div>
+                <p className="text-gray-500">Realizado por</p>
+                <p className="font-medium break-all">{mov.usuario}</p>
+              </div>
+
               <div className="sm:col-span-2">
                 <p className="text-gray-500">Observações</p>
                 <p className="font-medium whitespace-pre-wrap">
@@ -273,7 +281,7 @@ export default function Historico() {
 
       <div className="hidden xl:block bg-white border border-gray-200 rounded-3xl shadow-sm overflow-x-auto">
 
-        <table className="w-full min-w-[1250px]">
+        <table className="w-full min-w-[1400px]">
 
           <thead>
             <tr className="text-left bg-gray-50">
@@ -307,6 +315,10 @@ export default function Historico() {
 
               <th className="p-4 text-sm text-gray-600 font-semibold">
                 Observações
+              </th>
+
+              <th className="p-4 text-sm text-gray-600 font-semibold">
+                Realizado por
               </th>
 
               <th className="p-4 text-sm text-gray-600 font-semibold">
@@ -361,6 +373,10 @@ export default function Historico() {
                   <span className="line-clamp-2">
                     {mov.observacoes}
                   </span>
+                </td>
+
+                <td className="p-4 text-gray-600 max-w-[220px] break-all">
+                  {mov.usuario}
                 </td>
 
                 <td className="p-4 text-gray-600 whitespace-nowrap">
