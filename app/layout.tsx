@@ -34,39 +34,36 @@ export default function RootLayout({
         data: { session },
       } = await supabase.auth.getSession();
 
-      if (!session && !rotaPublica) {
+      if (rotaPublica) {
+        setAutorizado(true);
+        setLoading(false);
+        return;
+      }
+
+      if (!session) {
         setAutorizado(false);
         router.replace("/login");
         setLoading(false);
         return;
       }
 
-      if (session) {
-        const emailUsuario = session.user.email;
+      const emailUsuario = session.user.email?.toLowerCase();
 
-        const { data: usuarioAutorizado } = await supabase
-          .from("usuarios_autorizados")
-          .select("email")
-          .eq("email", emailUsuario)
-          .single();
+      const { data: usuarioAutorizado } = await supabase
+        .from("usuarios_autorizados")
+        .select("email")
+        .eq("email", emailUsuario)
+        .single();
 
-        if (!usuarioAutorizado) {
-          await supabase.auth.signOut();
+      if (!usuarioAutorizado) {
+        await supabase.auth.signOut();
 
-          alert(
-            "Seu email não possui autorização para acessar o sistema."
-          );
+        alert(
+          "Seu email não possui autorização para acessar o sistema."
+        );
 
-          setAutorizado(false);
-          router.replace("/login");
-          setLoading(false);
-          return;
-        }
-      }
-
-      if (session && rotaPublica) {
         setAutorizado(false);
-        router.replace("/");
+        router.replace("/login");
         setLoading(false);
         return;
       }
