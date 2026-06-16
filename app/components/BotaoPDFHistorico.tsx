@@ -39,11 +39,7 @@ export default function BotaoPDFHistorico({
 
     doc.setFontSize(10);
 
-    doc.text(
-      `Período: ${tituloMes}`,
-      14,
-      30
-    );
+    doc.text(`Período: ${tituloMes}`, 14, 30);
 
     doc.text(
       `Gerado em: ${new Date().toLocaleDateString("pt-BR")}`,
@@ -63,6 +59,7 @@ export default function BotaoPDFHistorico({
         "NF",
         "Contador",
         "Observações",
+        "Realizado por",
         "Data/Hora",
       ]],
 
@@ -75,25 +72,27 @@ export default function BotaoPDFHistorico({
         mov.notaFiscal,
         mov.contador,
         mov.observacoes,
+        mov.usuario,
         formatarDataHora(mov.data),
       ])),
 
       styles: {
-        fontSize: 7,
+        fontSize: 6,
         cellPadding: 2,
         overflow: "linebreak",
       },
 
       headStyles: {
-        fontSize: 7,
+        fontSize: 6,
       },
 
       columnStyles: {
-        1: { cellWidth: 42 },
-        3: { cellWidth: 35 },
-        4: { cellWidth: 35 },
-        7: { cellWidth: 45 },
-        8: { cellWidth: 28 },
+        1: { cellWidth: 36 },
+        3: { cellWidth: 30 },
+        4: { cellWidth: 30 },
+        7: { cellWidth: 38 },
+        8: { cellWidth: 42 },
+        9: { cellWidth: 28 },
       },
     });
 
