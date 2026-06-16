@@ -39,6 +39,12 @@ export default function Entradas() {
   async function registrarEntrada(e: React.FormEvent) {
     e.preventDefault();
 
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const emailUsuario = user?.email || "Usuário não identificado";
+
     const produtoSelecionado = produtos.find(
       (produto) => produto.id === Number(produtoId)
     );
@@ -61,6 +67,7 @@ export default function Entradas() {
           nota_fiscal: notaFiscal || null,
           contador: contador || null,
           observacoes: observacoes || null,
+          usuario_email: emailUsuario,
         },
       ]);
 
@@ -125,10 +132,7 @@ export default function Entradas() {
             </option>
 
             {produtos.map((produto) => (
-              <option
-                key={produto.id}
-                value={produto.id}
-              >
+              <option key={produto.id} value={produto.id}>
                 {produto.nome}
               </option>
             ))}
