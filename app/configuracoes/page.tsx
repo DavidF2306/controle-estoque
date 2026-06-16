@@ -11,6 +11,7 @@ import {
 
 export default function Configuracoes() {
   const [usuarios, setUsuarios] = useState<any[]>([]);
+  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
 
   useEffect(() => {
@@ -21,7 +22,7 @@ export default function Configuracoes() {
     const { data } = await supabase
       .from("usuarios_autorizados")
       .select("*")
-      .order("email");
+      .order("nome");
 
     if (data) {
       setUsuarios(data);
@@ -31,14 +32,16 @@ export default function Configuracoes() {
   async function adicionarUsuario(e: React.FormEvent) {
     e.preventDefault();
 
+    const nomeFormatado = nome.trim();
     const emailFormatado = email.trim().toLowerCase();
 
-    if (!emailFormatado) return;
+    if (!nomeFormatado || !emailFormatado) return;
 
     const { error } = await supabase
       .from("usuarios_autorizados")
       .insert([
         {
+          nome: nomeFormatado,
           email: emailFormatado,
         },
       ]);
@@ -48,6 +51,7 @@ export default function Configuracoes() {
       return;
     }
 
+    setNome("");
     setEmail("");
     buscarUsuarios();
 
@@ -117,34 +121,61 @@ export default function Configuracoes() {
               </h2>
 
               <p className="text-sm text-gray-500">
-                Autorize um email para acessar
+                Autorize uma pessoa para acessar
               </p>
             </div>
 
           </div>
 
-          <label className="block text-sm font-medium mb-2">
-            Email
-          </label>
+          <div className="space-y-4">
 
-          <input
-            type="email"
-            value={email}
-            onChange={(e) =>
-              setEmail(e.target.value)
-            }
-            placeholder="email@empresa.com"
-            className="
-              w-full
-              border border-gray-300
-              rounded-2xl
-              px-4 py-3
-              outline-none
-              focus:ring-2
-              focus:ring-blue-500
-            "
-            required
-          />
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Nome
+              </label>
+
+              <input
+                type="text"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                placeholder="Ex: David Lucas"
+                className="
+                  w-full
+                  border border-gray-300
+                  rounded-2xl
+                  px-4 py-3
+                  outline-none
+                  focus:ring-2
+                  focus:ring-blue-500
+                "
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Email
+              </label>
+
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="email@empresa.com"
+                className="
+                  w-full
+                  border border-gray-300
+                  rounded-2xl
+                  px-4 py-3
+                  outline-none
+                  focus:ring-2
+                  focus:ring-blue-500
+                "
+                required
+              />
+            </div>
+
+          </div>
 
           <button
             className="
@@ -191,7 +222,7 @@ export default function Configuracoes() {
               </h2>
 
               <p className="text-sm text-gray-500">
-                {usuarios.length} email(s) com acesso ao sistema
+                {usuarios.length} usuário(s) com acesso ao sistema
               </p>
             </div>
 
@@ -224,12 +255,12 @@ export default function Configuracoes() {
                 >
 
                   <div>
-                    <p className="font-medium text-gray-900">
-                      {usuario.email}
+                    <p className="font-semibold text-gray-900">
+                      {usuario.nome || "Sem nome"}
                     </p>
 
-                    <p className="text-sm text-gray-500">
-                      Usuário autorizado
+                    <p className="text-sm text-gray-500 break-all">
+                      {usuario.email}
                     </p>
                   </div>
 
