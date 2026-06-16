@@ -16,6 +16,8 @@ import {
   Menu,
   X,
   Printer,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 
 import { supabase } from "@/lib/supabase";
@@ -24,7 +26,8 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const [aberto, setAberto] = useState(false);
+  const [abertoMobile, setAbertoMobile] = useState(false);
+  const [abertoDesktop, setAbertoDesktop] = useState(true);
 
   const menu = [
     { name: "Início", icon: LayoutDashboard, path: "/" },
@@ -41,44 +44,69 @@ export default function Sidebar() {
     router.push("/login");
   }
 
-  function fecharMenu() {
-    setAberto(false);
+  function fecharMenuMobile() {
+    setAbertoMobile(false);
   }
 
   return (
     <>
       <button
-        onClick={() => setAberto(true)}
+        onClick={() => setAbertoMobile(true)}
         className="md:hidden fixed top-4 left-4 z-50 bg-white text-gray-800 p-3 rounded-2xl shadow-sm border border-gray-200"
       >
         <Menu size={24} />
       </button>
 
-      {aberto && (
+      {abertoMobile && (
         <div
-          onClick={fecharMenu}
+          onClick={fecharMenuMobile}
           className="md:hidden fixed inset-0 bg-black/30 z-40"
         />
       )}
 
       <aside
         className={`
-          fixed md:static top-0 left-0 z-50
-          w-72 bg-white text-gray-800 min-h-screen
-          p-5 border-r border-gray-200
+          fixed md:sticky top-0 left-0 z-50
+          bg-white text-gray-800 min-h-screen h-screen
+          border-r border-gray-200
           flex flex-col justify-between
-          transition-transform duration-300
-          ${aberto ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+          transition-all duration-300
+          ${abertoDesktop ? "md:w-72" : "md:w-24"}
+          w-72
+          ${abertoMobile ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
         `}
       >
-        <div>
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center">
+        <div className="p-5">
+
+          <div
+            className={`
+              flex items-center mb-8
+              ${abertoDesktop ? "justify-between" : "justify-center"}
+            `}
+          >
+            <div
+              className={`
+                flex items-center gap-3
+                ${!abertoDesktop ? "md:justify-center" : ""}
+              `}
+            >
+              <div className="w-11 h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center shrink-0">
                 <Printer size={22} />
               </div>
 
-              <div>
+              {abertoDesktop && (
+                <div className="hidden md:block">
+                  <h1 className="text-xl font-bold text-gray-900">
+                    EstoquePro
+                  </h1>
+
+                  <p className="text-gray-500 text-sm">
+                    Impressoras e suprimentos
+                  </p>
+                </div>
+              )}
+
+              <div className="md:hidden">
                 <h1 className="text-xl font-bold text-gray-900">
                   EstoquePro
                 </h1>
@@ -90,12 +118,43 @@ export default function Sidebar() {
             </div>
 
             <button
-              onClick={fecharMenu}
+              onClick={fecharMenuMobile}
               className="md:hidden text-gray-500 hover:text-gray-900"
             >
               <X size={24} />
             </button>
           </div>
+
+          <button
+            onClick={() => setAbertoDesktop(!abertoDesktop)}
+            className="
+              hidden md:flex
+              w-full
+              mb-4
+              items-center
+              justify-center
+              gap-2
+              border border-gray-200
+              text-gray-600
+              hover:text-gray-900
+              hover:bg-gray-50
+              rounded-2xl
+              px-3 py-3
+              transition
+            "
+            title={abertoDesktop ? "Recolher menu" : "Expandir menu"}
+          >
+            {abertoDesktop ? (
+              <>
+                <PanelLeftClose size={20} />
+                <span className="text-sm font-medium">
+                  Recolher
+                </span>
+              </>
+            ) : (
+              <PanelLeftOpen size={20} />
+            )}
+          </button>
 
           <nav className="flex flex-col gap-1">
             {menu.map((item) => {
@@ -106,12 +165,15 @@ export default function Sidebar() {
                 <Link
                   key={item.path}
                   href={item.path}
-                  onClick={fecharMenu}
+                  onClick={fecharMenuMobile}
+                  title={item.name}
                   className={`
-                    flex items-center gap-3
+                    flex items-center
                     px-4 py-3 rounded-2xl
                     text-sm font-medium
                     transition
+                    ${abertoDesktop ? "md:justify-start md:gap-3" : "md:justify-center md:gap-0"}
+                    gap-3
                     ${
                       ativo
                         ? "bg-blue-50 text-blue-700"
@@ -119,16 +181,36 @@ export default function Sidebar() {
                     }
                   `}
                 >
-                  <Icon size={20} />
-                  {item.name}
+                  <Icon size={20} className="shrink-0" />
+
+                  <span
+                    className={`
+                      md:${abertoDesktop ? "inline" : "hidden"}
+                    `}
+                  >
+                    {item.name}
+                  </span>
                 </Link>
               );
             })}
           </nav>
         </div>
 
-        <div className="space-y-4">
-          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4">
+        <div className="p-5 space-y-4">
+
+          {abertoDesktop && (
+            <div className="hidden md:block bg-gray-50 border border-gray-200 rounded-2xl p-4">
+              <p className="text-sm font-medium text-gray-800">
+                Sistema interno
+              </p>
+
+              <p className="text-xs text-gray-500 mt-1">
+                Acesso restrito por email autorizado.
+              </p>
+            </div>
+          )}
+
+          <div className="md:hidden bg-gray-50 border border-gray-200 rounded-2xl p-4">
             <p className="text-sm font-medium text-gray-800">
               Sistema interno
             </p>
@@ -140,18 +222,28 @@ export default function Sidebar() {
 
           <button
             onClick={sair}
-            className="
+            title="Sair"
+            className={`
               w-full
-              flex items-center justify-center gap-3
+              flex items-center
               bg-gray-900 hover:bg-black
               text-white
               transition
               px-4 py-3 rounded-2xl
               font-medium
-            "
+              ${abertoDesktop ? "md:justify-center md:gap-3" : "md:justify-center md:gap-0"}
+              justify-center gap-3
+            `}
           >
             <LogOut size={20} />
-            Sair
+
+            <span
+              className={`
+                md:${abertoDesktop ? "inline" : "hidden"}
+              `}
+            >
+              Sair
+            </span>
           </button>
         </div>
       </aside>
