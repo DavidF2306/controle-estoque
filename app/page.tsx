@@ -91,6 +91,7 @@ export default function Home() {
       cliente: "-",
       local: entrada.origem || "-",
       observacoes: entrada.observacoes || "-",
+      usuario: entrada.usuario_email || "-",
       data: entrada.created_at,
     })),
 
@@ -101,6 +102,7 @@ export default function Home() {
       cliente: saida.cliente || "-",
       local: saida.local || saida.destino || "-",
       observacoes: saida.observacoes || "-",
+      usuario: saida.usuario_email || "-",
       data: saida.created_at,
     })),
   ]
@@ -247,6 +249,10 @@ export default function Home() {
                       {mov.tipo === "Entrada"
                         ? `Origem: ${mov.local}`
                         : `Cliente: ${mov.cliente} • Local: ${mov.local}`}
+                    </p>
+
+                    <p className="text-sm text-gray-500 mt-1 break-all">
+                      Realizado por: {mov.usuario}
                     </p>
 
                     {mov.observacoes !== "-" && (
