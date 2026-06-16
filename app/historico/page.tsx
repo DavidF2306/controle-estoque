@@ -33,6 +33,21 @@ export default function Historico() {
   }, []);
 
   async function buscarMovimentacoes() {
+    const { data: usuarios } = await supabase
+      .from("usuarios_autorizados")
+      .select("nome, email");
+
+    function buscarNomeUsuario(email: string) {
+      if (!email) return "-";
+
+      const usuario = usuarios?.find(
+        (item) =>
+          item.email?.toLowerCase() === email.toLowerCase()
+      );
+
+      return usuario?.nome || email;
+    }
+
     const { data: entradas } = await supabase
       .from("entradas")
       .select(`
@@ -61,7 +76,7 @@ export default function Historico() {
         notaFiscal: entrada.nota_fiscal || "-",
         contador: entrada.contador || "-",
         observacoes: entrada.observacoes || "-",
-        usuario: entrada.usuario_email || "-",
+        usuario: buscarNomeUsuario(entrada.usuario_email),
         data: entrada.created_at,
       })),
 
@@ -74,7 +89,7 @@ export default function Historico() {
         notaFiscal: "-",
         contador: saida.contador || "-",
         observacoes: saida.observacoes || "-",
-        usuario: saida.usuario_email || "-",
+        usuario: buscarNomeUsuario(saida.usuario_email),
         data: saida.created_at,
       })),
     ];
