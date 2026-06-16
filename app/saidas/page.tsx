@@ -48,6 +48,13 @@ export default function Saidas() {
   async function registrarSaida(e: React.FormEvent) {
     e.preventDefault();
 
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const emailUsuario =
+      user?.email || "Usuário não identificado";
+
     const produtoSelecionado = produtos.find(
       (produto) => produto.id === Number(produtoId)
     );
@@ -75,6 +82,7 @@ export default function Saidas() {
           local,
           contador: contador || null,
           observacoes: observacoes || null,
+          usuario_email: emailUsuario,
           destino: `${cliente} - ${local}`,
         },
       ]);
