@@ -1,12 +1,14 @@
 "use client";
-import BotaoBackup from "../components/BotaoBackup";
+
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import BotaoBackup from "../components/BotaoBackup";
 import {
   Settings,
   UserPlus,
   Trash2,
   ShieldCheck,
+  DatabaseBackup,
 } from "lucide-react";
 
 export default function Configuracoes() {
@@ -22,7 +24,7 @@ export default function Configuracoes() {
     const { data } = await supabase
       .from("usuarios_autorizados")
       .select("*")
-      .order("nome");
+      .order("email");
 
     if (data) {
       setUsuarios(data);
@@ -47,7 +49,7 @@ export default function Configuracoes() {
       ]);
 
     if (error) {
-      alert("Este email já está autorizado.");
+      alert("Erro ao adicionar usuário: " + error.message);
       return;
     }
 
@@ -77,7 +79,6 @@ export default function Configuracoes() {
     <div className="text-gray-900 w-full overflow-x-hidden">
 
       <div className="pt-14 md:pt-0 mb-8 flex items-center gap-3">
-
         <div className="w-11 h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center">
           <Settings size={22} />
         </div>
@@ -91,26 +92,15 @@ export default function Configuracoes() {
             Gerencie os usuários autorizados do sistema
           </p>
         </div>
-
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
         <form
           onSubmit={adicionarUsuario}
-          className="
-            xl:col-span-1
-            bg-white
-            border border-gray-200
-            rounded-3xl
-            p-4 md:p-6
-            shadow-sm
-            h-fit
-          "
+          className="bg-white border border-gray-200 rounded-3xl p-4 md:p-6 shadow-sm h-fit"
         >
-
           <div className="flex items-center gap-3 mb-6">
-
             <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
               <UserPlus size={20} />
             </div>
@@ -124,7 +114,6 @@ export default function Configuracoes() {
                 Autorize uma pessoa para acessar
               </p>
             </div>
-
           </div>
 
           <div className="space-y-4">
@@ -139,15 +128,7 @@ export default function Configuracoes() {
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
                 placeholder="Ex: David Lucas"
-                className="
-                  w-full
-                  border border-gray-300
-                  rounded-2xl
-                  px-4 py-3
-                  outline-none
-                  focus:ring-2
-                  focus:ring-blue-500
-                "
+                className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -162,15 +143,7 @@ export default function Configuracoes() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="email@empresa.com"
-                className="
-                  w-full
-                  border border-gray-300
-                  rounded-2xl
-                  px-4 py-3
-                  outline-none
-                  focus:ring-2
-                  focus:ring-blue-500
-                "
+                className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -178,44 +151,35 @@ export default function Configuracoes() {
           </div>
 
           <button
-            className="
-              w-full
-              mt-4
-              bg-blue-600
-              hover:bg-blue-700
-              text-white
-              px-6 py-3
-              rounded-2xl
-              font-medium
-              transition
-              flex items-center
-              justify-center
-              gap-2
-            "
+            className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-medium transition flex items-center justify-center gap-2"
           >
             <UserPlus size={20} />
             Adicionar usuário
           </button>
-
         </form>
 
-        <div className="mt-3">
-  <BotaoBackup />
-</div>
-
-        <div
-          className="
-            xl:col-span-2
-            bg-white
-            border border-gray-200
-            rounded-3xl
-            p-4 md:p-6
-            shadow-sm
-          "
-        >
-
+        <div className="bg-white border border-gray-200 rounded-3xl p-4 md:p-6 shadow-sm h-fit">
           <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-2xl bg-gray-100 text-gray-700 flex items-center justify-center">
+              <DatabaseBackup size={20} />
+            </div>
 
+            <div>
+              <h2 className="text-xl font-bold">
+                Backup do sistema
+              </h2>
+
+              <p className="text-sm text-gray-500">
+                Baixe uma cópia completa dos dados
+              </p>
+            </div>
+          </div>
+
+          <BotaoBackup />
+        </div>
+
+        <div className="xl:col-span-2 bg-white border border-gray-200 rounded-3xl p-4 md:p-6 shadow-sm">
+          <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center">
               <ShieldCheck size={20} />
             </div>
@@ -229,7 +193,6 @@ export default function Configuracoes() {
                 {usuarios.length} usuário(s) com acesso ao sistema
               </p>
             </div>
-
           </div>
 
           {usuarios.length === 0 ? (
@@ -238,26 +201,11 @@ export default function Configuracoes() {
             </p>
           ) : (
             <div className="space-y-3">
-
               {usuarios.map((usuario) => (
-
                 <div
                   key={usuario.id}
-                  className="
-                    flex
-                    flex-col
-                    md:flex-row
-                    md:items-center
-                    md:justify-between
-                    gap-3
-                    border border-gray-100
-                    rounded-2xl
-                    p-4
-                    hover:bg-gray-50
-                    transition
-                  "
+                  className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border border-gray-100 rounded-2xl p-4 hover:bg-gray-50 transition"
                 >
-
                   <div>
                     <p className="font-semibold text-gray-900">
                       {usuario.nome || "Sem nome"}
@@ -270,34 +218,17 @@ export default function Configuracoes() {
 
                   <button
                     onClick={() =>
-                      removerUsuario(
-                        usuario.id,
-                        usuario.email
-                      )
+                      removerUsuario(usuario.id, usuario.email)
                     }
-                    className="
-                      bg-red-50
-                      text-red-600
-                      hover:bg-red-100
-                      px-4 py-2
-                      rounded-xl
-                      transition
-                      flex items-center
-                      justify-center
-                      gap-2
-                    "
+                    className="bg-red-50 text-red-600 hover:bg-red-100 px-4 py-2 rounded-xl transition flex items-center justify-center gap-2"
                   >
                     <Trash2 size={16} />
                     Remover
                   </button>
-
                 </div>
-
               ))}
-
             </div>
           )}
-
         </div>
 
       </div>
