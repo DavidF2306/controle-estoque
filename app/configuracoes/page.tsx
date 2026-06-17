@@ -1,5 +1,5 @@
 "use client";
-
+import BotaoBackup from "../components/BotaoBackup";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import {
@@ -198,6 +198,10 @@ export default function Configuracoes() {
           </button>
 
         </form>
+
+        <div className="mt-3">
+  <BotaoBackup />
+</div>
 
         <div
           className="
