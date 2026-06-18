@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -15,7 +16,6 @@ import {
   LogOut,
   Menu,
   X,
-  Printer,
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
@@ -60,58 +60,62 @@ export default function Sidebar() {
       {abertoMobile && (
         <div
           onClick={fecharMenuMobile}
-          className="md:hidden fixed inset-0 bg-black/30 z-40"
+          className="md:hidden fixed inset-0 bg-black/40 z-40"
         />
       )}
 
       <aside
         className={`
           fixed md:sticky top-0 left-0 z-50
-          bg-white text-gray-800 min-h-screen h-screen
-          border-r border-gray-200
+          min-h-screen h-screen
+          bg-gradient-to-b from-slate-950 via-blue-950 to-blue-800
+          text-white
           flex flex-col justify-between
           transition-all duration-300
+          shadow-xl
           ${abertoDesktop ? "md:w-72" : "md:w-24"}
           w-72
           ${abertoMobile ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
         `}
       >
         <div className="p-5">
-
           <div
             className={`
-              flex items-center mb-8
-              ${abertoDesktop ? "justify-between" : "justify-center"}
+              flex items-center mb-6
+              ${abertoDesktop ? "md:justify-between" : "md:justify-center"}
+              justify-between
             `}
           >
-            <div
-              className={`
-                flex items-center gap-3
-                ${!abertoDesktop ? "md:justify-center" : ""}
-              `}
-            >
-              <div className="w-11 h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center shrink-0">
-                <Printer size={22} />
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center overflow-hidden shadow-sm shrink-0">
+                <Image
+                  src="/logo.png"
+                  alt="Logo Copystar"
+                  width={42}
+                  height={42}
+                  className="object-contain"
+                  priority
+                />
               </div>
 
               {abertoDesktop && (
                 <div className="hidden md:block">
-                  <h1 className="text-xl font-bold text-gray-900">
-                    EstoquePro
+                  <h1 className="text-lg font-extrabold leading-tight">
+                    Estoque da Copystar
                   </h1>
 
-                  <p className="text-gray-500 text-sm">
+                  <p className="text-blue-100 text-xs mt-1">
                     Impressoras e suprimentos
                   </p>
                 </div>
               )}
 
               <div className="md:hidden">
-                <h1 className="text-xl font-bold text-gray-900">
-                  EstoquePro
+                <h1 className="text-lg font-extrabold leading-tight">
+                  Estoque da Copystar
                 </h1>
 
-                <p className="text-gray-500 text-sm">
+                <p className="text-blue-100 text-xs mt-1">
                   Impressoras e suprimentos
                 </p>
               </div>
@@ -119,7 +123,7 @@ export default function Sidebar() {
 
             <button
               onClick={fecharMenuMobile}
-              className="md:hidden text-gray-500 hover:text-gray-900"
+              className="md:hidden text-blue-100 hover:text-white"
             >
               <X size={24} />
             </button>
@@ -129,15 +133,11 @@ export default function Sidebar() {
             onClick={() => setAbertoDesktop(!abertoDesktop)}
             className="
               hidden md:flex
-              w-full
-              mb-4
-              items-center
-              justify-center
-              gap-2
-              border border-gray-200
-              text-gray-600
-              hover:text-gray-900
-              hover:bg-gray-50
+              w-full mb-5
+              items-center justify-center gap-2
+              bg-white/10 hover:bg-white/15
+              border border-white/10
+              text-blue-50
               rounded-2xl
               px-3 py-3
               transition
@@ -147,7 +147,7 @@ export default function Sidebar() {
             {abertoDesktop ? (
               <>
                 <PanelLeftClose size={20} />
-                <span className="text-sm font-medium">
+                <span className="text-sm font-bold">
                   Recolher
                 </span>
               </>
@@ -156,7 +156,7 @@ export default function Sidebar() {
             )}
           </button>
 
-          <nav className="flex flex-col gap-1">
+          <nav className="flex flex-col gap-2">
             {menu.map((item) => {
               const Icon = item.icon;
               const ativo = pathname === item.path;
@@ -170,24 +170,26 @@ export default function Sidebar() {
                   className={`
                     flex items-center
                     px-4 py-3 rounded-2xl
-                    text-sm font-medium
+                    text-sm font-bold
                     transition
-                    ${abertoDesktop ? "md:justify-start md:gap-3" : "md:justify-center md:gap-0"}
                     gap-3
+                    ${abertoDesktop ? "md:justify-start" : "md:justify-center"}
                     ${
                       ativo
-                        ? "bg-blue-50 text-blue-700"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                        ? "bg-white text-blue-700 shadow-sm"
+                        : "text-blue-100 hover:bg-white/10 hover:text-white"
                     }
                   `}
                 >
                   <Icon size={20} className="shrink-0" />
 
-                  <span
-                    className={`
-                      md:${abertoDesktop ? "inline" : "hidden"}
-                    `}
-                  >
+                  {abertoDesktop && (
+                    <span className="hidden md:inline">
+                      {item.name}
+                    </span>
+                  )}
+
+                  <span className="md:hidden">
                     {item.name}
                   </span>
                 </Link>
@@ -197,25 +199,24 @@ export default function Sidebar() {
         </div>
 
         <div className="p-5 space-y-4">
-
           {abertoDesktop && (
-            <div className="hidden md:block bg-gray-50 border border-gray-200 rounded-2xl p-4">
-              <p className="text-sm font-medium text-gray-800">
+            <div className="hidden md:block bg-white/10 border border-white/10 rounded-3xl p-4">
+              <p className="text-sm font-bold">
                 Sistema interno
               </p>
 
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-blue-100 mt-1">
                 Acesso restrito por email autorizado.
               </p>
             </div>
           )}
 
-          <div className="md:hidden bg-gray-50 border border-gray-200 rounded-2xl p-4">
-            <p className="text-sm font-medium text-gray-800">
+          <div className="md:hidden bg-white/10 border border-white/10 rounded-3xl p-4">
+            <p className="text-sm font-bold">
               Sistema interno
             </p>
 
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-blue-100 mt-1">
               Acesso restrito por email autorizado.
             </p>
           </div>
@@ -225,23 +226,24 @@ export default function Sidebar() {
             title="Sair"
             className={`
               w-full
-              flex items-center
-              bg-gray-900 hover:bg-black
-              text-white
+              flex items-center justify-center
+              bg-white text-red-600
+              hover:bg-red-50
               transition
               px-4 py-3 rounded-2xl
-              font-medium
-              ${abertoDesktop ? "md:justify-center md:gap-3" : "md:justify-center md:gap-0"}
-              justify-center gap-3
+              font-extrabold
+              gap-3
             `}
           >
             <LogOut size={20} />
 
-            <span
-              className={`
-                md:${abertoDesktop ? "inline" : "hidden"}
-              `}
-            >
+            {abertoDesktop && (
+              <span className="hidden md:inline">
+                Sair
+              </span>
+            )}
+
+            <span className="md:hidden">
               Sair
             </span>
           </button>
