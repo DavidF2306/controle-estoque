@@ -14,6 +14,7 @@ import {
   User,
   MapPin,
   FileText,
+  Sparkles,
 } from "lucide-react";
 
 export default function Home() {
@@ -140,46 +141,46 @@ export default function Home() {
   const cards = [
     {
       titulo: "Produtos",
-      subtitulo: "Cadastrados",
       valor: totalProdutos,
+      detalhe: "produtos cadastrados",
       icon: Package,
-      cor: "bg-blue-600",
+      cor: "from-blue-500 to-blue-700",
       fundo: "bg-blue-50",
       texto: "text-blue-700",
     },
     {
-      titulo: "Itens em estoque",
-      subtitulo: "Quantidade total",
+      titulo: "Estoque total",
       valor: totalEstoque,
+      detalhe: "unidades disponíveis",
       icon: Archive,
-      cor: "bg-violet-600",
+      cor: "from-indigo-500 to-violet-700",
       fundo: "bg-violet-50",
       texto: "text-violet-700",
     },
     {
       titulo: "Entradas",
-      subtitulo: "Movimentações",
       valor: entradas.length,
+      detalhe: "registros de entrada",
       icon: ArrowDownCircle,
-      cor: "bg-emerald-600",
+      cor: "from-emerald-500 to-green-700",
       fundo: "bg-emerald-50",
       texto: "text-emerald-700",
     },
     {
       titulo: "Saídas",
-      subtitulo: "Movimentações",
       valor: saidas.length,
+      detalhe: "registros de saída",
       icon: ArrowUpCircle,
-      cor: "bg-rose-600",
+      cor: "from-rose-500 to-red-700",
       fundo: "bg-rose-50",
       texto: "text-rose-700",
     },
     {
       titulo: "Estoque baixo",
-      subtitulo: "Atenção necessária",
       valor: estoqueBaixo,
+      detalhe: "precisam de atenção",
       icon: AlertTriangle,
-      cor: "bg-orange-500",
+      cor: "from-orange-400 to-orange-600",
       fundo: "bg-orange-50",
       texto: "text-orange-700",
     },
@@ -189,111 +190,143 @@ export default function Home() {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="bg-white border border-gray-200 rounded-3xl px-6 py-4 shadow-sm text-gray-500">
-          Carregando informações do estoque...
+          Carregando Estoque Copystar...
         </div>
       </div>
     );
   }
 
   return (
-    <div className="text-gray-900 w-full overflow-x-hidden">
+    <div className="text-gray-900 w-full overflow-x-hidden space-y-8">
 
-      <div className="mb-8 pt-14 md:pt-0">
-        <div className="bg-gradient-to-br from-slate-950 via-blue-950 to-blue-700 rounded-[2rem] p-6 md:p-8 text-white shadow-sm overflow-hidden relative">
+      <section className="pt-14 md:pt-0">
+        <div className="relative overflow-hidden rounded-[2.2rem] bg-gradient-to-br from-sky-400 via-blue-600 to-indigo-800 text-white shadow-lg">
 
-          <div className="absolute right-0 top-0 w-72 h-72 bg-white/10 rounded-full blur-3xl translate-x-24 -translate-y-24" />
-
-          <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-
-            <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-3xl bg-white flex items-center justify-center shadow-sm overflow-hidden shrink-0">
-                <Image
-                  src="/logo.png"
-                  alt="Logo"
-                  width={70}
-                  height={70}
-                  className="object-contain"
-                  priority
-                />
-              </div>
-
-              <div>
-                <p className="text-blue-100 text-sm font-medium mb-1">
-                  Bem-vindo ao sistema
-                </p>
-
-                <h1 className="text-3xl md:text-5xl font-bold">
-                  Controle de Estoque
-                </h1>
-
-                <p className="text-blue-100 mt-2 max-w-2xl">
-                  Acompanhe produtos, entradas, saídas e alertas importantes em tempo real.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-white/10 border border-white/20 rounded-3xl p-4 min-w-[220px]">
-              <p className="text-sm text-blue-100">
-                Resumo atual
-              </p>
-
-              <p className="text-3xl font-bold mt-1">
-                {totalEstoque} itens
-              </p>
-
-              <p className="text-sm text-blue-100 mt-1">
-                distribuídos em {totalProdutos} produto(s)
-              </p>
-            </div>
-
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute -top-24 -right-20 w-80 h-80 bg-white rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-72 h-72 bg-cyan-300 rounded-full blur-3xl" />
           </div>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 md:gap-5">
+          <div className="relative p-6 md:p-10">
+            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
+
+              <div className="flex flex-col md:flex-row md:items-center gap-5">
+                <div className="w-24 h-24 rounded-[2rem] bg-white shadow-md flex items-center justify-center overflow-hidden shrink-0">
+                  <Image
+                    src="/logo.png"
+                    alt="Logo Copystar"
+                    width={86}
+                    height={86}
+                    className="object-contain"
+                    priority
+                  />
+                </div>
+
+                <div>
+                  <div className="inline-flex items-center gap-2 bg-white/15 border border-white/20 rounded-full px-4 py-2 text-sm font-medium mb-4">
+                    <Sparkles size={16} />
+                    Sistema interno de controle
+                  </div>
+
+                  <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
+                    Estoque Copystar
+                  </h1>
+
+                  <p className="text-blue-50 mt-3 text-base md:text-lg max-w-2xl">
+                    Controle produtos, entradas, saídas, locais e alertas do estoque em uma única tela.
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-white/15 border border-white/20 backdrop-blur rounded-[2rem] p-5 min-w-[240px]">
+                <p className="text-blue-50 text-sm">
+                  Resumo de hoje
+                </p>
+
+                <p className="text-4xl font-extrabold mt-2">
+                  {totalEstoque}
+                </p>
+
+                <p className="text-blue-50 text-sm mt-1">
+                  unidades em estoque
+                </p>
+
+                <div className="mt-4 h-2 bg-white/20 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-white rounded-full"
+                    style={{
+                      width:
+                        estoqueBaixo > 0
+                          ? "55%"
+                          : "100%",
+                    }}
+                  />
+                </div>
+
+                <p className="text-xs text-blue-50 mt-3">
+                  {estoqueBaixo > 0
+                    ? `${estoqueBaixo} produto(s) precisam de atenção`
+                    : "Nenhum produto em estoque baixo"}
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+          <div className="h-7 bg-white rounded-t-[100%] opacity-95" />
+        </div>
+      </section>
+
+      <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 md:gap-5">
         {cards.map((card) => {
           const Icon = card.icon;
 
           return (
             <div
               key={card.titulo}
-              className="bg-white border border-gray-200 rounded-[1.7rem] p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition"
+              className="group relative overflow-hidden bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition"
             >
+              <div
+                className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${card.cor}`}
+              />
+
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-sm text-gray-500">
                     {card.titulo}
                   </p>
 
-                  <h2 className="text-4xl font-bold mt-2">
+                  <h2 className="text-4xl font-extrabold mt-2">
                     {card.valor}
                   </h2>
 
                   <p className="text-xs text-gray-400 mt-2">
-                    {card.subtitulo}
+                    {card.detalhe}
                   </p>
                 </div>
 
-                <div className={`w-12 h-12 rounded-2xl ${card.fundo} ${card.texto} flex items-center justify-center`}>
+                <div
+                  className={`w-12 h-12 rounded-2xl ${card.fundo} ${card.texto} flex items-center justify-center group-hover:scale-110 transition`}
+                >
                   <Icon size={24} />
                 </div>
               </div>
             </div>
           );
         })}
-      </div>
+      </section>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
+      <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
         <div className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm">
           <div className="flex items-center justify-between gap-3 mb-6">
             <div>
-              <h2 className="text-xl md:text-2xl font-bold">
+              <h2 className="text-xl md:text-2xl font-extrabold">
                 Movimentações recentes
               </h2>
 
               <p className="text-sm text-gray-500 mt-1">
-                Últimas atividades registradas no estoque
+                Últimas ações registradas no Estoque Copystar
               </p>
             </div>
 
@@ -374,8 +407,8 @@ export default function Home() {
                         <p
                           className={
                             entrada
-                              ? "font-bold text-emerald-600"
-                              : "font-bold text-rose-600"
+                              ? "font-extrabold text-emerald-600"
+                              : "font-extrabold text-rose-600"
                           }
                         >
                           {entrada ? "+" : "-"}
@@ -398,12 +431,12 @@ export default function Home() {
         <div className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm">
           <div className="flex items-center justify-between gap-3 mb-6">
             <div>
-              <h2 className="text-xl md:text-2xl font-bold">
+              <h2 className="text-xl md:text-2xl font-extrabold">
                 Atenção no estoque
               </h2>
 
               <p className="text-sm text-gray-500 mt-1">
-                Produtos com 5 unidades ou menos
+                Produtos com quantidade igual ou menor que 5
               </p>
             </div>
 
@@ -439,7 +472,7 @@ export default function Home() {
                     </p>
                   </div>
 
-                  <div className="text-orange-700 font-bold text-lg whitespace-nowrap">
+                  <div className="text-orange-700 font-extrabold text-lg whitespace-nowrap">
                     {produto.quantidade} un.
                   </div>
                 </div>
@@ -448,18 +481,18 @@ export default function Home() {
           )}
         </div>
 
-      </div>
+      </section>
 
-      <div className="mt-8 bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm">
+      <section className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm">
 
         <div className="flex items-center justify-between gap-3 mb-6">
           <div>
-            <h2 className="text-xl md:text-2xl font-bold">
+            <h2 className="text-xl md:text-2xl font-extrabold">
               Últimos produtos
             </h2>
 
             <p className="text-sm text-gray-500 mt-1">
-              Produtos cadastrados recentemente
+              Produtos cadastrados recentemente no sistema
             </p>
           </div>
 
@@ -590,7 +623,7 @@ export default function Home() {
           </table>
         </div>
 
-      </div>
+      </section>
 
     </div>
   );
