@@ -9,6 +9,7 @@ import {
   Trash2,
   ShieldCheck,
   DatabaseBackup,
+  Crown,
 } from "lucide-react";
 
 export default function Configuracoes() {
@@ -26,9 +27,7 @@ export default function Configuracoes() {
       .select("*")
       .order("email");
 
-    if (data) {
-      setUsuarios(data);
-    }
+    if (data) setUsuarios(data);
   }
 
   async function adicionarUsuario(e: React.FormEvent) {
@@ -45,6 +44,7 @@ export default function Configuracoes() {
         {
           nome: nomeFormatado,
           email: emailFormatado,
+          admin: false,
         },
       ]);
 
@@ -60,17 +60,27 @@ export default function Configuracoes() {
     alert("Usuário autorizado!");
   }
 
-  async function removerUsuario(id: number, emailUsuario: string) {
+  async function removerUsuario(usuario: any) {
+    if (usuario.admin) {
+      alert("Este usuário é administrador e não pode ser removido.");
+      return;
+    }
+
     const confirmar = confirm(
-      `Remover o acesso de ${emailUsuario}?`
+      `Remover o acesso de ${usuario.email}?`
     );
 
     if (!confirmar) return;
 
-    await supabase
+    const { error } = await supabase
       .from("usuarios_autorizados")
       .delete()
-      .eq("id", id);
+      .eq("id", usuario.id);
+
+    if (error) {
+      alert("Erro ao remover usuário: " + error.message);
+      return;
+    }
 
     buscarUsuarios();
   }
@@ -150,9 +160,7 @@ export default function Configuracoes() {
 
           </div>
 
-          <button
-            className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-medium transition flex items-center justify-center gap-2"
-          >
+          <button className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-medium transition flex items-center justify-center gap-2">
             <UserPlus size={20} />
             Adicionar usuário
           </button>
@@ -207,24 +215,41 @@ export default function Configuracoes() {
                   className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border border-gray-100 rounded-2xl p-4 hover:bg-gray-50 transition"
                 >
                   <div>
-                    <p className="font-semibold text-gray-900">
-                      {usuario.nome || "Sem nome"}
-                    </p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-semibold text-gray-900">
+                        {usuario.nome || "Sem nome"}
+                      </p>
 
-                    <p className="text-sm text-gray-500 break-all">
+                      {usuario.admin && (
+                        <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                          <Crown size={14} />
+                          Administrador
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-sm text-gray-500 break-all mt-1">
                       {usuario.email}
                     </p>
                   </div>
 
-                  <button
-                    onClick={() =>
-                      removerUsuario(usuario.id, usuario.email)
-                    }
-                    className="bg-red-50 text-red-600 hover:bg-red-100 px-4 py-2 rounded-xl transition flex items-center justify-center gap-2"
-                  >
-                    <Trash2 size={16} />
-                    Remover
-                  </button>
+                  {usuario.admin ? (
+                    <button
+                      disabled
+                      className="bg-gray-100 text-gray-400 px-4 py-2 rounded-xl flex items-center justify-center gap-2 cursor-not-allowed"
+                    >
+                      <ShieldCheck size={16} />
+                      Protegido
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => removerUsuario(usuario)}
+                      className="bg-red-50 text-red-600 hover:bg-red-100 px-4 py-2 rounded-xl transition flex items-center justify-center gap-2"
+                    >
+                      <Trash2 size={16} />
+                      Remover
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
