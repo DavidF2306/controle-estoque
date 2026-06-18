@@ -10,6 +10,9 @@ import {
   Search,
   Pencil,
   Trash2,
+  AlertTriangle,
+  CheckCircle,
+  Boxes,
 } from "lucide-react";
 
 export default function Produtos() {
@@ -26,14 +29,11 @@ export default function Produtos() {
       .select("*")
       .order("nome");
 
-    if (data) {
-      setProdutos(data);
-    }
+    if (data) setProdutos(data);
   }
 
   async function excluirProduto(id: number) {
-    const confirmar = confirm("Deseja realmente excluir?");
-
+    const confirmar = confirm("Deseja realmente excluir este produto?");
     if (!confirmar) return;
 
     await supabase.from("entradas").delete().eq("produto_id", id);
@@ -50,52 +50,131 @@ export default function Produtos() {
       produto.tipo?.toLowerCase().includes(busca.toLowerCase())
   );
 
+  const totalProdutos = produtos.length;
+
+  const totalEstoque = produtos.reduce(
+    (total, produto) => total + Number(produto.quantidade || 0),
+    0
+  );
+
+  const estoqueBaixo = produtos.filter(
+    (produto) => Number(produto.quantidade || 0) <= 5
+  ).length;
+
+  const estoqueNormal = totalProdutos - estoqueBaixo;
+
   return (
-    <div className="text-gray-900 w-full overflow-x-hidden">
+    <div className="text-gray-900 w-full overflow-x-hidden space-y-8">
 
-      <div className="pt-14 md:pt-0 mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <section className="pt-14 md:pt-0">
+        <div className="relative overflow-hidden rounded-[2.2rem] bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-400 text-white shadow-lg">
 
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center">
-            <Package size={22} />
+          <div className="absolute -top-24 -right-20 w-80 h-80 bg-white/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-900/20 rounded-full blur-3xl" />
+
+          <div className="relative p-6 md:p-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
+
+            <div className="flex items-center gap-4">
+              <div className="w-20 h-20 rounded-[2rem] bg-white/20 border border-white/30 flex items-center justify-center">
+                <Package size={38} />
+              </div>
+
+              <div>
+                <p className="text-blue-50 text-sm font-medium mb-1">
+                  Estoque Copystar
+                </p>
+
+                <h1 className="text-4xl md:text-6xl font-extrabold">
+                  Produtos
+                </h1>
+
+                <p className="text-blue-50 mt-2 max-w-2xl">
+                  Gerencie toners, cartuchos, impressoras e suprimentos cadastrados no sistema.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 w-full xl:w-auto">
+              <BotaoPDF produtos={produtos} />
+
+              <Link
+                href="/produtos/novo"
+                className="bg-white text-blue-700 hover:bg-blue-50 px-5 py-3 rounded-2xl font-bold transition text-center flex items-center justify-center gap-2 shadow-sm"
+              >
+                <Plus size={20} />
+                Novo Produto
+              </Link>
+            </div>
+
           </div>
 
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold">
-              Produtos
-            </h1>
+          <div className="h-7 bg-white rounded-t-[100%] opacity-95" />
+        </div>
+      </section>
 
-            <p className="text-gray-500 mt-1">
-              Toners, cartuchos e suprimentos cadastrados
-            </p>
+      <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Produtos</p>
+              <h2 className="text-4xl font-extrabold mt-2">{totalProdutos}</h2>
+              <p className="text-xs text-gray-400 mt-2">cadastrados</p>
+            </div>
+
+            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center">
+              <Package size={24} />
+            </div>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <BotaoPDF produtos={produtos} />
+        <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Estoque total</p>
+              <h2 className="text-4xl font-extrabold mt-2">{totalEstoque}</h2>
+              <p className="text-xs text-gray-400 mt-2">unidades</p>
+            </div>
 
-          <Link
-            href="/produtos/novo"
-            className="
-              bg-blue-600
-              hover:bg-blue-700
-              text-white
-              px-5 py-3
-              rounded-2xl
-              font-medium
-              transition
-              text-center
-              flex items-center justify-center gap-2
-            "
-          >
-            <Plus size={20} />
-            Novo Produto
-          </Link>
+            <div className="w-12 h-12 rounded-2xl bg-violet-50 text-violet-700 flex items-center justify-center">
+              <Boxes size={24} />
+            </div>
+          </div>
         </div>
 
-      </div>
+        <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Estoque normal</p>
+              <h2 className="text-4xl font-extrabold mt-2">{estoqueNormal}</h2>
+              <p className="text-xs text-gray-400 mt-2">produtos ok</p>
+            </div>
 
-      <div className="bg-white border border-gray-200 rounded-3xl p-4 md:p-6 shadow-sm mb-6">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <CheckCircle size={24} />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Estoque baixo</p>
+              <h2 className="text-4xl font-extrabold mt-2">{estoqueBaixo}</h2>
+              <p className="text-xs text-gray-400 mt-2">atenção necessária</p>
+            </div>
+
+            <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-700 flex items-center justify-center">
+              <AlertTriangle size={24} />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm">
+        <label className="block text-sm font-medium mb-2">
+          Buscar produto
+        </label>
+
         <div className="relative">
           <Search
             size={20}
@@ -107,32 +186,27 @@ export default function Produtos() {
             placeholder="Buscar por nome, categoria ou tipo..."
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
-            className="
-              w-full
-              border border-gray-300
-              rounded-2xl
-              pl-12 pr-4 py-3
-              outline-none
-              focus:ring-2
-              focus:ring-blue-500
-            "
+            className="w-full border border-gray-300 rounded-2xl pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-      </div>
 
-      <div className="xl:hidden space-y-4">
+        <p className="text-sm text-gray-500 mt-3">
+          {produtosFiltrados.length} produto(s) encontrado(s)
+        </p>
+      </section>
 
+      <section className="xl:hidden space-y-4">
         {produtosFiltrados.map((produto) => {
           const baixo = Number(produto.quantidade) <= 5;
 
           return (
             <div
               key={produto.id}
-              className="bg-white border border-gray-200 rounded-3xl p-4 shadow-sm"
+              className="bg-white border border-gray-200 rounded-[2rem] p-4 shadow-sm"
             >
               <div className="flex items-start justify-between gap-3 mb-4">
                 <div>
-                  <h2 className="font-bold text-lg text-gray-900">
+                  <h2 className="font-extrabold text-lg text-gray-900">
                     {produto.nome}
                   </h2>
 
@@ -142,37 +216,30 @@ export default function Produtos() {
                 </div>
 
                 {baixo ? (
-                  <span className="bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
+                  <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
                     Baixo
                   </span>
                 ) : (
-                  <span className="bg-green-50 text-green-600 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
+                  <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
                     Normal
                   </span>
                 )}
               </div>
 
               <div className="grid grid-cols-2 gap-3 text-sm mb-4">
-                <div>
-                  <p className="text-gray-500">
-                    Tipo
-                  </p>
-
-                  <p className="font-medium">
-                    {produto.tipo || "-"}
-                  </p>
+                <div className="bg-gray-50 rounded-2xl p-3">
+                  <p className="text-gray-500">Tipo</p>
+                  <p className="font-bold mt-1">{produto.tipo || "-"}</p>
                 </div>
 
-                <div>
-                  <p className="text-gray-500">
-                    Quantidade
-                  </p>
+                <div className="bg-gray-50 rounded-2xl p-3">
+                  <p className="text-gray-500">Quantidade</p>
 
                   <p
                     className={
                       baixo
-                        ? "font-bold text-red-600"
-                        : "font-bold text-gray-900"
+                        ? "font-extrabold text-orange-700 mt-1"
+                        : "font-extrabold text-gray-900 mt-1"
                     }
                   >
                     {produto.quantidade} un.
@@ -183,16 +250,7 @@ export default function Produtos() {
               <div className="flex flex-col sm:flex-row gap-2">
                 <Link
                   href={`/produtos/editar/${produto.id}`}
-                  className="
-                    bg-yellow-50
-                    text-yellow-700
-                    px-4 py-3
-                    rounded-2xl
-                    hover:bg-yellow-100
-                    transition
-                    flex items-center justify-center gap-2
-                    font-medium
-                  "
+                  className="bg-yellow-50 text-yellow-700 px-4 py-3 rounded-2xl hover:bg-yellow-100 transition flex items-center justify-center gap-2 font-bold"
                 >
                   <Pencil size={16} />
                   Editar
@@ -200,16 +258,7 @@ export default function Produtos() {
 
                 <button
                   onClick={() => excluirProduto(produto.id)}
-                  className="
-                    bg-red-50
-                    text-red-600
-                    px-4 py-3
-                    rounded-2xl
-                    hover:bg-red-100
-                    transition
-                    flex items-center justify-center gap-2
-                    font-medium
-                  "
+                  className="bg-red-50 text-red-600 px-4 py-3 rounded-2xl hover:bg-red-100 transition flex items-center justify-center gap-2 font-bold"
                 >
                   <Trash2 size={16} />
                   Excluir
@@ -218,10 +267,9 @@ export default function Produtos() {
             </div>
           );
         })}
+      </section>
 
-      </div>
-
-      <div className="hidden xl:block bg-white border border-gray-200 rounded-3xl shadow-sm overflow-x-auto">
+      <section className="hidden xl:block bg-white border border-gray-200 rounded-[2rem] shadow-sm overflow-x-auto">
 
         <table className="w-full min-w-[850px]">
 
@@ -260,9 +308,9 @@ export default function Produtos() {
               return (
                 <tr
                   key={produto.id}
-                  className="border-t border-gray-100 hover:bg-gray-50 transition"
+                  className="border-t border-gray-100 hover:bg-blue-50/40 transition"
                 >
-                  <td className="p-4 font-medium text-gray-900">
+                  <td className="p-4 font-bold text-gray-900">
                     {produto.nome}
                   </td>
 
@@ -273,11 +321,11 @@ export default function Produtos() {
                   <td
                     className={
                       baixo
-                        ? "p-4 font-semibold text-red-600"
-                        : "p-4 text-gray-600"
+                        ? "p-4 font-extrabold text-orange-700"
+                        : "p-4 font-bold text-gray-700"
                     }
                   >
-                    {produto.quantidade}
+                    {produto.quantidade} un.
                   </td>
 
                   <td className="p-4 text-gray-600">
@@ -286,11 +334,11 @@ export default function Produtos() {
 
                   <td className="p-4">
                     {baixo ? (
-                      <span className="bg-red-50 text-red-600 px-3 py-1 rounded-full text-sm font-medium">
+                      <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">
                         Estoque baixo
                       </span>
                     ) : (
-                      <span className="bg-green-50 text-green-600 px-3 py-1 rounded-full text-sm font-medium">
+                      <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm font-bold">
                         Normal
                       </span>
                     )}
@@ -298,18 +346,9 @@ export default function Produtos() {
 
                   <td className="p-4">
                     <div className="flex gap-2 whitespace-nowrap">
-
                       <Link
                         href={`/produtos/editar/${produto.id}`}
-                        className="
-                          bg-yellow-50
-                          text-yellow-700
-                          px-4 py-2
-                          rounded-xl
-                          hover:bg-yellow-100
-                          transition
-                          flex items-center gap-2
-                        "
+                        className="bg-yellow-50 text-yellow-700 px-4 py-2 rounded-xl hover:bg-yellow-100 transition flex items-center gap-2 font-medium"
                       >
                         <Pencil size={16} />
                         Editar
@@ -317,20 +356,11 @@ export default function Produtos() {
 
                       <button
                         onClick={() => excluirProduto(produto.id)}
-                        className="
-                          bg-red-50
-                          text-red-600
-                          px-4 py-2
-                          rounded-xl
-                          hover:bg-red-100
-                          transition
-                          flex items-center gap-2
-                        "
+                        className="bg-red-50 text-red-600 px-4 py-2 rounded-xl hover:bg-red-100 transition flex items-center gap-2 font-medium"
                       >
                         <Trash2 size={16} />
                         Excluir
                       </button>
-
                     </div>
                   </td>
                 </tr>
@@ -340,7 +370,7 @@ export default function Produtos() {
 
         </table>
 
-      </div>
+      </section>
 
     </div>
   );
