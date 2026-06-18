@@ -8,6 +8,14 @@ import {
   Search,
   Calendar,
   RotateCcw,
+  ArrowDownCircle,
+  ArrowUpCircle,
+  User,
+  MapPin,
+  FileText,
+  Clock,
+  Package,
+  Activity,
 } from "lucide-react";
 
 export default function Historico() {
@@ -126,37 +134,157 @@ export default function Historico() {
     return filtroMes && filtroBusca;
   });
 
+  const totalEntradas = movimentacoesFiltradas.filter(
+    (mov) => mov.tipo === "Entrada"
+  ).length;
+
+  const totalSaidas = movimentacoesFiltradas.filter(
+    (mov) => mov.tipo === "Saída"
+  ).length;
+
+  const totalItensMovimentados = movimentacoesFiltradas.reduce(
+    (total, mov) => total + Number(mov.quantidade || 0),
+    0
+  );
+
+  const usuariosUnicos = [
+    ...new Set(
+      movimentacoesFiltradas
+        .map((mov) => mov.usuario)
+        .filter(Boolean)
+    ),
+  ];
+
   return (
-    <div className="text-gray-900 w-full overflow-x-hidden">
+    <div className="text-gray-900 w-full overflow-x-hidden space-y-8">
 
-      <div className="pt-14 md:pt-0 mb-8 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+      <section className="pt-14 md:pt-0">
+        <div className="relative overflow-hidden rounded-[2.2rem] bg-gradient-to-br from-indigo-600 via-blue-700 to-purple-800 text-white shadow-lg">
+          <div className="absolute -top-24 -right-20 w-80 h-80 bg-white/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-72 h-72 bg-cyan-300/20 rounded-full blur-3xl" />
 
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center">
-            <History size={22} />
+          <div className="relative p-6 md:p-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
+            <div className="flex items-center gap-4">
+              <div className="w-20 h-20 rounded-[2rem] bg-white/20 border border-white/30 flex items-center justify-center">
+                <History size={40} />
+              </div>
+
+              <div>
+                <p className="text-blue-50 text-sm font-medium mb-1">
+                  Estoque Copystar
+                </p>
+
+                <h1 className="text-4xl md:text-6xl font-extrabold">
+                  Histórico
+                </h1>
+
+                <p className="text-blue-50 mt-2 max-w-2xl">
+                  Acompanhe todas as entradas, saídas, usuários e movimentações do estoque.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white/15 border border-white/20 backdrop-blur rounded-[2rem] p-5 min-w-[240px]">
+              <p className="text-blue-50 text-sm">
+                Movimentações encontradas
+              </p>
+
+              <p className="text-4xl font-extrabold mt-2">
+                {movimentacoesFiltradas.length}
+              </p>
+
+              <p className="text-blue-50 text-sm mt-1">
+                registros no histórico
+              </p>
+
+              <div className="mt-4">
+                <BotaoPDFHistorico
+                  movimentacoes={movimentacoesFiltradas}
+                  mesFiltro={mesFiltro}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="h-7 bg-white rounded-t-[100%] opacity-95" />
+        </div>
+      </section>
+
+      <section className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Entradas</p>
+              <h2 className="text-4xl font-extrabold mt-2">{totalEntradas}</h2>
+              <p className="text-xs text-gray-400 mt-2">registros filtrados</p>
+            </div>
+
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <ArrowDownCircle size={24} />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Saídas</p>
+              <h2 className="text-4xl font-extrabold mt-2">{totalSaidas}</h2>
+              <p className="text-xs text-gray-400 mt-2">registros filtrados</p>
+            </div>
+
+            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center">
+              <ArrowUpCircle size={24} />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Itens</p>
+              <h2 className="text-4xl font-extrabold mt-2">{totalItensMovimentados}</h2>
+              <p className="text-xs text-gray-400 mt-2">unidades movimentadas</p>
+            </div>
+
+            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center">
+              <Package size={24} />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Usuários</p>
+              <h2 className="text-4xl font-extrabold mt-2">{usuariosUnicos.length}</h2>
+              <p className="text-xs text-gray-400 mt-2">com movimentações</p>
+            </div>
+
+            <div className="w-12 h-12 rounded-2xl bg-violet-50 text-violet-700 flex items-center justify-center">
+              <User size={24} />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm">
+
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-11 h-11 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center">
+            <Search size={22} />
           </div>
 
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold">
-              Histórico
-            </h1>
+            <h2 className="text-xl md:text-2xl font-extrabold">
+              Filtros do histórico
+            </h2>
 
-            <p className="text-gray-500 mt-1">
-              Entradas, saídas e movimentações do estoque
+            <p className="text-sm text-gray-500 mt-1">
+              Pesquise por produto, cliente, local, usuário ou observação
             </p>
           </div>
         </div>
-
-        <div className="w-full xl:w-auto">
-          <BotaoPDFHistorico
-            movimentacoes={movimentacoesFiltradas}
-            mesFiltro={mesFiltro}
-          />
-        </div>
-
-      </div>
-
-      <div className="bg-white border border-gray-200 rounded-3xl p-4 md:p-6 shadow-sm mb-6">
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
@@ -204,7 +332,6 @@ export default function Historico() {
         </div>
 
         <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-
           <p className="text-sm text-gray-500">
             {movimentacoesFiltradas.length} movimentação(ões) encontrada(s)
           </p>
@@ -214,87 +341,126 @@ export default function Historico() {
               setMesFiltro("");
               setBusca("");
             }}
-            className="bg-gray-900 hover:bg-black text-white px-5 py-3 rounded-2xl transition flex items-center justify-center gap-2"
+            className="bg-gray-900 hover:bg-black text-white px-5 py-3 rounded-2xl transition flex items-center justify-center gap-2 font-bold"
           >
             <RotateCcw size={18} />
             Limpar filtros
           </button>
-
         </div>
 
-      </div>
+      </section>
 
-      <div className="xl:hidden space-y-4">
+      <section className="xl:hidden space-y-4">
 
-        {movimentacoesFiltradas.map((mov, index) => (
-          <div
-            key={index}
-            className="bg-white border border-gray-200 rounded-3xl p-4 shadow-sm"
-          >
-            <div className="flex items-center justify-between gap-3 mb-4">
-              <span
-                className={
-                  mov.tipo === "Entrada"
-                    ? "bg-green-50 text-green-600 px-3 py-1 rounded-full text-sm font-medium"
-                    : "bg-red-50 text-red-600 px-3 py-1 rounded-full text-sm font-medium"
-                }
-              >
-                {mov.tipo}
-              </span>
+        {movimentacoesFiltradas.map((mov, index) => {
+          const entrada = mov.tipo === "Entrada";
 
-              <span className="text-sm text-gray-500">
-                {formatarDataHora(mov.data)}
-              </span>
+          return (
+            <div
+              key={index}
+              className="bg-white border border-gray-200 rounded-[2rem] p-4 shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-3 mb-4">
+                <div className="flex gap-3">
+                  <div
+                    className={
+                      entrada
+                        ? "w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0"
+                        : "w-11 h-11 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0"
+                    }
+                  >
+                    {entrada ? (
+                      <ArrowDownCircle size={21} />
+                    ) : (
+                      <ArrowUpCircle size={21} />
+                    )}
+                  </div>
+
+                  <div>
+                    <span
+                      className={
+                        entrada
+                          ? "bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold"
+                          : "bg-rose-50 text-rose-700 px-3 py-1 rounded-full text-xs font-bold"
+                      }
+                    >
+                      {mov.tipo}
+                    </span>
+
+                    <h3 className="font-extrabold text-lg mt-2">
+                      {mov.produto}
+                    </h3>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <p
+                    className={
+                      entrada
+                        ? "font-extrabold text-emerald-700"
+                        : "font-extrabold text-rose-700"
+                    }
+                  >
+                    {entrada ? "+" : "-"}
+                    {mov.quantidade} un.
+                  </p>
+
+                  <p className="text-xs text-gray-400 mt-1">
+                    {formatarDataHora(mov.data)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div className="bg-gray-50 rounded-2xl p-3">
+                  <p className="text-gray-500">Cliente</p>
+                  <p className="font-bold mt-1">{mov.cliente}</p>
+                </div>
+
+                <div className="bg-gray-50 rounded-2xl p-3">
+                  <p className="text-gray-500">Local / Origem</p>
+                  <p className="font-bold mt-1">{mov.local}</p>
+                </div>
+
+                <div className="bg-gray-50 rounded-2xl p-3">
+                  <p className="text-gray-500">Nota Fiscal</p>
+                  <p className="font-bold mt-1">{mov.notaFiscal}</p>
+                </div>
+
+                <div className="bg-gray-50 rounded-2xl p-3">
+                  <p className="text-gray-500">Contador</p>
+                  <p className="font-bold mt-1">{mov.contador}</p>
+                </div>
+
+                <div className="sm:col-span-2 bg-blue-50 rounded-2xl p-3">
+                  <p className="text-blue-700 flex items-center gap-1">
+                    <User size={15} />
+                    Realizado por
+                  </p>
+                  <p className="font-bold text-blue-900 mt-1 break-all">
+                    {mov.usuario}
+                  </p>
+                </div>
+
+                {mov.observacoes !== "-" && (
+                  <div className="sm:col-span-2 bg-violet-50 rounded-2xl p-3">
+                    <p className="text-violet-700 flex items-center gap-1">
+                      <FileText size={15} />
+                      Observações
+                    </p>
+                    <p className="font-medium text-violet-900 mt-1 whitespace-pre-wrap">
+                      {mov.observacoes}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
+          );
+        })}
 
-            <h3 className="font-bold text-lg mb-3">
-              {mov.produto}
-            </h3>
+      </section>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-              <div>
-                <p className="text-gray-500">Quantidade</p>
-                <p className="font-medium">{mov.quantidade}</p>
-              </div>
-
-              <div>
-                <p className="text-gray-500">Cliente</p>
-                <p className="font-medium">{mov.cliente}</p>
-              </div>
-
-              <div>
-                <p className="text-gray-500">Local / Origem</p>
-                <p className="font-medium">{mov.local}</p>
-              </div>
-
-              <div>
-                <p className="text-gray-500">Nota Fiscal</p>
-                <p className="font-medium">{mov.notaFiscal}</p>
-              </div>
-
-              <div>
-                <p className="text-gray-500">Contador</p>
-                <p className="font-medium">{mov.contador}</p>
-              </div>
-
-              <div>
-                <p className="text-gray-500">Realizado por</p>
-                <p className="font-medium break-all">{mov.usuario}</p>
-              </div>
-
-              <div className="sm:col-span-2">
-                <p className="text-gray-500">Observações</p>
-                <p className="font-medium whitespace-pre-wrap">
-                  {mov.observacoes}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
-
-      </div>
-
-      <div className="hidden xl:block bg-white border border-gray-200 rounded-3xl shadow-sm overflow-x-auto">
+      <section className="hidden xl:block bg-white border border-gray-200 rounded-[2rem] shadow-sm overflow-x-auto">
 
         <table className="w-full min-w-[1400px]">
 
@@ -343,67 +509,78 @@ export default function Historico() {
           </thead>
 
           <tbody>
-            {movimentacoesFiltradas.map((mov, index) => (
-              <tr
-                key={index}
-                className="border-t border-gray-100 hover:bg-gray-50 transition"
-              >
-                <td className="p-4">
-                  <span
+            {movimentacoesFiltradas.map((mov, index) => {
+              const entrada = mov.tipo === "Entrada";
+
+              return (
+                <tr
+                  key={index}
+                  className="border-t border-gray-100 hover:bg-blue-50/40 transition"
+                >
+                  <td className="p-4">
+                    <span
+                      className={
+                        entrada
+                          ? "bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm font-bold"
+                          : "bg-rose-50 text-rose-700 px-3 py-1 rounded-full text-sm font-bold"
+                      }
+                    >
+                      {mov.tipo}
+                    </span>
+                  </td>
+
+                  <td className="p-4 font-bold text-gray-900">
+                    {mov.produto}
+                  </td>
+
+                  <td
                     className={
-                      mov.tipo === "Entrada"
-                        ? "bg-green-50 text-green-600 px-3 py-1 rounded-full text-sm font-medium"
-                        : "bg-red-50 text-red-600 px-3 py-1 rounded-full text-sm font-medium"
+                      entrada
+                        ? "p-4 font-extrabold text-emerald-700"
+                        : "p-4 font-extrabold text-rose-700"
                     }
                   >
-                    {mov.tipo}
-                  </span>
-                </td>
+                    {entrada ? "+" : "-"}
+                    {mov.quantidade}
+                  </td>
 
-                <td className="p-4 font-medium text-gray-900">
-                  {mov.produto}
-                </td>
+                  <td className="p-4 text-gray-600 whitespace-nowrap">
+                    {mov.cliente}
+                  </td>
 
-                <td className="p-4 text-gray-600">
-                  {mov.quantidade}
-                </td>
+                  <td className="p-4 text-gray-600 whitespace-nowrap">
+                    {mov.local}
+                  </td>
 
-                <td className="p-4 text-gray-600 whitespace-nowrap">
-                  {mov.cliente}
-                </td>
+                  <td className="p-4 text-gray-600 whitespace-nowrap">
+                    {mov.notaFiscal}
+                  </td>
 
-                <td className="p-4 text-gray-600 whitespace-nowrap">
-                  {mov.local}
-                </td>
+                  <td className="p-4 text-gray-600 whitespace-nowrap">
+                    {mov.contador}
+                  </td>
 
-                <td className="p-4 text-gray-600 whitespace-nowrap">
-                  {mov.notaFiscal}
-                </td>
+                  <td className="p-4 text-gray-600 max-w-[260px]">
+                    <span className="line-clamp-2">
+                      {mov.observacoes}
+                    </span>
+                  </td>
 
-                <td className="p-4 text-gray-600 whitespace-nowrap">
-                  {mov.contador}
-                </td>
+                  <td className="p-4 text-gray-600 max-w-[220px] break-all">
+                    {mov.usuario}
+                  </td>
 
-                <td className="p-4 text-gray-600 max-w-[260px]">
-                  <span className="line-clamp-2">
-                    {mov.observacoes}
-                  </span>
-                </td>
-
-                <td className="p-4 text-gray-600 max-w-[220px] break-all">
-                  {mov.usuario}
-                </td>
-
-                <td className="p-4 text-gray-600 whitespace-nowrap">
-                  {formatarDataHora(mov.data)}
-                </td>
-              </tr>
-            ))}
+                  <td className="p-4 text-gray-600 whitespace-nowrap">
+                    {formatarDataHora(mov.data)}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
 
         </table>
 
-      </div>
+      </section>
 
     </div>
   );
