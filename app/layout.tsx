@@ -47,13 +47,26 @@ export default function RootLayout({
         return;
       }
 
-      const emailUsuario = session.user.email?.toLowerCase();
+      const emailUsuario =
+        session.user.email?.trim().toLowerCase();
 
-      const { data: usuarioAutorizado } = await supabase
-        .from("usuarios_autorizados")
-        .select("email")
-        .eq("email", emailUsuario)
-        .single();
+      const { data: usuarioAutorizado, error } =
+        await supabase
+          .from("usuarios_autorizados")
+          .select("email")
+          .eq("email", emailUsuario)
+          .maybeSingle();
+
+      if (error) {
+        console.error(
+          "Erro ao verificar autorização:",
+          error.message
+        );
+
+        setAutorizado(true);
+        setLoading(false);
+        return;
+      }
 
       if (!usuarioAutorizado) {
         await supabase.auth.signOut();
