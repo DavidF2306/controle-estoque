@@ -60,7 +60,7 @@ export default function Sidebar() {
       {abertoMobile && (
         <div
           onClick={fecharMenuMobile}
-          className="md:hidden fixed inset-0 bg-black/40 z-40"
+          className="md:hidden fixed inset-0 bg-black/30 z-40"
         />
       )}
 
@@ -68,17 +68,18 @@ export default function Sidebar() {
         className={`
           fixed md:sticky top-0 left-0 z-50
           min-h-screen h-screen
-          bg-gradient-to-b from-slate-950 via-blue-950 to-blue-800
-          text-white
+          bg-white
+          text-gray-800
+          border-r border-gray-200
           flex flex-col justify-between
           transition-all duration-300
-          shadow-xl
+          shadow-sm
           ${abertoDesktop ? "md:w-72" : "md:w-24"}
           w-72
           ${abertoMobile ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
         `}
       >
-        <div className="p-5">
+        <div className="p-5 flex-1">
           <div
             className={`
               flex items-center mb-6
@@ -87,7 +88,7 @@ export default function Sidebar() {
             `}
           >
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center overflow-hidden shadow-sm shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-center overflow-hidden shrink-0">
                 <Image
                   src="/logo.png"
                   alt="Logo Copystar"
@@ -100,22 +101,22 @@ export default function Sidebar() {
 
               {abertoDesktop && (
                 <div className="hidden md:block">
-                  <h1 className="text-lg font-extrabold leading-tight">
+                  <h1 className="text-lg font-extrabold leading-tight text-gray-900">
                     Estoque da Copystar
                   </h1>
 
-                  <p className="text-blue-100 text-xs mt-1">
+                  <p className="text-gray-500 text-xs mt-1">
                     Impressoras e suprimentos
                   </p>
                 </div>
               )}
 
               <div className="md:hidden">
-                <h1 className="text-lg font-extrabold leading-tight">
+                <h1 className="text-lg font-extrabold leading-tight text-gray-900">
                   Estoque da Copystar
                 </h1>
 
-                <p className="text-blue-100 text-xs mt-1">
+                <p className="text-gray-500 text-xs mt-1">
                   Impressoras e suprimentos
                 </p>
               </div>
@@ -123,7 +124,7 @@ export default function Sidebar() {
 
             <button
               onClick={fecharMenuMobile}
-              className="md:hidden text-blue-100 hover:text-white"
+              className="md:hidden text-gray-500 hover:text-gray-900"
             >
               <X size={24} />
             </button>
@@ -135,9 +136,9 @@ export default function Sidebar() {
               hidden md:flex
               w-full mb-5
               items-center justify-center gap-2
-              bg-white/10 hover:bg-white/15
-              border border-white/10
-              text-blue-50
+              bg-gray-50 hover:bg-gray-100
+              border border-gray-200
+              text-gray-600 hover:text-gray-900
               rounded-2xl
               px-3 py-3
               transition
@@ -176,8 +177,8 @@ export default function Sidebar() {
                     ${abertoDesktop ? "md:justify-start" : "md:justify-center"}
                     ${
                       ativo
-                        ? "bg-white text-blue-700 shadow-sm"
-                        : "text-blue-100 hover:bg-white/10 hover:text-white"
+                        ? "bg-blue-50 text-blue-700 border border-blue-100"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 border border-transparent"
                     }
                   `}
                 >
@@ -198,25 +199,25 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        <div className="p-5 space-y-4">
+        <div className="p-5 space-y-4 bg-white">
           {abertoDesktop && (
-            <div className="hidden md:block bg-white/10 border border-white/10 rounded-3xl p-4">
-              <p className="text-sm font-bold">
+            <div className="hidden md:block bg-gray-50 border border-gray-200 rounded-3xl p-4">
+              <p className="text-sm font-bold text-gray-800">
                 Sistema interno
               </p>
 
-              <p className="text-xs text-blue-100 mt-1">
+              <p className="text-xs text-gray-500 mt-1">
                 Acesso restrito por email autorizado.
               </p>
             </div>
           )}
 
-          <div className="md:hidden bg-white/10 border border-white/10 rounded-3xl p-4">
-            <p className="text-sm font-bold">
+          <div className="md:hidden bg-gray-50 border border-gray-200 rounded-3xl p-4">
+            <p className="text-sm font-bold text-gray-800">
               Sistema interno
             </p>
 
-            <p className="text-xs text-blue-100 mt-1">
+            <p className="text-xs text-gray-500 mt-1">
               Acesso restrito por email autorizado.
             </p>
           </div>
@@ -224,16 +225,17 @@ export default function Sidebar() {
           <button
             onClick={sair}
             title="Sair"
-            className={`
+            className="
               w-full
               flex items-center justify-center
-              bg-white text-red-600
-              hover:bg-red-50
+              bg-red-50 text-red-600
+              hover:bg-red-100
               transition
               px-4 py-3 rounded-2xl
               font-extrabold
               gap-3
-            `}
+              border border-red-100
+            "
           >
             <LogOut size={20} />
 
