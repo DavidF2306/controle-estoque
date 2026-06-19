@@ -13,6 +13,7 @@ import {
   Users,
   LockKeyhole,
   CheckCircle,
+  KeyRound,
 } from "lucide-react";
 
 export default function Configuracoes() {
@@ -70,7 +71,6 @@ export default function Configuracoes() {
     }
 
     const confirmar = confirm(`Remover o acesso de ${usuario.email}?`);
-
     if (!confirmar) return;
 
     const { error } = await supabase
@@ -86,13 +86,58 @@ export default function Configuracoes() {
     buscarUsuarios();
   }
 
+  async function redefinirSenha(usuario: any) {
+    if (!usuario.auth_id) {
+      alert(
+        "Este usuário ainda não possui auth_id vinculado. Ele precisa criar a conta ou você precisa preencher o auth_id no banco."
+      );
+      return;
+    }
+
+    const novaSenha = prompt(
+      `Digite a nova senha para ${usuario.nome || usuario.email}:`
+    );
+
+    if (!novaSenha) return;
+
+    if (novaSenha.length < 6) {
+      alert("A senha precisa ter no mínimo 6 caracteres.");
+      return;
+    }
+
+    const confirmar = confirm(
+      `Confirmar redefinição de senha para ${usuario.email}?`
+    );
+
+    if (!confirmar) return;
+
+    const resposta = await fetch("/api/redefinir-senha", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: usuario.auth_id,
+        novaSenha,
+      }),
+    });
+
+    const resultado = await resposta.json();
+
+    if (!resposta.ok) {
+      alert("Erro ao redefinir senha: " + resultado.error);
+      return;
+    }
+
+    alert("Senha redefinida com sucesso!");
+  }
+
   const totalUsuarios = usuarios.length;
   const totalAdmins = usuarios.filter((u) => u.admin).length;
   const totalComuns = totalUsuarios - totalAdmins;
 
   return (
     <div className="text-gray-900 w-full overflow-x-hidden space-y-8">
-
       <section className="pt-14 md:pt-0">
         <div className="relative overflow-hidden rounded-[2.2rem] bg-gradient-to-br from-slate-900 via-indigo-700 to-blue-600 text-white shadow-lg">
           <div className="absolute -top-24 -right-20 w-80 h-80 bg-white/20 rounded-full blur-3xl" />
@@ -114,15 +159,13 @@ export default function Configuracoes() {
                 </h1>
 
                 <p className="text-blue-50 mt-2 max-w-2xl">
-                  Gerencie usuários autorizados, proteja administradores e faça backup dos dados do sistema.
+                  Gerencie usuários autorizados, senhas administrativas e backup dos dados.
                 </p>
               </div>
             </div>
 
             <div className="bg-white/15 border border-white/20 backdrop-blur rounded-[2rem] p-5 min-w-[240px]">
-              <p className="text-blue-50 text-sm">
-                Acesso autorizado
-              </p>
+              <p className="text-blue-50 text-sm">Acesso autorizado</p>
 
               <p className="text-4xl font-extrabold mt-2">
                 {totalUsuarios}
@@ -150,9 +193,7 @@ export default function Configuracoes() {
               <h2 className="text-4xl font-extrabold mt-2">
                 {totalUsuarios}
               </h2>
-              <p className="text-xs text-gray-400 mt-2">
-                com acesso
-              </p>
+              <p className="text-xs text-gray-400 mt-2">com acesso</p>
             </div>
 
             <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center">
@@ -168,9 +209,7 @@ export default function Configuracoes() {
               <h2 className="text-4xl font-extrabold mt-2">
                 {totalAdmins}
               </h2>
-              <p className="text-xs text-gray-400 mt-2">
-                protegidos
-              </p>
+              <p className="text-xs text-gray-400 mt-2">protegidos</p>
             </div>
 
             <div className="w-12 h-12 rounded-2xl bg-violet-50 text-violet-700 flex items-center justify-center">
@@ -186,9 +225,7 @@ export default function Configuracoes() {
               <h2 className="text-4xl font-extrabold mt-2">
                 {totalComuns}
               </h2>
-              <p className="text-xs text-gray-400 mt-2">
-                removíveis
-              </p>
+              <p className="text-xs text-gray-400 mt-2">removíveis</p>
             </div>
 
             <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
@@ -199,7 +236,6 @@ export default function Configuracoes() {
       </section>
 
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-
         <form
           onSubmit={adicionarUsuario}
           className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm h-fit"
@@ -221,7 +257,6 @@ export default function Configuracoes() {
           </div>
 
           <div className="space-y-4">
-
             <div>
               <label className="block text-sm font-medium mb-2">
                 Nome
@@ -251,16 +286,13 @@ export default function Configuracoes() {
                 required
               />
             </div>
-
           </div>
 
           <div className="mt-5 bg-blue-50 border border-blue-100 rounded-3xl p-4">
-            <p className="font-bold text-blue-800">
-              Atenção
-            </p>
+            <p className="font-bold text-blue-800">Atenção</p>
 
             <p className="text-sm text-blue-700/80 mt-1">
-              O email precisa estar autorizado aqui para conseguir cadastrar e acessar o Estoque Copystar.
+              Após a pessoa criar a conta, o auth_id precisa estar vinculado para permitir redefinir senha pelo sistema.
             </p>
           </div>
 
@@ -288,9 +320,7 @@ export default function Configuracoes() {
           </div>
 
           <div className="bg-violet-50 border border-violet-100 rounded-3xl p-4 mb-5">
-            <p className="font-bold text-violet-800">
-              Proteção de dados
-            </p>
+            <p className="font-bold text-violet-800">Proteção de dados</p>
 
             <p className="text-sm text-violet-700/80 mt-1">
               O backup exporta produtos, entradas, saídas, locais e usuários autorizados.
@@ -299,7 +329,6 @@ export default function Configuracoes() {
 
           <BotaoBackup />
         </div>
-
       </section>
 
       <section className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm">
@@ -338,11 +367,7 @@ export default function Configuracoes() {
                         : "w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0"
                     }
                   >
-                    {usuario.admin ? (
-                      <Crown size={22} />
-                    ) : (
-                      <Users size={22} />
-                    )}
+                    {usuario.admin ? <Crown size={22} /> : <Users size={22} />}
                   </div>
 
                   <div>
@@ -361,6 +386,12 @@ export default function Configuracoes() {
                           Usuário
                         </span>
                       )}
+
+                      {!usuario.auth_id && (
+                        <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-xs font-bold">
+                          Sem auth_id
+                        </span>
+                      )}
                     </div>
 
                     <p className="text-sm text-gray-500 break-all mt-1">
@@ -369,29 +400,38 @@ export default function Configuracoes() {
                   </div>
                 </div>
 
-                {usuario.admin ? (
+                <div className="flex flex-col sm:flex-row gap-2">
                   <button
-                    disabled
-                    className="bg-gray-100 text-gray-400 px-4 py-3 rounded-2xl flex items-center justify-center gap-2 cursor-not-allowed font-bold"
+                    onClick={() => redefinirSenha(usuario)}
+                    className="bg-blue-50 text-blue-700 hover:bg-blue-100 px-4 py-3 rounded-2xl transition flex items-center justify-center gap-2 font-bold"
                   >
-                    <LockKeyhole size={16} />
-                    Protegido
+                    <KeyRound size={16} />
+                    Redefinir senha
                   </button>
-                ) : (
-                  <button
-                    onClick={() => removerUsuario(usuario)}
-                    className="bg-red-50 text-red-600 hover:bg-red-100 px-4 py-3 rounded-2xl transition flex items-center justify-center gap-2 font-bold"
-                  >
-                    <Trash2 size={16} />
-                    Remover
-                  </button>
-                )}
+
+                  {usuario.admin ? (
+                    <button
+                      disabled
+                      className="bg-gray-100 text-gray-400 px-4 py-3 rounded-2xl flex items-center justify-center gap-2 cursor-not-allowed font-bold"
+                    >
+                      <LockKeyhole size={16} />
+                      Protegido
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => removerUsuario(usuario)}
+                      className="bg-red-50 text-red-600 hover:bg-red-100 px-4 py-3 rounded-2xl transition flex items-center justify-center gap-2 font-bold"
+                    >
+                      <Trash2 size={16} />
+                      Remover
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
         )}
       </section>
-
     </div>
   );
 }
