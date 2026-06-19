@@ -15,6 +15,42 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const authHeader = req.headers.get("authorization");
+
+    if (!authHeader) {
+      return NextResponse.json(
+        { error: "Usuário não autenticado." },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.replace("Bearer ", "");
+
+    const {
+      data: { user },
+      error: erroUsuario,
+    } = await admin.auth.getUser(token);
+
+    if (erroUsuario || !user?.email) {
+      return NextResponse.json(
+        { error: "Sessão inválida." },
+        { status: 401 }
+      );
+    }
+
+    const { data: usuarioAdmin } = await admin
+      .from("usuarios_autorizados")
+      .select("admin")
+      .eq("email", user.email.toLowerCase())
+      .maybeSingle();
+
+    if (!usuarioAdmin?.admin) {
+      return NextResponse.json(
+        { error: "Apenas administradores podem redefinir senhas." },
+        { status: 403 }
+      );
+    }
+
     const { userId, novaSenha } = await req.json();
 
     if (!userId || !novaSenha) {
@@ -31,12 +67,9 @@ export async function POST(req: Request) {
       );
     }
 
-    const { error } = await admin.auth.admin.updateUserById(
-      userId,
-      {
-        password: novaSenha,
-      }
-    );
+    const { error } = await admin.auth.admin.updateUserById(userId, {
+      password: novaSenha,
+    });
 
     if (error) {
       return NextResponse.json(

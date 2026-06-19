@@ -91,7 +91,7 @@ export default function Configuracoes() {
     setEmail("");
     buscarUsuarios();
 
-    alert("Usuário autorizado!");
+    alert("Usuário autorizado! Agora ele pode criar a conta na tela de cadastro.");
   }
 
   async function removerUsuario(usuario: any) {
@@ -123,7 +123,7 @@ export default function Configuracoes() {
 
     if (!usuario.auth_id) {
       alert(
-        "Este usuário ainda não possui auth_id vinculado. Ele precisa criar a conta novamente ou você precisa preencher o auth_id no banco."
+        "Este usuário ainda não possui auth_id vinculado. Rode a correção no banco ou peça para ele criar a conta."
       );
       return;
     }
@@ -145,10 +145,15 @@ export default function Configuracoes() {
 
     if (!confirmar) return;
 
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
     const resposta = await fetch("/api/redefinir-senha", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.access_token}`,
       },
       body: JSON.stringify({
         userId: usuario.auth_id,
@@ -194,7 +199,7 @@ export default function Configuracoes() {
                 </h1>
 
                 <p className="text-blue-50 mt-2 max-w-2xl">
-                  Gerencie usuários autorizados, senhas administrativas e backup dos dados.
+                  Gerencie usuários autorizados, redefina senhas e faça backup do sistema.
                 </p>
               </div>
             </div>
@@ -206,7 +211,7 @@ export default function Configuracoes() {
                 {ehAdmin ? "Admin" : "Usuário"}
               </p>
 
-              <p className="text-blue-50 text-sm mt-1">
+              <p className="text-blue-50 text-sm mt-1 break-all">
                 {usuarioLogado?.email || "-"}
               </p>
             </div>
@@ -220,16 +225,19 @@ export default function Configuracoes() {
         <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
           <p className="text-sm text-gray-500">Usuários</p>
           <h2 className="text-4xl font-extrabold mt-2">{totalUsuarios}</h2>
+          <p className="text-xs text-gray-400 mt-2">com acesso</p>
         </div>
 
         <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
           <p className="text-sm text-gray-500">Administradores</p>
           <h2 className="text-4xl font-extrabold mt-2">{totalAdmins}</h2>
+          <p className="text-xs text-gray-400 mt-2">protegidos</p>
         </div>
 
         <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
           <p className="text-sm text-gray-500">Usuários comuns</p>
           <h2 className="text-4xl font-extrabold mt-2">{totalComuns}</h2>
+          <p className="text-xs text-gray-400 mt-2">removíveis</p>
         </div>
       </section>
 
@@ -273,6 +281,15 @@ export default function Configuracoes() {
                 className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
+            </div>
+
+            <div className="mt-5 bg-blue-50 border border-blue-100 rounded-3xl p-4">
+              <p className="font-bold text-blue-800">Atenção</p>
+
+              <p className="text-sm text-blue-700/80 mt-1">
+                Depois de autorizado, o usuário deve criar conta na tela de cadastro.
+                Se ele já existia no Auth, rode a correção de auth_id no banco.
+              </p>
             </div>
 
             <button className="w-full mt-5 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-bold transition flex items-center justify-center gap-2">
