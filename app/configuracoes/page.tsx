@@ -18,12 +18,31 @@ import {
 
 export default function Configuracoes() {
   const [usuarios, setUsuarios] = useState<any[]>([]);
+  const [usuarioLogado, setUsuarioLogado] = useState<any>(null);
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    buscarUsuarios();
+    iniciar();
   }, []);
+
+  async function iniciar() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user?.email) {
+      const { data } = await supabase
+        .from("usuarios_autorizados")
+        .select("*")
+        .eq("email", user.email.toLowerCase())
+        .maybeSingle();
+
+      setUsuarioLogado(data);
+    }
+
+    buscarUsuarios();
+  }
 
   async function buscarUsuarios() {
     const { data } = await supabase
@@ -34,8 +53,19 @@ export default function Configuracoes() {
     if (data) setUsuarios(data);
   }
 
+  function verificarAdmin() {
+    if (!usuarioLogado?.admin) {
+      alert("Apenas administradores podem fazer esta ação.");
+      return false;
+    }
+
+    return true;
+  }
+
   async function adicionarUsuario(e: React.FormEvent) {
     e.preventDefault();
+
+    if (!verificarAdmin()) return;
 
     const nomeFormatado = nome.trim();
     const emailFormatado = email.trim().toLowerCase();
@@ -65,6 +95,8 @@ export default function Configuracoes() {
   }
 
   async function removerUsuario(usuario: any) {
+    if (!verificarAdmin()) return;
+
     if (usuario.admin) {
       alert("Este usuário é administrador e não pode ser removido.");
       return;
@@ -87,9 +119,11 @@ export default function Configuracoes() {
   }
 
   async function redefinirSenha(usuario: any) {
+    if (!verificarAdmin()) return;
+
     if (!usuario.auth_id) {
       alert(
-        "Este usuário ainda não possui auth_id vinculado. Ele precisa criar a conta ou você precisa preencher o auth_id no banco."
+        "Este usuário ainda não possui auth_id vinculado. Ele precisa criar a conta novamente ou você precisa preencher o auth_id no banco."
       );
       return;
     }
@@ -132,6 +166,7 @@ export default function Configuracoes() {
     alert("Senha redefinida com sucesso!");
   }
 
+  const ehAdmin = usuarioLogado?.admin === true;
   const totalUsuarios = usuarios.length;
   const totalAdmins = usuarios.filter((u) => u.admin).length;
   const totalComuns = totalUsuarios - totalAdmins;
@@ -165,18 +200,14 @@ export default function Configuracoes() {
             </div>
 
             <div className="bg-white/15 border border-white/20 backdrop-blur rounded-[2rem] p-5 min-w-[240px]">
-              <p className="text-blue-50 text-sm">Acesso autorizado</p>
+              <p className="text-blue-50 text-sm">Seu acesso</p>
 
-              <p className="text-4xl font-extrabold mt-2">
-                {totalUsuarios}
+              <p className="text-3xl font-extrabold mt-2">
+                {ehAdmin ? "Admin" : "Usuário"}
               </p>
 
               <p className="text-blue-50 text-sm mt-1">
-                usuário(s) no sistema
-              </p>
-
-              <p className="text-xs text-blue-50 mt-3">
-                {totalAdmins} administrador(es) protegido(s)
+                {usuarioLogado?.email || "-"}
               </p>
             </div>
           </div>
@@ -187,95 +218,52 @@ export default function Configuracoes() {
 
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Usuários</p>
-              <h2 className="text-4xl font-extrabold mt-2">
-                {totalUsuarios}
-              </h2>
-              <p className="text-xs text-gray-400 mt-2">com acesso</p>
-            </div>
-
-            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center">
-              <Users size={24} />
-            </div>
-          </div>
+          <p className="text-sm text-gray-500">Usuários</p>
+          <h2 className="text-4xl font-extrabold mt-2">{totalUsuarios}</h2>
         </div>
 
         <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Administradores</p>
-              <h2 className="text-4xl font-extrabold mt-2">
-                {totalAdmins}
-              </h2>
-              <p className="text-xs text-gray-400 mt-2">protegidos</p>
-            </div>
-
-            <div className="w-12 h-12 rounded-2xl bg-violet-50 text-violet-700 flex items-center justify-center">
-              <Crown size={24} />
-            </div>
-          </div>
+          <p className="text-sm text-gray-500">Administradores</p>
+          <h2 className="text-4xl font-extrabold mt-2">{totalAdmins}</h2>
         </div>
 
         <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Usuários comuns</p>
-              <h2 className="text-4xl font-extrabold mt-2">
-                {totalComuns}
-              </h2>
-              <p className="text-xs text-gray-400 mt-2">removíveis</p>
-            </div>
-
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <CheckCircle size={24} />
-            </div>
-          </div>
+          <p className="text-sm text-gray-500">Usuários comuns</p>
+          <h2 className="text-4xl font-extrabold mt-2">{totalComuns}</h2>
         </div>
       </section>
 
-      <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <form
-          onSubmit={adicionarUsuario}
-          className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm h-fit"
-        >
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-11 h-11 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center">
-              <UserPlus size={22} />
+      {ehAdmin && (
+        <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <form
+            onSubmit={adicionarUsuario}
+            className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm h-fit"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-11 h-11 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center">
+                <UserPlus size={22} />
+              </div>
+
+              <div>
+                <h2 className="text-xl md:text-2xl font-extrabold">
+                  Novo usuário
+                </h2>
+
+                <p className="text-sm text-gray-500 mt-1">
+                  Autorize uma pessoa para acessar o sistema
+                </p>
+              </div>
             </div>
 
-            <div>
-              <h2 className="text-xl md:text-2xl font-extrabold">
-                Novo usuário
-              </h2>
-
-              <p className="text-sm text-gray-500 mt-1">
-                Autorize uma pessoa para acessar o sistema
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Nome
-              </label>
-
+            <div className="space-y-4">
               <input
                 type="text"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
-                placeholder="Ex: David Lucas"
+                placeholder="Nome"
                 className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Email
-              </label>
 
               <input
                 type="email"
@@ -286,50 +274,34 @@ export default function Configuracoes() {
                 required
               />
             </div>
-          </div>
 
-          <div className="mt-5 bg-blue-50 border border-blue-100 rounded-3xl p-4">
-            <p className="font-bold text-blue-800">Atenção</p>
+            <button className="w-full mt-5 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-bold transition flex items-center justify-center gap-2">
+              <UserPlus size={20} />
+              Adicionar usuário
+            </button>
+          </form>
 
-            <p className="text-sm text-blue-700/80 mt-1">
-              Após a pessoa criar a conta, o auth_id precisa estar vinculado para permitir redefinir senha pelo sistema.
-            </p>
-          </div>
+          <div className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm h-fit">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-11 h-11 rounded-2xl bg-violet-50 text-violet-700 flex items-center justify-center">
+                <DatabaseBackup size={22} />
+              </div>
 
-          <button className="w-full mt-5 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-bold transition flex items-center justify-center gap-2">
-            <UserPlus size={20} />
-            Adicionar usuário
-          </button>
-        </form>
+              <div>
+                <h2 className="text-xl md:text-2xl font-extrabold">
+                  Backup do sistema
+                </h2>
 
-        <div className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm h-fit">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-11 h-11 rounded-2xl bg-violet-50 text-violet-700 flex items-center justify-center">
-              <DatabaseBackup size={22} />
+                <p className="text-sm text-gray-500 mt-1">
+                  Baixe uma cópia completa dos dados
+                </p>
+              </div>
             </div>
 
-            <div>
-              <h2 className="text-xl md:text-2xl font-extrabold">
-                Backup do sistema
-              </h2>
-
-              <p className="text-sm text-gray-500 mt-1">
-                Baixe uma cópia completa dos dados
-              </p>
-            </div>
+            <BotaoBackup />
           </div>
-
-          <div className="bg-violet-50 border border-violet-100 rounded-3xl p-4 mb-5">
-            <p className="font-bold text-violet-800">Proteção de dados</p>
-
-            <p className="text-sm text-violet-700/80 mt-1">
-              O backup exporta produtos, entradas, saídas, locais e usuários autorizados.
-            </p>
-          </div>
-
-          <BotaoBackup />
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm">
         <div className="flex items-center gap-3 mb-6">
@@ -348,58 +320,54 @@ export default function Configuracoes() {
           </div>
         </div>
 
-        {usuarios.length === 0 ? (
-          <div className="border border-dashed border-gray-200 rounded-3xl p-6 text-center text-gray-500">
-            Nenhum usuário autorizado.
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {usuarios.map((usuario) => (
-              <div
-                key={usuario.id}
-                className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border border-gray-100 rounded-3xl p-4 hover:bg-blue-50/40 transition"
-              >
-                <div className="flex items-start gap-3">
-                  <div
-                    className={
-                      usuario.admin
-                        ? "w-12 h-12 rounded-2xl bg-violet-50 text-violet-700 flex items-center justify-center shrink-0"
-                        : "w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0"
-                    }
-                  >
-                    {usuario.admin ? <Crown size={22} /> : <Users size={22} />}
-                  </div>
-
-                  <div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="font-extrabold text-gray-900">
-                        {usuario.nome || "Sem nome"}
-                      </p>
-
-                      {usuario.admin ? (
-                        <span className="bg-violet-50 text-violet-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                          <Crown size={14} />
-                          Administrador
-                        </span>
-                      ) : (
-                        <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">
-                          Usuário
-                        </span>
-                      )}
-
-                      {!usuario.auth_id && (
-                        <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-xs font-bold">
-                          Sem auth_id
-                        </span>
-                      )}
-                    </div>
-
-                    <p className="text-sm text-gray-500 break-all mt-1">
-                      {usuario.email}
-                    </p>
-                  </div>
+        <div className="space-y-3">
+          {usuarios.map((usuario) => (
+            <div
+              key={usuario.id}
+              className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border border-gray-100 rounded-3xl p-4 hover:bg-blue-50/40 transition"
+            >
+              <div className="flex items-start gap-3">
+                <div
+                  className={
+                    usuario.admin
+                      ? "w-12 h-12 rounded-2xl bg-violet-50 text-violet-700 flex items-center justify-center shrink-0"
+                      : "w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0"
+                  }
+                >
+                  {usuario.admin ? <Crown size={22} /> : <Users size={22} />}
                 </div>
 
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="font-extrabold text-gray-900">
+                      {usuario.nome || "Sem nome"}
+                    </p>
+
+                    {usuario.admin ? (
+                      <span className="bg-violet-50 text-violet-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                        <Crown size={14} />
+                        Administrador
+                      </span>
+                    ) : (
+                      <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">
+                        Usuário
+                      </span>
+                    )}
+
+                    {!usuario.auth_id && (
+                      <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-xs font-bold">
+                        Sem auth_id
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-sm text-gray-500 break-all mt-1">
+                    {usuario.email}
+                  </p>
+                </div>
+              </div>
+
+              {ehAdmin ? (
                 <div className="flex flex-col sm:flex-row gap-2">
                   <button
                     onClick={() => redefinirSenha(usuario)}
@@ -427,10 +395,14 @@ export default function Configuracoes() {
                     </button>
                   )}
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ) : (
+                <span className="bg-gray-100 text-gray-500 px-4 py-3 rounded-2xl font-bold">
+                  Somente visualização
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   );

@@ -44,7 +44,7 @@ export default function Cadastro() {
       return;
     }
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: emailFormatado,
       password: senha,
       options: {
@@ -59,6 +59,15 @@ export default function Cadastro() {
       alert("Erro ao criar conta: " + error.message);
       return;
     }
+
+    if (data.user?.id) {
+  await supabase
+    .from("usuarios_autorizados")
+    .update({
+      auth_id: data.user.id,
+    })
+    .eq("email", emailFormatado);
+}
 
     alert("Conta criada! Verifique seu email para confirmar o cadastro.");
 
