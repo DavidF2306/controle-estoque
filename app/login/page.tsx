@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import {
   Eye,
   EyeOff,
@@ -163,22 +162,6 @@ export default function Login() {
             <LogIn size={20} />
             {loading ? "Entrando..." : "Entrar"}
           </button>
-
-          <div className="flex flex-col gap-3 mt-6 text-center">
-            <Link
-              href="/cadastro"
-              className="text-blue-600 hover:underline font-medium"
-            >
-              Criar nova conta
-            </Link>
-
-            <Link
-              href="/recuperar-senha"
-              className="text-gray-500 hover:text-gray-800 hover:underline"
-            >
-              Esqueci a senha
-            </Link>
-          </div>
         </form>
       </div>
     </div>

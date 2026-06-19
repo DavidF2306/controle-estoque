@@ -17,12 +17,7 @@ export default function RootLayout({
   const [loading, setLoading] = useState(true);
   const [autorizado, setAutorizado] = useState(false);
 
-  const rotasPublicas = [
-    "/login",
-    "/cadastro",
-    "/recuperar-senha",
-    "/atualizar-senha",
-  ];
+  const rotasPublicas = [ "/login",];
 
   const rotaPublica = rotasPublicas.includes(pathname);
 

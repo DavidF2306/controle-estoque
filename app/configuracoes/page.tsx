@@ -14,13 +14,24 @@ import {
   LockKeyhole,
   CheckCircle,
   KeyRound,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 export default function Configuracoes() {
   const [usuarios, setUsuarios] = useState<any[]>([]);
   const [usuarioLogado, setUsuarioLogado] = useState<any>(null);
+
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
+  const [senhaTemporaria, setSenhaTemporaria] = useState("");
+  const [mostrarSenhaTemporaria, setMostrarSenhaTemporaria] = useState(false);
+
+  const [minhaSenha, setMinhaSenha] = useState("");
+  const [confirmarMinhaSenha, setConfirmarMinhaSenha] = useState("");
+  const [mostrarMinhaSenha, setMostrarMinhaSenha] = useState(false);
+  const [mostrarConfirmarMinhaSenha, setMostrarConfirmarMinhaSenha] =
+    useState(false);
 
   useEffect(() => {
     iniciar();
@@ -70,28 +81,46 @@ export default function Configuracoes() {
     const nomeFormatado = nome.trim();
     const emailFormatado = email.trim().toLowerCase();
 
-    if (!nomeFormatado || !emailFormatado) return;
-
-    const { error } = await supabase
-      .from("usuarios_autorizados")
-      .insert([
-        {
-          nome: nomeFormatado,
-          email: emailFormatado,
-          admin: false,
-        },
-      ]);
-
-    if (error) {
-      alert("Erro ao adicionar usuário: " + error.message);
+    if (!nomeFormatado || !emailFormatado || !senhaTemporaria) {
+      alert("Preencha nome, email e senha temporária.");
       return;
     }
 
+    if (senhaTemporaria.length < 6) {
+      alert("A senha temporária precisa ter no mínimo 6 caracteres.");
+      return;
+    }
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    const resposta = await fetch("/api/criar-usuario", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+      body: JSON.stringify({
+        nome: nomeFormatado,
+        email: emailFormatado,
+        senha: senhaTemporaria,
+      }),
+    });
+
+    const resultado = await resposta.json();
+
+    if (!resposta.ok) {
+      alert("Erro ao criar usuário: " + resultado.error);
+      return;
+    }
+
+    alert("Usuário criado com sucesso!");
+
     setNome("");
     setEmail("");
+    setSenhaTemporaria("");
     buscarUsuarios();
-
-    alert("Usuário autorizado! Agora ele pode criar a conta na tela de cadastro.");
   }
 
   async function removerUsuario(usuario: any) {
@@ -122,9 +151,7 @@ export default function Configuracoes() {
     if (!verificarAdmin()) return;
 
     if (!usuario.auth_id) {
-      alert(
-        "Este usuário ainda não possui auth_id vinculado. Rode a correção no banco ou peça para ele criar a conta."
-      );
+      alert("Este usuário está sem auth_id. Recrie o usuário pelo botão Criar usuário.");
       return;
     }
 
@@ -171,6 +198,53 @@ export default function Configuracoes() {
     alert("Senha redefinida com sucesso!");
   }
 
+  async function alterarMinhaSenha(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (!minhaSenha || !confirmarMinhaSenha) {
+      alert("Preencha os dois campos de senha.");
+      return;
+    }
+
+    if (minhaSenha !== confirmarMinhaSenha) {
+      alert("As senhas não coincidem.");
+      return;
+    }
+
+    if (minhaSenha.length < 6) {
+      alert("A senha precisa ter no mínimo 6 caracteres.");
+      return;
+    }
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    const resposta = await fetch("/api/redefinir-senha", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+      body: JSON.stringify({
+        userId: session?.user.id,
+        novaSenha: minhaSenha,
+      }),
+    });
+
+    const resultado = await resposta.json();
+
+    if (!resposta.ok) {
+      alert("Erro ao alterar sua senha: " + resultado.error);
+      return;
+    }
+
+    alert("Sua senha foi alterada com sucesso!");
+
+    setMinhaSenha("");
+    setConfirmarMinhaSenha("");
+  }
+
   const ehAdmin = usuarioLogado?.admin === true;
   const totalUsuarios = usuarios.length;
   const totalAdmins = usuarios.filter((u) => u.admin).length;
@@ -180,9 +254,6 @@ export default function Configuracoes() {
     <div className="text-gray-900 w-full overflow-x-hidden space-y-8">
       <section className="pt-14 md:pt-0">
         <div className="relative overflow-hidden rounded-[2.2rem] bg-gradient-to-br from-slate-900 via-indigo-700 to-blue-600 text-white shadow-lg">
-          <div className="absolute -top-24 -right-20 w-80 h-80 bg-white/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-72 h-72 bg-cyan-300/20 rounded-full blur-3xl" />
-
           <div className="relative p-6 md:p-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
             <div className="flex items-center gap-4">
               <div className="w-20 h-20 rounded-[2rem] bg-white/20 border border-white/30 flex items-center justify-center">
@@ -199,7 +270,7 @@ export default function Configuracoes() {
                 </h1>
 
                 <p className="text-blue-50 mt-2 max-w-2xl">
-                  Gerencie usuários autorizados, redefina senhas e faça backup do sistema.
+                  Crie usuários, altere senhas e gerencie acessos do sistema.
                 </p>
               </div>
             </div>
@@ -241,8 +312,78 @@ export default function Configuracoes() {
         </div>
       </section>
 
-      {ehAdmin && (
-        <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <form
+          onSubmit={alterarMinhaSenha}
+          className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm h-fit"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <KeyRound size={22} />
+            </div>
+
+            <div>
+              <h2 className="text-xl md:text-2xl font-extrabold">
+                Minha senha
+              </h2>
+
+              <p className="text-sm text-gray-500 mt-1">
+                Altere sua própria senha de acesso
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="relative">
+              <input
+                type={mostrarMinhaSenha ? "text" : "password"}
+                value={minhaSenha}
+                onChange={(e) => setMinhaSenha(e.target.value)}
+                placeholder="Nova senha"
+                className="w-full border border-gray-300 rounded-2xl px-4 py-3 pr-12 outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+
+              <button
+                type="button"
+                onClick={() => setMostrarMinhaSenha(!mostrarMinhaSenha)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"
+              >
+                {mostrarMinhaSenha ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+
+            <div className="relative">
+              <input
+                type={mostrarConfirmarMinhaSenha ? "text" : "password"}
+                value={confirmarMinhaSenha}
+                onChange={(e) => setConfirmarMinhaSenha(e.target.value)}
+                placeholder="Confirmar nova senha"
+                className="w-full border border-gray-300 rounded-2xl px-4 py-3 pr-12 outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+
+              <button
+                type="button"
+                onClick={() =>
+                  setMostrarConfirmarMinhaSenha(!mostrarConfirmarMinhaSenha)
+                }
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"
+              >
+                {mostrarConfirmarMinhaSenha ? (
+                  <EyeOff size={20} />
+                ) : (
+                  <Eye size={20} />
+                )}
+              </button>
+            </div>
+          </div>
+
+          <button className="w-full mt-5 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-2xl font-bold transition flex items-center justify-center gap-2">
+            <KeyRound size={20} />
+            Alterar minha senha
+          </button>
+        </form>
+
+        {ehAdmin && (
           <form
             onSubmit={adicionarUsuario}
             className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm h-fit"
@@ -254,11 +395,11 @@ export default function Configuracoes() {
 
               <div>
                 <h2 className="text-xl md:text-2xl font-extrabold">
-                  Novo usuário
+                  Criar usuário
                 </h2>
 
                 <p className="text-sm text-gray-500 mt-1">
-                  Autorize uma pessoa para acessar o sistema
+                  Crie o acesso completo com senha temporária
                 </p>
               </div>
             </div>
@@ -281,42 +422,60 @@ export default function Configuracoes() {
                 className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
-            </div>
 
-            <div className="mt-5 bg-blue-50 border border-blue-100 rounded-3xl p-4">
-              <p className="font-bold text-blue-800">Atenção</p>
+              <div className="relative">
+                <input
+                  type={mostrarSenhaTemporaria ? "text" : "password"}
+                  value={senhaTemporaria}
+                  onChange={(e) => setSenhaTemporaria(e.target.value)}
+                  placeholder="Senha temporária"
+                  className="w-full border border-gray-300 rounded-2xl px-4 py-3 pr-12 outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
 
-              <p className="text-sm text-blue-700/80 mt-1">
-                Depois de autorizado, o usuário deve criar conta na tela de cadastro.
-                Se ele já existia no Auth, rode a correção de auth_id no banco.
-              </p>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setMostrarSenhaTemporaria(!mostrarSenhaTemporaria)
+                  }
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"
+                >
+                  {mostrarSenhaTemporaria ? (
+                    <EyeOff size={20} />
+                  ) : (
+                    <Eye size={20} />
+                  )}
+                </button>
+              </div>
             </div>
 
             <button className="w-full mt-5 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-bold transition flex items-center justify-center gap-2">
               <UserPlus size={20} />
-              Adicionar usuário
+              Criar usuário
             </button>
           </form>
+        )}
+      </section>
 
-          <div className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm h-fit">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-11 h-11 rounded-2xl bg-violet-50 text-violet-700 flex items-center justify-center">
-                <DatabaseBackup size={22} />
-              </div>
-
-              <div>
-                <h2 className="text-xl md:text-2xl font-extrabold">
-                  Backup do sistema
-                </h2>
-
-                <p className="text-sm text-gray-500 mt-1">
-                  Baixe uma cópia completa dos dados
-                </p>
-              </div>
+      {ehAdmin && (
+        <section className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-11 h-11 rounded-2xl bg-violet-50 text-violet-700 flex items-center justify-center">
+              <DatabaseBackup size={22} />
             </div>
 
-            <BotaoBackup />
+            <div>
+              <h2 className="text-xl md:text-2xl font-extrabold">
+                Backup do sistema
+              </h2>
+
+              <p className="text-sm text-gray-500 mt-1">
+                Baixe uma cópia completa dos dados
+              </p>
+            </div>
           </div>
+
+          <BotaoBackup />
         </section>
       )}
 
