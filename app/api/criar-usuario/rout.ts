@@ -6,6 +6,13 @@ const admin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+export async function GET() {
+  return NextResponse.json({
+    ok: true,
+    rota: "criar-usuario",
+  });
+}
+
 export async function POST(req: Request) {
   try {
     const authHeader = req.headers.get("authorization");
@@ -21,9 +28,10 @@ export async function POST(req: Request) {
 
     const {
       data: { user },
+      error: erroSessao,
     } = await admin.auth.getUser(token);
 
-    if (!user?.email) {
+    if (erroSessao || !user?.email) {
       return NextResponse.json(
         { error: "Sessão inválida." },
         { status: 401 }
@@ -59,7 +67,10 @@ export async function POST(req: Request) {
       );
     }
 
+    const nomeFormatado = nome.trim();
     const emailFormatado = email.trim().toLowerCase();
+
+    let authId = "";
 
     const { data: usuarioCriado, error: erroCriar } =
       await admin.auth.admin.createUser({
@@ -68,21 +79,56 @@ export async function POST(req: Request) {
         email_confirm: true,
       });
 
+    if (usuarioCriado?.user?.id) {
+      authId = usuarioCriado.user.id;
+    }
+
     if (erroCriar) {
-      return NextResponse.json(
-        { error: erroCriar.message },
-        { status: 400 }
+      const { data: listaUsuarios, error: erroListar } =
+        await admin.auth.admin.listUsers();
+
+      if (erroListar) {
+        return NextResponse.json(
+          { error: erroListar.message },
+          { status: 400 }
+        );
+      }
+
+      const usuarioExistente = listaUsuarios.users.find(
+        (u) => u.email?.toLowerCase() === emailFormatado
       );
+
+      if (!usuarioExistente) {
+        return NextResponse.json(
+          { error: erroCriar.message },
+          { status: 400 }
+        );
+      }
+
+      authId = usuarioExistente.id;
+
+      const { error: erroAtualizarSenha } =
+        await admin.auth.admin.updateUserById(authId, {
+          password: senha,
+          email_confirm: true,
+        });
+
+      if (erroAtualizarSenha) {
+        return NextResponse.json(
+          { error: erroAtualizarSenha.message },
+          { status: 400 }
+        );
+      }
     }
 
     const { error: erroSalvar } = await admin
       .from("usuarios_autorizados")
       .upsert(
         {
-          nome: nome.trim(),
+          nome: nomeFormatado,
           email: emailFormatado,
           admin: false,
-          auth_id: usuarioCriado.user.id,
+          auth_id: authId,
         },
         {
           onConflict: "email",
