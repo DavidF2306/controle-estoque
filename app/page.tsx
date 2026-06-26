@@ -84,24 +84,28 @@ export default function Home() {
     if (!email) return "-";
 
     const usuario = usuarios.find(
-      (u) =>
-        u.email?.toLowerCase() ===
-        email.toLowerCase()
+      (u) => u.email?.toLowerCase() === email.toLowerCase()
     );
 
     return usuario?.nome || email;
   }
 
+  function estoqueEstaBaixo(produto: any) {
+    return (
+      Number(produto.quantidade || 0) <=
+      Number(produto.estoque_minimo || 5)
+    );
+  }
+
   const totalProdutos = produtos.length;
 
   const totalEstoque = produtos.reduce(
-    (total, produto) =>
-      total + Number(produto.quantidade || 0),
+    (total, produto) => total + Number(produto.quantidade || 0),
     0
   );
 
-  const produtosBaixoEstoque = produtos.filter(
-    (produto) => Number(produto.quantidade || 0) <= 5
+  const produtosBaixoEstoque = produtos.filter((produto) =>
+    estoqueEstaBaixo(produto)
   );
 
   const estoqueBaixo = produtosBaixoEstoque.length;
@@ -131,8 +135,7 @@ export default function Home() {
   ]
     .sort(
       (a, b) =>
-        new Date(b.data).getTime() -
-        new Date(a.data).getTime()
+        new Date(b.data).getTime() - new Date(a.data).getTime()
     )
     .slice(0, 5);
 
@@ -178,7 +181,7 @@ export default function Home() {
     {
       titulo: "Estoque baixo",
       valor: estoqueBaixo,
-      detalhe: "precisam de atenção",
+      detalhe: "abaixo do mínimo",
       icon: AlertTriangle,
       cor: "from-orange-400 to-orange-600",
       fundo: "bg-orange-50",
@@ -198,10 +201,8 @@ export default function Home() {
 
   return (
     <div className="text-gray-900 w-full overflow-x-hidden space-y-8">
-
       <section className="pt-14 md:pt-0">
         <div className="relative overflow-hidden rounded-[2.2rem] bg-gradient-to-br from-sky-400 via-blue-600 to-indigo-800 text-white shadow-lg">
-
           <div className="absolute inset-0 opacity-20">
             <div className="absolute -top-24 -right-20 w-80 h-80 bg-white rounded-full blur-3xl" />
             <div className="absolute bottom-0 left-0 w-72 h-72 bg-cyan-300 rounded-full blur-3xl" />
@@ -209,7 +210,6 @@ export default function Home() {
 
           <div className="relative p-6 md:p-10">
             <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
-
               <div className="flex flex-col md:flex-row md:items-center gap-5">
                 <div className="w-24 h-24 rounded-[2rem] bg-white shadow-md flex items-center justify-center overflow-hidden shrink-0">
                   <Image
@@ -255,21 +255,17 @@ export default function Home() {
                   <div
                     className="h-full bg-white rounded-full"
                     style={{
-                      width:
-                        estoqueBaixo > 0
-                          ? "55%"
-                          : "100%",
+                      width: estoqueBaixo > 0 ? "55%" : "100%",
                     }}
                   />
                 </div>
 
                 <p className="text-xs text-blue-50 mt-3">
                   {estoqueBaixo > 0
-                    ? `${estoqueBaixo} produto(s) precisam de atenção`
+                    ? `${estoqueBaixo} produto(s) abaixo do estoque mínimo`
                     : "Nenhum produto em estoque baixo"}
                 </p>
               </div>
-
             </div>
           </div>
 
@@ -317,7 +313,6 @@ export default function Home() {
       </section>
 
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-
         <div className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm">
           <div className="flex items-center justify-between gap-3 mb-6">
             <div>
@@ -350,7 +345,6 @@ export default function Home() {
                     className="border border-gray-100 rounded-3xl p-4 hover:bg-gray-50 transition"
                   >
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-
                       <div className="flex gap-3">
                         <div
                           className={
@@ -419,7 +413,6 @@ export default function Home() {
                           {formatarDataHora(mov.data)}
                         </p>
                       </div>
-
                     </div>
                   </div>
                 );
@@ -436,7 +429,7 @@ export default function Home() {
               </h2>
 
               <p className="text-sm text-gray-500 mt-1">
-                Produtos com quantidade igual ou menor que 5
+                Produtos abaixo do estoque mínimo definido
               </p>
             </div>
 
@@ -452,7 +445,7 @@ export default function Home() {
               </p>
 
               <p className="text-sm text-emerald-700/80 mt-1">
-                Nenhum produto está com estoque baixo no momento.
+                Nenhum produto está abaixo do estoque mínimo no momento.
               </p>
             </div>
           ) : (
@@ -468,7 +461,7 @@ export default function Home() {
                     </h3>
 
                     <p className="text-sm text-gray-500 mt-1">
-                      Tipo: {produto.tipo || "-"}
+                      Mínimo: {produto.estoque_minimo || 5} un.
                     </p>
                   </div>
 
@@ -480,11 +473,9 @@ export default function Home() {
             </div>
           )}
         </div>
-
       </section>
 
       <section className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm">
-
         <div className="flex items-center justify-between gap-3 mb-6">
           <div>
             <h2 className="text-xl md:text-2xl font-extrabold">
@@ -503,7 +494,7 @@ export default function Home() {
 
         <div className="xl:hidden space-y-3">
           {ultimosProdutos.map((produto) => {
-            const baixo = Number(produto.quantidade) <= 5;
+            const baixo = estoqueEstaBaixo(produto);
 
             return (
               <div
@@ -517,7 +508,7 @@ export default function Home() {
                     </h3>
 
                     <p className="text-sm text-gray-500 mt-1">
-                      {produto.categoria || "Sem categoria"}
+                      Estoque mínimo: {produto.estoque_minimo || 5}
                     </p>
                   </div>
 
@@ -534,9 +525,7 @@ export default function Home() {
 
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <p className="text-gray-500">
-                      Tipo
-                    </p>
+                    <p className="text-gray-500">Tipo</p>
 
                     <p className="font-medium">
                       {produto.tipo || "-"}
@@ -544,9 +533,7 @@ export default function Home() {
                   </div>
 
                   <div>
-                    <p className="text-gray-500">
-                      Quantidade
-                    </p>
+                    <p className="text-gray-500">Quantidade</p>
 
                     <p
                       className={
@@ -580,15 +567,19 @@ export default function Home() {
                   Quantidade
                 </th>
 
+                <th className="p-4 text-sm text-gray-600 font-semibold">
+                  Estoque mínimo
+                </th>
+
                 <th className="p-4 text-sm text-gray-600 font-semibold rounded-r-2xl">
-                  Categoria
+                  Status
                 </th>
               </tr>
             </thead>
 
             <tbody>
               {ultimosProdutos.map((produto) => {
-                const baixo = Number(produto.quantidade) <= 5;
+                const baixo = estoqueEstaBaixo(produto);
 
                 return (
                   <tr
@@ -610,11 +601,23 @@ export default function Home() {
                           : "p-4 text-gray-600"
                       }
                     >
-                      {produto.quantidade}
+                      {produto.quantidade} un.
                     </td>
 
                     <td className="p-4 text-gray-600">
-                      {produto.categoria || "-"}
+                      {produto.estoque_minimo || 5} un.
+                    </td>
+
+                    <td className="p-4">
+                      {baixo ? (
+                        <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">
+                          Baixo
+                        </span>
+                      ) : (
+                        <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm font-bold">
+                          Normal
+                        </span>
+                      )}
                     </td>
                   </tr>
                 );
@@ -622,9 +625,7 @@ export default function Home() {
             </tbody>
           </table>
         </div>
-
       </section>
-
     </div>
   );
 }

@@ -43,10 +43,13 @@ export default function Produtos() {
     buscarProdutos();
   }
 
+  function estaBaixo(produto: any) {
+    return Number(produto.quantidade || 0) <= Number(produto.estoque_minimo || 5);
+  }
+
   const produtosFiltrados = produtos.filter(
     (produto) =>
       produto.nome?.toLowerCase().includes(busca.toLowerCase()) ||
-      produto.categoria?.toLowerCase().includes(busca.toLowerCase()) ||
       produto.tipo?.toLowerCase().includes(busca.toLowerCase())
   );
 
@@ -57,23 +60,14 @@ export default function Produtos() {
     0
   );
 
-  const estoqueBaixo = produtos.filter(
-    (produto) => Number(produto.quantidade || 0) <= 5
-  ).length;
-
+  const estoqueBaixo = produtos.filter((produto) => estaBaixo(produto)).length;
   const estoqueNormal = totalProdutos - estoqueBaixo;
 
   return (
     <div className="text-gray-900 w-full overflow-x-hidden space-y-8">
-
       <section className="pt-14 md:pt-0">
         <div className="relative overflow-hidden rounded-[2.2rem] bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-400 text-white shadow-lg">
-
-          <div className="absolute -top-24 -right-20 w-80 h-80 bg-white/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-900/20 rounded-full blur-3xl" />
-
           <div className="relative p-6 md:p-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
-
             <div className="flex items-center gap-4">
               <div className="w-20 h-20 rounded-[2rem] bg-white/20 border border-white/30 flex items-center justify-center">
                 <Package size={38} />
@@ -89,7 +83,7 @@ export default function Produtos() {
                 </h1>
 
                 <p className="text-blue-50 mt-2 max-w-2xl">
-                  Gerencie toners, cartuchos, impressoras e suprimentos cadastrados no sistema.
+                  Gerencie toners, cartuchos, cilindros e suprimentos cadastrados no sistema.
                 </p>
               </div>
             </div>
@@ -105,7 +99,6 @@ export default function Produtos() {
                 Novo Produto
               </Link>
             </div>
-
           </div>
 
           <div className="h-7 bg-white rounded-t-[100%] opacity-95" />
@@ -114,59 +107,29 @@ export default function Produtos() {
 
       <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Produtos</p>
-              <h2 className="text-4xl font-extrabold mt-2">{totalProdutos}</h2>
-              <p className="text-xs text-gray-400 mt-2">cadastrados</p>
-            </div>
-
-            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center">
-              <Package size={24} />
-            </div>
-          </div>
+          <p className="text-sm text-gray-500">Produtos</p>
+          <h2 className="text-4xl font-extrabold mt-2">{totalProdutos}</h2>
+          <p className="text-xs text-gray-400 mt-2">cadastrados</p>
         </div>
 
         <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Estoque total</p>
-              <h2 className="text-4xl font-extrabold mt-2">{totalEstoque}</h2>
-              <p className="text-xs text-gray-400 mt-2">unidades</p>
-            </div>
-
-            <div className="w-12 h-12 rounded-2xl bg-violet-50 text-violet-700 flex items-center justify-center">
-              <Boxes size={24} />
-            </div>
-          </div>
+          <p className="text-sm text-gray-500">Estoque total</p>
+          <h2 className="text-4xl font-extrabold mt-2">{totalEstoque}</h2>
+          <p className="text-xs text-gray-400 mt-2">unidades</p>
         </div>
 
         <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Estoque normal</p>
-              <h2 className="text-4xl font-extrabold mt-2">{estoqueNormal}</h2>
-              <p className="text-xs text-gray-400 mt-2">produtos ok</p>
-            </div>
-
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <CheckCircle size={24} />
-            </div>
-          </div>
+          <p className="text-sm text-gray-500">Estoque normal</p>
+          <h2 className="text-4xl font-extrabold mt-2">{estoqueNormal}</h2>
+          <p className="text-xs text-gray-400 mt-2">produtos ok</p>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Estoque baixo</p>
-              <h2 className="text-4xl font-extrabold mt-2">{estoqueBaixo}</h2>
-              <p className="text-xs text-gray-400 mt-2">atenção necessária</p>
-            </div>
-
-            <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-700 flex items-center justify-center">
-              <AlertTriangle size={24} />
-            </div>
-          </div>
+        <div className="bg-white border border-orange-200 rounded-[1.8rem] p-5 shadow-sm">
+          <p className="text-sm text-gray-500">Estoque baixo</p>
+          <h2 className="text-4xl font-extrabold mt-2 text-orange-700">
+            {estoqueBaixo}
+          </h2>
+          <p className="text-xs text-gray-400 mt-2">atenção necessária</p>
         </div>
       </section>
 
@@ -183,7 +146,7 @@ export default function Produtos() {
 
           <input
             type="text"
-            placeholder="Buscar por nome, categoria ou tipo..."
+            placeholder="Buscar por nome ou tipo..."
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             className="w-full border border-gray-300 rounded-2xl pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
@@ -197,7 +160,7 @@ export default function Produtos() {
 
       <section className="xl:hidden space-y-4">
         {produtosFiltrados.map((produto) => {
-          const baixo = Number(produto.quantidade) <= 5;
+          const baixo = estaBaixo(produto);
 
           return (
             <div
@@ -211,7 +174,7 @@ export default function Produtos() {
                   </h2>
 
                   <p className="text-sm text-gray-500 mt-1">
-                    {produto.categoria || "Sem categoria"}
+                    Tipo: {produto.tipo || "-"}
                   </p>
                 </div>
 
@@ -228,11 +191,6 @@ export default function Produtos() {
 
               <div className="grid grid-cols-2 gap-3 text-sm mb-4">
                 <div className="bg-gray-50 rounded-2xl p-3">
-                  <p className="text-gray-500">Tipo</p>
-                  <p className="font-bold mt-1">{produto.tipo || "-"}</p>
-                </div>
-
-                <div className="bg-gray-50 rounded-2xl p-3">
                   <p className="text-gray-500">Quantidade</p>
 
                   <p
@@ -243,6 +201,13 @@ export default function Produtos() {
                     }
                   >
                     {produto.quantidade} un.
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 rounded-2xl p-3">
+                  <p className="text-gray-500">Estoque mínimo</p>
+                  <p className="font-bold mt-1">
+                    {produto.estoque_minimo || 5} un.
                   </p>
                 </div>
               </div>
@@ -270,9 +235,7 @@ export default function Produtos() {
       </section>
 
       <section className="hidden xl:block bg-white border border-gray-200 rounded-[2rem] shadow-sm overflow-x-auto">
-
         <table className="w-full min-w-[850px]">
-
           <thead>
             <tr className="text-left bg-gray-50">
               <th className="p-4 text-sm text-gray-600 font-semibold">
@@ -288,7 +251,7 @@ export default function Produtos() {
               </th>
 
               <th className="p-4 text-sm text-gray-600 font-semibold">
-                Categoria
+                Estoque mínimo
               </th>
 
               <th className="p-4 text-sm text-gray-600 font-semibold">
@@ -303,7 +266,7 @@ export default function Produtos() {
 
           <tbody>
             {produtosFiltrados.map((produto) => {
-              const baixo = Number(produto.quantidade) <= 5;
+              const baixo = estaBaixo(produto);
 
               return (
                 <tr
@@ -329,7 +292,7 @@ export default function Produtos() {
                   </td>
 
                   <td className="p-4 text-gray-600">
-                    {produto.categoria || "-"}
+                    {produto.estoque_minimo || 5} un.
                   </td>
 
                   <td className="p-4">
@@ -367,11 +330,8 @@ export default function Produtos() {
               );
             })}
           </tbody>
-
         </table>
-
       </section>
-
     </div>
   );
 }

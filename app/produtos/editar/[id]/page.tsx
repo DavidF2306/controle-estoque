@@ -9,8 +9,8 @@ import {
   ArrowLeft,
   Pencil,
   Boxes,
-  Tag,
   CheckCircle,
+  AlertTriangle,
 } from "lucide-react";
 
 export default function EditarProduto() {
@@ -20,7 +20,7 @@ export default function EditarProduto() {
   const [nome, setNome] = useState("");
   const [tipo, setTipo] = useState("");
   const [quantidade, setQuantidade] = useState("");
-  const [categoria, setCategoria] = useState("");
+  const [estoqueMinimo, setEstoqueMinimo] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function EditarProduto() {
       setNome(data.nome || "");
       setTipo(data.tipo || "");
       setQuantidade(String(data.quantidade || 0));
-      setCategoria(data.categoria || "");
+      setEstoqueMinimo(String(data.estoque_minimo || 5));
     }
 
     setLoading(false);
@@ -53,7 +53,7 @@ export default function EditarProduto() {
         nome,
         tipo: tipo || null,
         quantidade: Number(quantidade),
-        categoria,
+        estoque_minimo: Number(estoqueMinimo || 5),
       })
       .eq("id", params.id);
 
@@ -78,12 +78,8 @@ export default function EditarProduto() {
 
   return (
     <div className="text-gray-900 w-full overflow-x-hidden space-y-8">
-
       <section className="pt-14 md:pt-0">
         <div className="relative overflow-hidden rounded-[2.2rem] bg-gradient-to-br from-blue-500 via-indigo-600 to-violet-700 text-white shadow-lg">
-          <div className="absolute -top-24 -right-20 w-80 h-80 bg-white/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-72 h-72 bg-cyan-300/20 rounded-full blur-3xl" />
-
           <div className="relative p-6 md:p-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
             <div className="flex items-center gap-4">
               <div className="w-20 h-20 rounded-[2rem] bg-white/20 border border-white/30 flex items-center justify-center">
@@ -100,15 +96,13 @@ export default function EditarProduto() {
                 </h1>
 
                 <p className="text-blue-50 mt-2 max-w-2xl">
-                  Atualize as informações do produto e mantenha o estoque sempre correto.
+                  Atualize o produto e defina o limite mínimo para alerta de reposição.
                 </p>
               </div>
             </div>
 
             <div className="bg-white/15 border border-white/20 backdrop-blur rounded-[2rem] p-5 min-w-[240px]">
-              <p className="text-blue-50 text-sm">
-                Produto selecionado
-              </p>
+              <p className="text-blue-50 text-sm">Produto selecionado</p>
 
               <p className="text-2xl font-extrabold mt-2 line-clamp-2">
                 {nome || "Produto"}
@@ -116,6 +110,10 @@ export default function EditarProduto() {
 
               <p className="text-blue-50 text-sm mt-2">
                 {quantidade || 0} unidade(s) no estoque
+              </p>
+
+              <p className="text-blue-50 text-sm mt-1">
+                Mínimo: {estoqueMinimo || 5}
               </p>
             </div>
           </div>
@@ -126,51 +124,23 @@ export default function EditarProduto() {
 
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Quantidade</p>
-              <h2 className="text-4xl font-extrabold mt-2">
-                {quantidade || 0}
-              </h2>
-              <p className="text-xs text-gray-400 mt-2">unidades</p>
-            </div>
-
-            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center">
-              <Boxes size={24} />
-            </div>
-          </div>
+          <p className="text-sm text-gray-500">Quantidade</p>
+          <h2 className="text-4xl font-extrabold mt-2">{quantidade || 0}</h2>
+          <p className="text-xs text-gray-400 mt-2">unidades</p>
         </div>
 
         <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Tipo</p>
-              <h2 className="text-2xl font-extrabold mt-2">
-                {tipo || "-"}
-              </h2>
-              <p className="text-xs text-gray-400 mt-2">classificação</p>
-            </div>
-
-            <div className="w-12 h-12 rounded-2xl bg-violet-50 text-violet-700 flex items-center justify-center">
-              <Package size={24} />
-            </div>
-          </div>
+          <p className="text-sm text-gray-500">Tipo</p>
+          <h2 className="text-2xl font-extrabold mt-2">{tipo || "-"}</h2>
+          <p className="text-xs text-gray-400 mt-2">classificação</p>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Categoria</p>
-              <h2 className="text-2xl font-extrabold mt-2">
-                {categoria || "-"}
-              </h2>
-              <p className="text-xs text-gray-400 mt-2">grupo do produto</p>
-            </div>
-
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <Tag size={24} />
-            </div>
-          </div>
+        <div className="bg-white border border-orange-200 rounded-[1.8rem] p-5 shadow-sm">
+          <p className="text-sm text-gray-500">Estoque mínimo</p>
+          <h2 className="text-4xl font-extrabold mt-2 text-orange-600">
+            {estoqueMinimo || 5}
+          </h2>
+          <p className="text-xs text-gray-400 mt-2">alerta de reposição</p>
         </div>
       </section>
 
@@ -209,12 +179,9 @@ export default function EditarProduto() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-blue-50/50 border border-blue-100 rounded-3xl p-4">
-            <label className="block text-sm font-medium mb-2">
-              Tipo
-            </label>
+            <label className="block text-sm font-medium mb-2">Tipo</label>
 
             <select
               value={tipo}
@@ -228,9 +195,7 @@ export default function EditarProduto() {
           </div>
 
           <div className="bg-violet-50/50 border border-violet-100 rounded-3xl p-4">
-            <label className="block text-sm font-medium mb-2">
-              Quantidade
-            </label>
+            <label className="block text-sm font-medium mb-2">Quantidade</label>
 
             <input
               type="number"
@@ -242,29 +207,38 @@ export default function EditarProduto() {
             />
           </div>
 
+          <div className="bg-orange-50/50 border border-orange-100 rounded-3xl p-4">
+            <label className="block text-sm font-medium mb-2">
+              Estoque mínimo
+            </label>
+
+            <input
+              type="number"
+              value={estoqueMinimo}
+              onChange={(e) => setEstoqueMinimo(e.target.value)}
+              min="0"
+              className="w-full bg-white border border-orange-200 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            Categoria
-          </label>
+        <div className="bg-orange-50 border border-orange-100 rounded-3xl p-4 flex items-start gap-3">
+          <AlertTriangle className="text-orange-700 shrink-0 mt-0.5" size={20} />
 
-          <input
-            type="text"
-            value={categoria}
-            onChange={(e) => setCategoria(e.target.value)}
-            placeholder="Ex: Toner"
-            className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <div>
+            <p className="font-bold text-orange-800">Alerta de reposição</p>
+
+            <p className="text-sm text-orange-700/80 mt-1">
+              O sistema considera estoque baixo quando a quantidade ficar igual ou abaixo do estoque mínimo definido.
+            </p>
+          </div>
         </div>
 
         <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-4 flex items-start gap-3">
           <CheckCircle className="text-emerald-700 shrink-0 mt-0.5" size={20} />
 
           <div>
-            <p className="font-bold text-emerald-800">
-              Alteração segura
-            </p>
+            <p className="font-bold text-emerald-800">Alteração segura</p>
 
             <p className="text-sm text-emerald-700/80 mt-1">
               Após salvar, o cadastro do produto será atualizado imediatamente.
@@ -288,7 +262,6 @@ export default function EditarProduto() {
           </button>
         </div>
       </form>
-
     </div>
   );
 }
