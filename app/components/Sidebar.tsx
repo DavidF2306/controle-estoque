@@ -8,6 +8,7 @@ import { useState } from "react";
 import {
   LayoutDashboard,
   Package,
+  Printer,
   MapPin,
   ArrowDownCircle,
   ArrowUpCircle,
@@ -30,14 +31,15 @@ export default function Sidebar() {
   const [abertoDesktop, setAbertoDesktop] = useState(true);
 
   const menu = [
-    { name: "Início", icon: LayoutDashboard, path: "/" },
-    { name: "Produtos", icon: Package, path: "/produtos" },
-    { name: "Locais", icon: MapPin, path: "/locais" },
-    { name: "Entradas", icon: ArrowDownCircle, path: "/entradas" },
-    { name: "Saídas", icon: ArrowUpCircle, path: "/saidas" },
-    { name: "Histórico", icon: History, path: "/historico" },
-    { name: "Configurações", icon: Settings, path: "/configuracoes" },
-  ];
+  { name: "Início", icon: LayoutDashboard, path: "/" },
+  { name: "Produtos", icon: Package, path: "/produtos" },
+  { name: "Impressoras", icon: Printer, path: "/impressoras" },
+  { name: "Locais", icon: MapPin, path: "/locais" },
+  { name: "Entradas", icon: ArrowDownCircle, path: "/entradas" },
+  { name: "Saídas", icon: ArrowUpCircle, path: "/saidas" },
+  { name: "Histórico", icon: History, path: "/historico" },
+  { name: "Configurações", icon: Settings, path: "/configuracoes" },
+];
 
   async function sair() {
     await supabase.auth.signOut();
