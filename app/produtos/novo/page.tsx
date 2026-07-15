@@ -8,9 +8,9 @@ import {
   Package,
   Save,
   Boxes,
-  Tag,
   CheckCircle,
   PlusCircle,
+  AlertTriangle,
 } from "lucide-react";
 
 export default function NovoProduto() {
@@ -19,21 +19,19 @@ export default function NovoProduto() {
   const [nome, setNome] = useState("");
   const [tipo, setTipo] = useState("");
   const [quantidade, setQuantidade] = useState("");
-  const [categoria, setCategoria] = useState("");
+  const [estoqueMinimo, setEstoqueMinimo] = useState("5");
 
   async function salvarProduto(e: React.FormEvent) {
     e.preventDefault();
 
-    const { error } = await supabase
-      .from("produtos")
-      .insert([
-        {
-          nome,
-          tipo: tipo || null,
-          quantidade: Number(quantidade),
-          categoria,
-        },
-      ]);
+    const { error } = await supabase.from("produtos").insert([
+      {
+        nome,
+        tipo: tipo || null,
+        quantidade: Number(quantidade),
+        estoque_minimo: Number(estoqueMinimo || 5),
+      },
+    ]);
 
     if (error) {
       alert("Erro ao cadastrar produto: " + error.message);
@@ -46,12 +44,8 @@ export default function NovoProduto() {
 
   return (
     <div className="text-gray-900 w-full overflow-x-hidden space-y-8">
-
       <section className="pt-14 md:pt-0">
         <div className="relative overflow-hidden rounded-[2.2rem] bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 text-white shadow-lg">
-          <div className="absolute -top-24 -right-20 w-80 h-80 bg-white/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-900/20 rounded-full blur-3xl" />
-
           <div className="relative p-6 md:p-10 flex items-center gap-4">
             <div className="w-20 h-20 rounded-[2rem] bg-white/20 border border-white/30 flex items-center justify-center">
               <PlusCircle size={40} />
@@ -78,49 +72,25 @@ export default function NovoProduto() {
 
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Cadastro</p>
-              <h2 className="text-3xl font-extrabold mt-2">Novo</h2>
-              <p className="text-xs text-gray-400 mt-2">produto</p>
-            </div>
-
-            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center">
-              <Package size={24} />
-            </div>
-          </div>
+          <p className="text-sm text-gray-500">Cadastro</p>
+          <h2 className="text-3xl font-extrabold mt-2">Novo</h2>
+          <p className="text-xs text-gray-400 mt-2">produto</p>
         </div>
 
         <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Quantidade inicial</p>
-              <h2 className="text-4xl font-extrabold mt-2">
-                {quantidade || 0}
-              </h2>
-              <p className="text-xs text-gray-400 mt-2">unidades</p>
-            </div>
-
-            <div className="w-12 h-12 rounded-2xl bg-violet-50 text-violet-700 flex items-center justify-center">
-              <Boxes size={24} />
-            </div>
-          </div>
+          <p className="text-sm text-gray-500">Quantidade inicial</p>
+          <h2 className="text-4xl font-extrabold mt-2">
+            {quantidade || 0}
+          </h2>
+          <p className="text-xs text-gray-400 mt-2">unidades</p>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Categoria</p>
-              <h2 className="text-2xl font-extrabold mt-2">
-                {categoria || "-"}
-              </h2>
-              <p className="text-xs text-gray-400 mt-2">grupo do item</p>
-            </div>
-
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <Tag size={24} />
-            </div>
-          </div>
+        <div className="bg-white border border-orange-200 rounded-[1.8rem] p-5 shadow-sm">
+          <p className="text-sm text-gray-500">Estoque mínimo</p>
+          <h2 className="text-4xl font-extrabold mt-2 text-orange-600">
+            {estoqueMinimo || 5}
+          </h2>
+          <p className="text-xs text-gray-400 mt-2">alerta de reposição</p>
         </div>
       </section>
 
@@ -159,8 +129,7 @@ export default function NovoProduto() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-blue-50/50 border border-blue-100 rounded-3xl p-4">
             <label className="block text-sm font-medium mb-2">
               Tipo
@@ -193,20 +162,35 @@ export default function NovoProduto() {
             />
           </div>
 
+          <div className="bg-orange-50/50 border border-orange-100 rounded-3xl p-4">
+            <label className="block text-sm font-medium mb-2">
+              Estoque mínimo
+            </label>
+
+            <input
+              type="number"
+              value={estoqueMinimo}
+              onChange={(e) => setEstoqueMinimo(e.target.value)}
+              placeholder="Ex: 10"
+              min="0"
+              className="w-full bg-white border border-orange-200 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-orange-500"
+              required
+            />
+          </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            Categoria
-          </label>
+        <div className="bg-orange-50 border border-orange-100 rounded-3xl p-4 flex items-start gap-3">
+          <AlertTriangle className="text-orange-700 shrink-0 mt-0.5" size={20} />
 
-          <input
-            type="text"
-            value={categoria}
-            onChange={(e) => setCategoria(e.target.value)}
-            placeholder="Ex: Toner, Cartucho, Cilindro"
-            className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <div>
+            <p className="font-bold text-orange-800">
+              Alerta personalizado
+            </p>
+
+            <p className="text-sm text-orange-700/80 mt-1">
+              Quando a quantidade ficar igual ou abaixo do estoque mínimo, o sistema vai marcar como reposição necessária.
+            </p>
+          </div>
         </div>
 
         <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-4 flex items-start gap-3">
@@ -239,7 +223,6 @@ export default function NovoProduto() {
           </button>
         </div>
       </form>
-
     </div>
   );
 }
