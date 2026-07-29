@@ -22,10 +22,17 @@ export default function EditarImpressora() {
   const [contador, setContador] = useState("");
   const [observacoes, setObservacoes] = useState("");
   const [loading, setLoading] = useState(true);
+  const [locais, setLocais] = useState<any[]>([]);
 
   useEffect(() => {
+    buscarLocais();
     buscarImpressora();
   }, []);
+
+  async function buscarLocais() {
+    const { data } = await supabase.from("locais").select("*").order("nome");
+    if (data) setLocais(data);
+  }
 
   async function buscarImpressora() {
     const { data } = await supabase
@@ -171,12 +178,17 @@ export default function EditarImpressora() {
               Local
             </label>
 
-            <input
+            <select
               value={local}
               onChange={(e)=>setLocal(e.target.value)}
               className="w-full border rounded-2xl px-4 py-3"
               required
-            />
+            >
+              <option value="">Selecione um local</option>
+              {locais.map((item)=>(
+                <option key={item.id} value={item.nome}>{item.nome}</option>
+              ))}
+            </select>
           </div>
 
           <div>

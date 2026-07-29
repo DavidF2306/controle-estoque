@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -13,12 +14,28 @@ import {
 export default function NovaImpressora() {
   const router = useRouter();
 
-  const [modelo, setModelo] = useState("");
-  const [local, setLocal] = useState("");
-  const [numeroSerie, setNumeroSerie] = useState("");
-  const [contador, setContador] = useState("");
-  const [observacoes, setObservacoes] = useState("");
+  const [nome, setNome] = useState("");
+const [modelo, setModelo] = useState("");
+const [local, setLocal] = useState("");
+const [numeroSerie, setNumeroSerie] = useState("");
+const [contador, setContador] = useState("");
+const [observacoes, setObservacoes] = useState("");
+const [locais, setLocais] = useState<any[]>([]);
 
+  useEffect(() => {
+  buscarLocais();
+}, []);
+
+async function buscarLocais() {
+  const { data } = await supabase
+    .from("locais")
+    .select("*")
+    .order("nome");
+
+  if (data) {
+    setLocais(data);
+  }
+}
   async function salvarImpressora(e: React.FormEvent) {
     e.preventDefault();
 
@@ -98,14 +115,25 @@ export default function NovaImpressora() {
             Local
           </label>
 
-          <input
-            type="text"
-            value={local}
-            onChange={(e) => setLocal(e.target.value)}
-            placeholder="Ex: FIEMA"
-            className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
+          <select
+  value={local}
+  onChange={(e) => setLocal(e.target.value)}
+  className="w-full border rounded-2xl px-4 py-3"
+  required
+>
+  <option value="">
+    Selecione um local
+  </option>
+
+  {locais.map((item) => (
+    <option
+      key={item.id}
+      value={item.nome}
+    >
+      {item.nome}
+    </option>
+  ))}
+</select>
         </div>
 
         <div className="grid md:grid-cols-2 gap-4">
