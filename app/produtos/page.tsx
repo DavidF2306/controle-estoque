@@ -76,7 +76,6 @@ export default function Produtos() {
     "Produtos.xlsx"
   );
 
-
 }
 
   const produtosFiltrados = produtos.filter(
@@ -122,6 +121,19 @@ export default function Produtos() {
 
             <div className="flex flex-col sm:flex-row gap-3 w-full xl:w-auto">
               <BotaoPDF produtos={produtos} />
+
+              <BotaoPDF produtos={produtos} />
+
+<button
+  onClick={exportarExcel}
+  className="bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-2xl font-bold transition flex items-center justify-center gap-2 shadow-sm"
+>
+  📊 Excel
+</button>
+
+<Link
+  href="/produtos/novo"
+></Link>
 
               <Link
                 href="/produtos/novo"
