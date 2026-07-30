@@ -369,14 +369,6 @@ export default function Produtos() {
                         Excluir
                       </button>
 
-                      <button
-  onClick={exportarExcel}
-  className="bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-2xl font-bold transition flex items-center justify-center gap-2 shadow-sm"
->
-  📊 Excel
-
-
-</button>
                     </div>
                   </td>
                 </tr>
