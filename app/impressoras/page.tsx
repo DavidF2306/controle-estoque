@@ -7,6 +7,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { useRouter } from "next/navigation";
 
 
 import {
@@ -27,6 +28,7 @@ export default function Impressoras() {
 
   const [impressoras, setImpressoras] = useState<any[]>([]);
   const [locais, setLocais] = useState<any[]>([]);
+  const router = useRouter();
 
   const [busca, setBusca] = useState("");
   const [localSelecionado, setLocalSelecionado] = useState("Todos");
@@ -614,6 +616,23 @@ function exportarExcel() {
                   <Trash2 size={18} />
                   Excluir
                 </button>
+
+                <button
+                  onClick={() => router.push(`/impressoras/${item.id}`)}
+                  className="bg-sky-600 hover:bg-sky-700 text-white px-6 py-3 rounded-2xl font-bold flex items-center justify-center gap-2"
+                >
+                  👁 Ver
+                </button>
+
+                <button>
+                  ✏ Editar
+                </button>
+
+                <button>
+                  🗑 Excluir
+                </button>
+
+                
 
               </div>
 
