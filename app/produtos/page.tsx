@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import BotaoPDF from "../components/BotaoPDF";
+
+
+import * as XLSX from "xlsx";
 import {
   Package,
   Plus,
@@ -46,6 +49,35 @@ export default function Produtos() {
   function estaBaixo(produto: any) {
     return Number(produto.quantidade || 0) <= Number(produto.estoque_minimo || 5);
   }
+
+  function exportarExcel() {
+  const dados = produtos.map((produto) => ({
+    Produto: produto.nome,
+    Tipo: produto.tipo || "-",
+    Quantidade: produto.quantidade,
+    "Estoque Mínimo": produto.estoque_minimo || 5,
+    Status: estaBaixo(produto)
+      ? "Estoque Baixo"
+      : "Normal",
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(dados);
+
+  const workbook = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    "Produtos"
+  );
+
+  XLSX.writeFile(
+    workbook,
+    "Produtos.xlsx"
+  );
+
+
+}
 
   const produtosFiltrados = produtos.filter(
     (produto) =>
@@ -324,6 +356,15 @@ export default function Produtos() {
                         <Trash2 size={16} />
                         Excluir
                       </button>
+
+                      <button
+  onClick={exportarExcel}
+  className="bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-2xl font-bold transition flex items-center justify-center gap-2 shadow-sm"
+>
+  📊 Excel
+
+
+</button>
                     </div>
                   </td>
                 </tr>
