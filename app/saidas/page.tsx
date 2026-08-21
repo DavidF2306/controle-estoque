@@ -9,11 +9,9 @@ import {
   ArrowLeft,
   Package,
   MapPin,
-  Users,
   ClipboardList,
   FileText,
   Gauge,
-  Building2,
   AlertTriangle,
   CheckCircle,
 } from "lucide-react";
@@ -27,7 +25,6 @@ export default function Saidas() {
 
   const [produtoId, setProdutoId] = useState("");
   const [quantidade, setQuantidade] = useState("");
-  const [cliente, setCliente] = useState("");
   const [local, setLocal] = useState("");
   const [contador, setContador] = useState("");
   const [observacoes, setObservacoes] = useState("");
@@ -42,10 +39,11 @@ export default function Saidas() {
       .select("*")
       .order("nome");
 
+    // Buscando locais ordenados pelo nome, conectando com a nova estrutura de locais
     const { data: locaisData } = await supabase
       .from("locais")
       .select("*")
-      .order("cliente");
+      .order("nome");
 
     const { data: saidasData } = await supabase
       .from("saidas")
@@ -64,8 +62,7 @@ export default function Saidas() {
       data: { user },
     } = await supabase.auth.getUser();
 
-    const emailUsuario =
-      user?.email || "Usuário não identificado";
+    const emailUsuario = user?.email || "Usuário não identificado";
 
     const produtoSelecionado = produtos.find(
       (produto) => produto.id === Number(produtoId)
@@ -84,20 +81,18 @@ export default function Saidas() {
     const novaQuantidade =
       Number(produtoSelecionado.quantidade) - Number(quantidade);
 
-    const { error: erroSaida } = await supabase
-      .from("saidas")
-      .insert([
-        {
-          produto_id: Number(produtoId),
-          quantidade: Number(quantidade),
-          cliente,
-          local,
-          contador: contador || null,
-          observacoes: observacoes || null,
-          usuario_email: emailUsuario,
-          destino: `${cliente} - ${local}`,
-        },
-      ]);
+    // Salvando no banco apenas com o Local (Cliente removido)
+    const { error: erroSaida } = await supabase.from("saidas").insert([
+      {
+        produto_id: Number(produtoId),
+        quantidade: Number(quantidade),
+        local,
+        contador: contador || null,
+        observacoes: observacoes || null,
+        usuario_email: emailUsuario,
+        destino: local, // Destino agora é apenas o nome do Local
+      },
+    ]);
 
     if (erroSaida) {
       alert("Erro ao registrar saída: " + erroSaida.message);
@@ -121,21 +116,8 @@ export default function Saidas() {
     router.push("/historico");
   }
 
-  const clientes = [
-    ...new Set(
-      locais
-        .map((item) => item.cliente)
-        .filter(Boolean)
-    ),
-  ];
-
-  const locaisFiltrados = locais.filter(
-    (item) => item.cliente === cliente
-  );
-
   const totalEstoque = produtos.reduce(
-    (total, produto) =>
-      total + Number(produto.quantidade || 0),
+    (total, produto) => total + Number(produto.quantidade || 0),
     0
   );
 
@@ -145,7 +127,6 @@ export default function Saidas() {
 
   return (
     <div className="text-gray-900 w-full overflow-x-hidden space-y-8">
-
       <section className="pt-14 md:pt-0">
         <div className="relative overflow-hidden rounded-[2.2rem] bg-gradient-to-br from-rose-500 via-red-600 to-orange-600 text-white shadow-lg">
           <div className="absolute -top-24 -right-20 w-80 h-80 bg-white/20 rounded-full blur-3xl" />
@@ -167,27 +148,18 @@ export default function Saidas() {
                 </h1>
 
                 <p className="text-red-50 mt-2 max-w-2xl">
-                  Registre entregas para clientes, acompanhe locais e mantenha o estoque sempre atualizado.
+                  Registre entregas, acompanhe locais e mantenha o estoque
+                  sempre atualizado.
                 </p>
               </div>
             </div>
 
             <div className="bg-white/15 border border-white/20 backdrop-blur rounded-[2rem] p-5 min-w-[240px]">
-              <p className="text-red-50 text-sm">
-                Total de saídas
-              </p>
+              <p className="text-red-50 text-sm">Total de saídas</p>
 
-              <p className="text-4xl font-extrabold mt-2">
-                {saidas.length}
-              </p>
+              <p className="text-4xl font-extrabold mt-2">{saidas.length}</p>
 
-              <p className="text-red-50 text-sm mt-1">
-                registros realizados
-              </p>
-
-              <p className="text-xs text-red-50 mt-3">
-                {clientes.length} cliente(s) disponíveis
-              </p>
+              <p className="text-red-50 text-sm mt-1">registros realizados</p>
             </div>
           </div>
 
@@ -195,7 +167,8 @@ export default function Saidas() {
         </div>
       </section>
 
-      <section className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+      {/* Ajustado para 3 colunas já que o card de Clientes foi removido */}
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
@@ -203,9 +176,7 @@ export default function Saidas() {
               <h2 className="text-4xl font-extrabold mt-2">
                 {produtos.length}
               </h2>
-              <p className="text-xs text-gray-400 mt-2">
-                disponíveis
-              </p>
+              <p className="text-xs text-gray-400 mt-2">disponíveis</p>
             </div>
 
             <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center">
@@ -218,12 +189,8 @@ export default function Saidas() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500">Estoque</p>
-              <h2 className="text-4xl font-extrabold mt-2">
-                {totalEstoque}
-              </h2>
-              <p className="text-xs text-gray-400 mt-2">
-                unidades
-              </p>
+              <h2 className="text-4xl font-extrabold mt-2">{totalEstoque}</h2>
+              <p className="text-xs text-gray-400 mt-2">unidades</p>
             </div>
 
             <div className="w-12 h-12 rounded-2xl bg-violet-50 text-violet-700 flex items-center justify-center">
@@ -235,31 +202,9 @@ export default function Saidas() {
         <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Clientes</p>
-              <h2 className="text-4xl font-extrabold mt-2">
-                {clientes.length}
-              </h2>
-              <p className="text-xs text-gray-400 mt-2">
-                cadastrados
-              </p>
-            </div>
-
-            <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-700 flex items-center justify-center">
-              <Users size={24} />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
               <p className="text-sm text-gray-500">Locais</p>
-              <h2 className="text-4xl font-extrabold mt-2">
-                {locais.length}
-              </h2>
-              <p className="text-xs text-gray-400 mt-2">
-                disponíveis
-              </p>
+              <h2 className="text-4xl font-extrabold mt-2">{locais.length}</h2>
+              <p className="text-xs text-gray-400 mt-2">disponíveis</p>
             </div>
 
             <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
@@ -284,15 +229,13 @@ export default function Saidas() {
             </h2>
 
             <p className="text-sm text-gray-500 mt-1">
-              Preencha os dados da entrega ao cliente
+              Preencha os dados da entrega para o local
             </p>
           </div>
         </div>
 
         <div className="bg-blue-50/50 border border-blue-100 rounded-3xl p-4">
-          <label className="block text-sm font-medium mb-2">
-            Produto
-          </label>
+          <label className="block text-sm font-medium mb-2">Produto</label>
 
           <select
             value={produtoId}
@@ -300,9 +243,7 @@ export default function Saidas() {
             className="w-full bg-white border border-blue-200 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
-            <option value="">
-              Selecione um produto
-            </option>
+            <option value="">Selecione um produto</option>
 
             {produtos.map((produto) => (
               <option key={produto.id} value={produto.id}>
@@ -320,11 +261,8 @@ export default function Saidas() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
           <div className="bg-rose-50/60 border border-rose-100 rounded-3xl p-4">
-            <label className="block text-sm font-medium mb-2">
-              Quantidade
-            </label>
+            <label className="block text-sm font-medium mb-2">Quantidade</label>
 
             <input
               type="number"
@@ -345,66 +283,31 @@ export default function Saidas() {
               )}
           </div>
 
-          <div className="bg-orange-50/60 border border-orange-100 rounded-3xl p-4">
+          <div className="bg-violet-50/60 border border-violet-100 rounded-3xl p-4">
             <label className="text-sm font-medium mb-2 flex items-center gap-2">
-              <Building2 size={17} />
-              Cliente
+              <MapPin size={17} />
+              Local
             </label>
 
             <select
-              value={cliente}
-              onChange={(e) => {
-                setCliente(e.target.value);
-                setLocal("");
-              }}
-              className="w-full bg-white border border-orange-200 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-orange-500"
+              value={local}
+              onChange={(e) => setLocal(e.target.value)}
+              className="w-full bg-white border border-violet-200 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-violet-500"
               required
             >
-              <option value="">
-                Selecione o cliente
-              </option>
+              <option value="">Selecione o local</option>
 
-              {clientes.map((clienteNome) => (
-                <option key={clienteNome} value={clienteNome}>
-                  {clienteNome}
+              {locais.map((item) => (
+                <option key={item.id} value={item.nome}>
+                  {item.nome}
                 </option>
               ))}
             </select>
           </div>
-
-        </div>
-
-        <div className="bg-violet-50/60 border border-violet-100 rounded-3xl p-4">
-          <label className="text-sm font-medium mb-2 flex items-center gap-2">
-            <MapPin size={17} />
-            Local
-          </label>
-
-          <select
-            value={local}
-            onChange={(e) => setLocal(e.target.value)}
-            className="w-full bg-white border border-violet-200 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-violet-500"
-            required
-            disabled={!cliente}
-          >
-            <option value="">
-              {cliente
-                ? "Selecione o local"
-                : "Selecione um cliente primeiro"}
-            </option>
-
-            {locaisFiltrados.map((item) => (
-              <option key={item.id} value={item.nome}>
-                {item.nome}
-              </option>
-            ))}
-          </select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">
-            Contador
-          </label>
+          <label className="block text-sm font-medium mb-2">Contador</label>
 
           <input
             type="text"
@@ -439,7 +342,8 @@ export default function Saidas() {
             </p>
 
             <p className="text-sm text-emerald-700/80 mt-1">
-              Ao registrar a saída, o estoque do produto será atualizado automaticamente.
+              Ao registrar a saída, o estoque do produto será atualizado
+              automaticamente.
             </p>
           </div>
         </div>
@@ -460,7 +364,6 @@ export default function Saidas() {
           </button>
         </div>
       </form>
-
     </div>
   );
 }
