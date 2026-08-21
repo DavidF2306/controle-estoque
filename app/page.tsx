@@ -14,7 +14,9 @@ import {
   User,
   MapPin,
   FileText,
-  Sparkles,
+  Building,
+  TrendingDown,
+  TrendingUp,
 } from "lucide-react";
 
 export default function Home() {
@@ -115,7 +117,6 @@ export default function Home() {
       tipo: "Entrada",
       produto: entrada.produtos?.nome || "-",
       quantidade: entrada.quantidade,
-      cliente: "-",
       local: entrada.origem || "-",
       observacoes: entrada.observacoes || "-",
       usuario: buscarNomeUsuario(entrada.usuario_email),
@@ -126,7 +127,6 @@ export default function Home() {
       tipo: "Saída",
       produto: saida.produtos?.nome || "-",
       quantidade: saida.quantidade,
-      cliente: saida.cliente || "-",
       local: saida.local || saida.destino || "-",
       observacoes: saida.observacoes || "-",
       usuario: buscarNomeUsuario(saida.usuario_email),
@@ -143,168 +143,155 @@ export default function Home() {
 
   const cards = [
     {
-      titulo: "Produtos",
+      titulo: "Produtos Cadastrados",
       valor: totalProdutos,
-      detalhe: "produtos cadastrados",
+      detalhe: "Total de itens no sistema",
       icon: Package,
-      cor: "from-blue-500 to-blue-700",
-      fundo: "bg-blue-50",
-      texto: "text-blue-700",
+      corIcone: "text-slate-600",
+      fundoIcone: "bg-slate-100",
     },
     {
-      titulo: "Estoque total",
+      titulo: "Estoque Total",
       valor: totalEstoque,
-      detalhe: "unidades disponíveis",
+      detalhe: "Unidades físicas disponíveis",
       icon: Archive,
-      cor: "from-indigo-500 to-violet-700",
-      fundo: "bg-violet-50",
-      texto: "text-violet-700",
+      corIcone: "text-blue-600",
+      fundoIcone: "bg-blue-50",
     },
     {
       titulo: "Entradas",
       valor: entradas.length,
-      detalhe: "registros de entrada",
-      icon: ArrowDownCircle,
-      cor: "from-emerald-500 to-green-700",
-      fundo: "bg-emerald-50",
-      texto: "text-emerald-700",
+      detalhe: "Registros realizados",
+      icon: TrendingDown,
+      corIcone: "text-emerald-600",
+      fundoIcone: "bg-emerald-50",
     },
     {
       titulo: "Saídas",
       valor: saidas.length,
-      detalhe: "registros de saída",
-      icon: ArrowUpCircle,
-      cor: "from-rose-500 to-red-700",
-      fundo: "bg-rose-50",
-      texto: "text-rose-700",
+      detalhe: "Registros realizados",
+      icon: TrendingUp,
+      corIcone: "text-rose-600",
+      fundoIcone: "bg-rose-50",
     },
     {
-      titulo: "Estoque baixo",
+      titulo: "Alertas de Estoque",
       valor: estoqueBaixo,
-      detalhe: "abaixo do mínimo",
+      detalhe: "Itens abaixo do mínimo",
       icon: AlertTriangle,
-      cor: "from-orange-400 to-orange-600",
-      fundo: "bg-orange-50",
-      texto: "text-orange-700",
+      corIcone: "text-amber-600",
+      fundoIcone: "bg-amber-50",
     },
   ];
 
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="bg-white border border-gray-200 rounded-3xl px-6 py-4 shadow-sm text-gray-500">
-          Carregando Estoque Copystar...
+        <div className="flex flex-col items-center gap-3 text-slate-500">
+          <div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
+          <p className="font-medium">Carregando painel...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="text-gray-900 w-full overflow-x-hidden space-y-8">
+    <div className="text-slate-800 w-full overflow-x-hidden space-y-6">
+      
+      {/* Hero Section - Corporativo */}
       <section className="pt-14 md:pt-0">
-        <div className="relative overflow-hidden rounded-[2.2rem] bg-gradient-to-br from-sky-400 via-blue-600 to-indigo-800 text-white shadow-lg">
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute -top-24 -right-20 w-80 h-80 bg-white rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-72 h-72 bg-cyan-300 rounded-full blur-3xl" />
-          </div>
-
+        <div className="relative overflow-hidden rounded-2xl bg-slate-900 text-white shadow-md">
+          {/* Elemento de fundo sutil */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+          
           <div className="relative p-6 md:p-10">
             <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
-              <div className="flex flex-col md:flex-row md:items-center gap-5">
-                <div className="w-24 h-24 rounded-[2rem] bg-white shadow-md flex items-center justify-center overflow-hidden shrink-0">
+              
+              <div className="flex flex-col md:flex-row md:items-center gap-6">
+                <div className="w-20 h-20 rounded-xl bg-white shadow-sm flex items-center justify-center p-2 shrink-0">
                   <Image
                     src="/logo.png"
                     alt="Logo Copystar"
-                    width={86}
-                    height={86}
+                    width={70}
+                    height={70}
                     className="object-contain"
                     priority
                   />
                 </div>
 
                 <div>
-                  <div className="inline-flex items-center gap-2 bg-white/15 border border-white/20 rounded-full px-4 py-2 text-sm font-medium mb-4">
-                    <Sparkles size={16} />
-                    Sistema interno de controle
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-800 border border-slate-700 rounded-md text-xs font-semibold tracking-wide text-slate-300 uppercase mb-3">
+                    <Building size={14} />
+                    Painel de Gestão
                   </div>
 
-                  <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
+                  <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
                     Estoque Copystar
                   </h1>
 
-                  <p className="text-blue-50 mt-3 text-base md:text-lg max-w-2xl">
-                    Controle produtos, entradas, saídas, locais e alertas do estoque em uma única tela.
+                  <p className="text-slate-400 mt-2 text-sm md:text-base max-w-2xl">
+                    Visão geral e monitoramento de produtos, movimentações, locais e alertas operacionais.
                   </p>
                 </div>
               </div>
 
-              <div className="bg-white/15 border border-white/20 backdrop-blur rounded-[2rem] p-5 min-w-[240px]">
-                <p className="text-blue-50 text-sm">
-                  Resumo de hoje
+              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5 min-w-[260px]">
+                <p className="text-slate-400 text-sm font-medium">
+                  Status Operacional
                 </p>
 
-                <p className="text-4xl font-extrabold mt-2">
-                  {totalEstoque}
-                </p>
+                <div className="mt-3 flex items-end gap-3">
+                  <p className="text-3xl font-bold text-white">
+                    {totalEstoque}
+                  </p>
+                  <p className="text-slate-400 text-sm mb-1">itens em estoque</p>
+                </div>
 
-                <p className="text-blue-50 text-sm mt-1">
-                  unidades em estoque
-                </p>
-
-                <div className="mt-4 h-2 bg-white/20 rounded-full overflow-hidden">
+                <div className="mt-4 h-1.5 bg-slate-700 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-white rounded-full"
-                    style={{
-                      width: estoqueBaixo > 0 ? "55%" : "100%",
-                    }}
+                    className={`h-full rounded-full transition-all duration-500 ${estoqueBaixo > 0 ? 'bg-amber-500 w-1/2' : 'bg-emerald-500 w-full'}`}
                   />
                 </div>
 
-                <p className="text-xs text-blue-50 mt-3">
+                <p className={`text-xs mt-3 font-medium ${estoqueBaixo > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
                   {estoqueBaixo > 0
-                    ? `${estoqueBaixo} produto(s) abaixo do estoque mínimo`
-                    : "Nenhum produto em estoque baixo"}
+                    ? `Atenção: ${estoqueBaixo} produto(s) requerem reposição.`
+                    : "Operação normal. Estoque abastecido."}
                 </p>
               </div>
+
             </div>
           </div>
-
-          <div className="h-7 bg-white rounded-t-[100%] opacity-95" />
         </div>
       </section>
 
-      <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 md:gap-5">
+      {/* Métricas / KPIs */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
         {cards.map((card) => {
           const Icon = card.icon;
 
           return (
             <div
               key={card.titulo}
-              className="group relative overflow-hidden bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition"
+              className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200"
             >
-              <div
-                className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${card.cor}`}
-              />
-
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm font-medium text-slate-500">
                     {card.titulo}
                   </p>
-
-                  <h2 className="text-4xl font-extrabold mt-2">
+                  <h2 className="text-3xl font-bold text-slate-800 mt-1">
                     {card.valor}
                   </h2>
-
-                  <p className="text-xs text-gray-400 mt-2">
+                  <p className="text-xs text-slate-400 mt-1">
                     {card.detalhe}
                   </p>
                 </div>
 
                 <div
-                  className={`w-12 h-12 rounded-2xl ${card.fundo} ${card.texto} flex items-center justify-center group-hover:scale-110 transition`}
+                  className={`w-10 h-10 rounded-lg ${card.fundoIcone} ${card.corIcone} flex items-center justify-center shrink-0`}
                 >
-                  <Icon size={24} />
+                  <Icon size={20} />
                 </div>
               </div>
             </div>
@@ -312,235 +299,220 @@ export default function Home() {
         })}
       </section>
 
+      {/* Seção Principal: Movimentações e Alertas */}
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <div className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm">
-          <div className="flex items-center justify-between gap-3 mb-6">
+        
+        {/* Movimentações Recentes */}
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col">
+          <div className="p-5 border-b border-slate-100 flex items-center justify-between">
             <div>
-              <h2 className="text-xl md:text-2xl font-extrabold">
-                Movimentações recentes
+              <h2 className="text-lg font-bold text-slate-800">
+                Movimentações Recentes
               </h2>
-
-              <p className="text-sm text-gray-500 mt-1">
-                Últimas ações registradas no Estoque Copystar
+              <p className="text-sm text-slate-500">
+                Últimos registros inseridos no sistema
               </p>
             </div>
-
-            <div className="w-11 h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
-              <Clock size={21} />
+            <div className="w-8 h-8 rounded-md bg-slate-50 text-slate-400 flex items-center justify-center border border-slate-100">
+              <Clock size={16} />
             </div>
           </div>
 
-          {movimentacoesRecentes.length === 0 ? (
-            <div className="border border-dashed border-gray-200 rounded-3xl p-6 text-center text-gray-500">
-              Nenhuma movimentação registrada ainda.
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {movimentacoesRecentes.map((mov, index) => {
-                const entrada = mov.tipo === "Entrada";
+          <div className="p-5 flex-1">
+            {movimentacoesRecentes.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center text-slate-400 py-8">
+                <Archive size={40} className="mb-3 opacity-20" />
+                <p className="text-sm">Nenhuma movimentação registrada.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {movimentacoesRecentes.map((mov, index) => {
+                  const entrada = mov.tipo === "Entrada";
 
-                return (
-                  <div
-                    key={index}
-                    className="border border-gray-100 rounded-3xl p-4 hover:bg-gray-50 transition"
-                  >
-                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                  return (
+                    <div
+                      key={index}
+                      className="group flex flex-col md:flex-row md:items-start md:justify-between gap-3 p-3 -mx-3 rounded-lg hover:bg-slate-50 transition-colors"
+                    >
                       <div className="flex gap-3">
                         <div
-                          className={
+                          className={`mt-0.5 w-8 h-8 rounded-md flex items-center justify-center shrink-0 ${
                             entrada
-                              ? "w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0"
-                              : "w-11 h-11 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0"
-                          }
+                              ? "bg-emerald-50 text-emerald-600"
+                              : "bg-rose-50 text-rose-600"
+                          }`}
                         >
                           {entrada ? (
-                            <ArrowDownCircle size={21} />
+                            <ArrowDownCircle size={18} />
                           ) : (
-                            <ArrowUpCircle size={21} />
+                            <ArrowUpCircle size={18} />
                           )}
                         </div>
 
                         <div>
-                          <span
-                            className={
-                              entrada
-                                ? "bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-semibold"
-                                : "bg-rose-50 text-rose-700 px-3 py-1 rounded-full text-xs font-semibold"
-                            }
-                          >
-                            {mov.tipo}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-slate-700">
+                              {mov.produto}
+                            </h3>
+                            <span
+                              className={`text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-sm ${
+                                entrada
+                                  ? "bg-emerald-100 text-emerald-700"
+                                  : "bg-rose-100 text-rose-700"
+                              }`}
+                            >
+                              {mov.tipo}
+                            </span>
+                          </div>
 
-                          <h3 className="font-bold mt-2">
-                            {mov.produto}
-                          </h3>
-
-                          <p className="text-sm text-gray-500 mt-1 flex items-center gap-1 flex-wrap">
-                            <MapPin size={15} />
-
-                            {entrada
-                              ? `Origem: ${mov.local}`
-                              : `Cliente: ${mov.cliente} • Local: ${mov.local}`}
-                          </p>
-
-                          <p className="text-sm text-gray-500 mt-1 flex items-center gap-1">
-                            <User size={15} />
-                            Realizado por: {mov.usuario}
-                          </p>
-
-                          {mov.observacoes !== "-" && (
-                            <p className="text-sm text-gray-500 mt-1 flex items-start gap-1">
-                              <FileText size={15} className="mt-0.5 shrink-0" />
-                              {mov.observacoes}
+                          <div className="mt-1 flex flex-col gap-1">
+                            <p className="text-xs text-slate-500 flex items-center gap-1.5">
+                              <MapPin size={13} className="text-slate-400" />
+                              Local / Origem: {mov.local}
                             </p>
-                          )}
+                            <p className="text-xs text-slate-500 flex items-center gap-1.5">
+                              <User size={13} className="text-slate-400" />
+                              Usuário: {mov.usuario}
+                            </p>
+                            {mov.observacoes !== "-" && (
+                              <p className="text-xs text-slate-500 flex items-start gap-1.5">
+                                <FileText size={13} className="mt-0.5 text-slate-400 shrink-0" />
+                                {mov.observacoes}
+                              </p>
+                            )}
+                          </div>
                         </div>
                       </div>
 
-                      <div className="md:text-right">
+                      <div className="md:text-right pl-11 md:pl-0">
                         <p
-                          className={
-                            entrada
-                              ? "font-extrabold text-emerald-600"
-                              : "font-extrabold text-rose-600"
-                          }
+                          className={`font-bold ${
+                            entrada ? "text-emerald-600" : "text-rose-600"
+                          }`}
                         >
                           {entrada ? "+" : "-"}
                           {mov.quantidade} un.
                         </p>
-
-                        <p className="text-sm text-gray-400 mt-1">
+                        <p className="text-xs text-slate-400 mt-1 font-medium">
                           {formatarDataHora(mov.data)}
                         </p>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm">
-          <div className="flex items-center justify-between gap-3 mb-6">
+        {/* Alertas de Estoque */}
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col">
+          <div className="p-5 border-b border-slate-100 flex items-center justify-between">
             <div>
-              <h2 className="text-xl md:text-2xl font-extrabold">
-                Atenção no estoque
+              <h2 className="text-lg font-bold text-slate-800">
+                Atenção no Estoque
               </h2>
-
-              <p className="text-sm text-gray-500 mt-1">
-                Produtos abaixo do estoque mínimo definido
+              <p className="text-sm text-slate-500">
+                Itens abaixo da quantidade mínima
               </p>
             </div>
-
-            <div className="w-11 h-11 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center">
-              <AlertTriangle size={21} />
+            <div className="w-8 h-8 rounded-md bg-amber-50 text-amber-500 flex items-center justify-center border border-amber-100">
+              <AlertTriangle size={16} />
             </div>
           </div>
 
-          {produtosBaixoEstoque.length === 0 ? (
-            <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-6">
-              <p className="font-bold text-emerald-700">
-                Tudo certo por aqui!
-              </p>
-
-              <p className="text-sm text-emerald-700/80 mt-1">
-                Nenhum produto está abaixo do estoque mínimo no momento.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {produtosBaixoEstoque.map((produto) => (
-                <div
-                  key={produto.id}
-                  className="flex items-center justify-between bg-orange-50 border border-orange-100 rounded-3xl p-4 gap-4"
-                >
-                  <div>
-                    <h3 className="font-bold text-gray-900">
-                      {produto.nome}
-                    </h3>
-
-                    <p className="text-sm text-gray-500 mt-1">
-                      Mínimo: {produto.estoque_minimo || 5} un.
-                    </p>
-                  </div>
-
-                  <div className="text-orange-700 font-extrabold text-lg whitespace-nowrap">
-                    {produto.quantidade} un.
-                  </div>
+          <div className="p-5 flex-1 bg-slate-50/50 rounded-b-xl">
+            {produtosBaixoEstoque.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center text-emerald-600 py-8">
+                <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mb-3">
+                  <Archive size={20} />
                 </div>
-              ))}
-            </div>
-          )}
+                <p className="font-semibold">Tudo sob controle!</p>
+                <p className="text-sm text-emerald-600/70 mt-1">Nenhum alerta de estoque no momento.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {produtosBaixoEstoque.map((produto) => (
+                  <div
+                    key={produto.id}
+                    className="flex items-center justify-between bg-white border border-amber-200/60 rounded-lg p-4 shadow-sm"
+                  >
+                    <div>
+                      <h3 className="font-semibold text-slate-800">
+                        {produto.nome}
+                      </h3>
+                      <p className="text-xs text-slate-500 mt-1">
+                        Estoque ideal: acima de {produto.estoque_minimo || 5} un.
+                      </p>
+                    </div>
+
+                    <div className="text-right">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-md font-bold text-sm">
+                        {produto.quantidade} un.
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
-      <section className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-6 shadow-sm">
-        <div className="flex items-center justify-between gap-3 mb-6">
+      {/* Tabela: Últimos Produtos */}
+      <section className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div className="p-5 border-b border-slate-100 flex items-center justify-between">
           <div>
-            <h2 className="text-xl md:text-2xl font-extrabold">
-              Últimos produtos
+            <h2 className="text-lg font-bold text-slate-800">
+              Últimos Produtos Cadastrados
             </h2>
-
-            <p className="text-sm text-gray-500 mt-1">
-              Produtos cadastrados recentemente no sistema
+            <p className="text-sm text-slate-500">
+              Recentes adições ao catálogo do sistema
             </p>
           </div>
-
-          <div className="w-11 h-11 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center">
-            <Package size={21} />
+          <div className="w-8 h-8 rounded-md bg-slate-50 text-slate-400 flex items-center justify-center border border-slate-100">
+            <Package size={16} />
           </div>
         </div>
 
-        <div className="xl:hidden space-y-3">
+        {/* Versão Mobile */}
+        <div className="xl:hidden p-5 space-y-4">
           {ultimosProdutos.map((produto) => {
             const baixo = estoqueEstaBaixo(produto);
 
             return (
               <div
                 key={produto.id}
-                className="border border-gray-100 rounded-3xl p-4"
+                className="border border-slate-100 rounded-lg p-4 bg-slate-50/50"
               >
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <div>
-                    <h3 className="font-bold">
-                      {produto.nome}
-                    </h3>
-
-                    <p className="text-sm text-gray-500 mt-1">
-                      Estoque mínimo: {produto.estoque_minimo || 5}
-                    </p>
-                  </div>
-
-                  {baixo ? (
-                    <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
-                      Baixo
-                    </span>
-                  ) : (
-                    <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
-                      Normal
-                    </span>
-                  )}
+                <div className="flex items-start justify-between gap-3 mb-4">
+                  <h3 className="font-semibold text-slate-800">
+                    {produto.nome}
+                  </h3>
+                  <span
+                    className={`px-2 py-1 rounded text-xs font-semibold whitespace-nowrap ${
+                      baixo
+                        ? "bg-amber-100 text-amber-700"
+                        : "bg-emerald-100 text-emerald-700"
+                    }`}
+                  >
+                    {baixo ? "Alerta" : "Normal"}
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <p className="text-gray-500">Tipo</p>
-
-                    <p className="font-medium">
+                    <p className="text-slate-500 text-xs mb-1">Categoria</p>
+                    <p className="font-medium text-slate-700">
                       {produto.tipo || "-"}
                     </p>
                   </div>
-
                   <div>
-                    <p className="text-gray-500">Quantidade</p>
-
+                    <p className="text-slate-500 text-xs mb-1">Em Estoque</p>
                     <p
-                      className={
-                        baixo
-                          ? "font-bold text-orange-700"
-                          : "font-bold text-gray-900"
-                      }
+                      className={`font-semibold ${
+                        baixo ? "text-amber-600" : "text-slate-700"
+                      }`}
                     >
                       {produto.quantidade} un.
                     </p>
@@ -551,73 +523,53 @@ export default function Home() {
           })}
         </div>
 
+        {/* Versão Desktop (Tabela) */}
         <div className="hidden xl:block overflow-x-auto">
-          <table className="w-full min-w-[650px]">
-            <thead>
-              <tr className="text-left bg-gray-50">
-                <th className="p-4 text-sm text-gray-600 font-semibold rounded-l-2xl">
-                  Nome
-                </th>
-
-                <th className="p-4 text-sm text-gray-600 font-semibold">
-                  Tipo
-                </th>
-
-                <th className="p-4 text-sm text-gray-600 font-semibold">
-                  Quantidade
-                </th>
-
-                <th className="p-4 text-sm text-gray-600 font-semibold">
-                  Estoque mínimo
-                </th>
-
-                <th className="p-4 text-sm text-gray-600 font-semibold rounded-r-2xl">
-                  Status
-                </th>
+          <table className="w-full text-sm text-left">
+            <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
+              <tr>
+                <th className="px-6 py-4">Nome do Produto</th>
+                <th className="px-6 py-4">Categoria/Tipo</th>
+                <th className="px-6 py-4">Quantidade Atual</th>
+                <th className="px-6 py-4">Estoque Mínimo</th>
+                <th className="px-6 py-4">Status</th>
               </tr>
             </thead>
-
-            <tbody>
+            <tbody className="divide-y divide-slate-100">
               {ultimosProdutos.map((produto) => {
                 const baixo = estoqueEstaBaixo(produto);
 
                 return (
                   <tr
                     key={produto.id}
-                    className="border-b border-gray-100 hover:bg-gray-50"
+                    className="hover:bg-slate-50/50 transition-colors"
                   >
-                    <td className="p-4 font-medium">
+                    <td className="px-6 py-4 font-medium text-slate-800">
                       {produto.nome}
                     </td>
-
-                    <td className="p-4 text-gray-600">
+                    <td className="px-6 py-4 text-slate-600">
                       {produto.tipo || "-"}
                     </td>
-
                     <td
-                      className={
-                        baixo
-                          ? "p-4 font-semibold text-orange-700"
-                          : "p-4 text-gray-600"
-                      }
+                      className={`px-6 py-4 font-semibold ${
+                        baixo ? "text-amber-600" : "text-slate-700"
+                      }`}
                     >
                       {produto.quantidade} un.
                     </td>
-
-                    <td className="p-4 text-gray-600">
+                    <td className="px-6 py-4 text-slate-500">
                       {produto.estoque_minimo || 5} un.
                     </td>
-
-                    <td className="p-4">
-                      {baixo ? (
-                        <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">
-                          Baixo
-                        </span>
-                      ) : (
-                        <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm font-bold">
-                          Normal
-                        </span>
-                      )}
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold ${
+                          baixo
+                            ? "bg-amber-50 text-amber-700 border border-amber-200"
+                            : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        }`}
+                      >
+                        {baixo ? "Atenção" : "Normal"}
+                      </span>
                     </td>
                   </tr>
                 );

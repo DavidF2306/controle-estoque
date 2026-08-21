@@ -1,125 +1,110 @@
 "use client";
 
+import { FileText } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-export default function BotaoPDFHistorico({
-  movimentacoes,
-  mesFiltro,
-}: any) {
-  function formatarDataHora(data: string) {
-    const dataCorrigida = new Date(data);
-    dataCorrigida.setHours(dataCorrigida.getHours() - 3);
+interface BotaoPDFProps {
+  movimentacoes: any[];
+  mesFiltro: string;
+}
 
-    return dataCorrigida.toLocaleString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  }
+export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDFProps) {
+  function exportarParaPDF() {
+    if (movimentacoes.length === 0) {
+      alert("Não há dados para exportar.");
+      return;
+    }
 
-  function gerarPDF() {
-    const doc = new jsPDF({
-      orientation: "landscape",
-    });
+    const doc = new jsPDF("landscape"); // "landscape" para caber todas as colunas deitado
 
-    const tituloMes = mesFiltro
-      ? mesFiltro.split("-").reverse().join("/")
-      : "Todos os períodos";
-
-    doc.setFontSize(18);
-
-    doc.text(
-      "Relatório Mensal de Movimentações",
-      14,
-      20
-    );
-
+    // Título do PDF
+    doc.setFontSize(16);
+    doc.text("Histórico de Movimentações - Estoque Copystar", 14, 15);
+    
+    // Subtítulo com o filtro de mês, se houver
     doc.setFontSize(10);
+    doc.setTextColor(100);
+    if (mesFiltro) {
+      const [ano, mes] = mesFiltro.split("-");
+      doc.text(`Filtrado por: ${mes}/${ano}`, 14, 22);
+    } else {
+      doc.text("Filtro: Todo o período", 14, 22);
+    }
 
-    doc.text(`Período: ${tituloMes}`, 14, 30);
+    // Preparando os dados para a tabela do PDF (sem a coluna Cliente)
+    const colunas = [
+      "Tipo",
+      "Produto",
+      "Qtd",
+      "Local / Origem",
+      "NF",
+      "Contador",
+      "Observações",
+      "Realizado por",
+      "Data / Hora",
+    ];
 
-    doc.text(
-      `Gerado em: ${new Date().toLocaleDateString("pt-BR")}`,
-      14,
-      37
-    );
+    const linhas = movimentacoes.map((mov) => {
+      // Formatando a data no formato legível
+      const dataCorrigida = new Date(mov.data);
+      dataCorrigida.setHours(dataCorrigida.getHours() - 3);
+      const dataFormatada = dataCorrigida.toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
 
-    autoTable(doc, {
-      startY: 46,
-
-      head: [[
-        "Tipo",
-        "Produto",
-        "Qtd",
-        "Cliente",
-        "Local/Origem",
-        "NF",
-        "Contador",
-        "Observações",
-        "Realizado por",
-        "Data/Hora",
-      ]],
-
-      body: movimentacoes.map((mov: any) => ([
+      return [
         mov.tipo,
         mov.produto,
         mov.quantidade,
-        mov.cliente,
         mov.local,
         mov.notaFiscal,
         mov.contador,
         mov.observacoes,
         mov.usuario,
-        formatarDataHora(mov.data),
-      ])),
+        dataFormatada,
+      ];
+    });
 
+    // Gerando a tabela no documento
+    autoTable(doc, {
+      head: [colunas],
+      body: linhas,
+      startY: 28,
       styles: {
-        fontSize: 6,
-        cellPadding: 2,
-        overflow: "linebreak",
+        fontSize: 8,
+        cellPadding: 3,
       },
-
       headStyles: {
-        fontSize: 6,
+        fillColor: [30, 58, 138], // Azul escuro
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
       },
-
-      columnStyles: {
-        1: { cellWidth: 36 },
-        3: { cellWidth: 30 },
-        4: { cellWidth: 30 },
-        7: { cellWidth: 38 },
-        8: { cellWidth: 42 },
-        9: { cellWidth: 28 },
+      alternateRowStyles: {
+        fillColor: [245, 247, 250],
       },
     });
 
+    // Definindo o nome do arquivo dinamicamente
     const nomeArquivo = mesFiltro
-      ? `historico-${mesFiltro}.pdf`
-      : "historico-movimentacoes.pdf";
+      ? `Historico_Estoque_${mesFiltro}.pdf`
+      : `Historico_Estoque_Completo.pdf`;
 
+    // Baixando o arquivo
     doc.save(nomeArquivo);
   }
 
   return (
     <button
-      onClick={gerarPDF}
-      className="
-        bg-blue-600
-        hover:bg-blue-700
-        text-white
-        px-5
-        py-3
-        rounded-2xl
-        transition
-        w-full
-        md:w-auto
-        font-medium
-      "
+      onClick={exportarParaPDF}
+      className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-2xl font-bold transition flex items-center justify-center gap-2 w-full"
     >
-      Exportar PDF Mensal
+      <FileText size={20} />
+      Exportar PDF
     </button>
   );
 }

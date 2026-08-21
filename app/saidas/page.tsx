@@ -39,7 +39,6 @@ export default function Saidas() {
       .select("*")
       .order("nome");
 
-    // Buscando locais ordenados pelo nome, conectando com a nova estrutura de locais
     const { data: locaisData } = await supabase
       .from("locais")
       .select("*")
@@ -74,14 +73,13 @@ export default function Saidas() {
     }
 
     if (Number(quantidade) > Number(produtoSelecionado.quantidade)) {
-      alert("Quantidade maior que o estoque.");
+      alert("Quantidade maior que o estoque disponível.");
       return;
     }
 
     const novaQuantidade =
       Number(produtoSelecionado.quantidade) - Number(quantidade);
 
-    // Salvando no banco apenas com o Local (Cliente removido)
     const { error: erroSaida } = await supabase.from("saidas").insert([
       {
         produto_id: Number(produtoId),
@@ -90,7 +88,7 @@ export default function Saidas() {
         contador: contador || null,
         observacoes: observacoes || null,
         usuario_email: emailUsuario,
-        destino: local, // Destino agora é apenas o nome do Local
+        destino: local, 
       },
     ]);
 
@@ -112,7 +110,6 @@ export default function Saidas() {
     }
 
     alert("Saída registrada com sucesso!");
-
     router.push("/historico");
   }
 
@@ -126,241 +123,244 @@ export default function Saidas() {
   );
 
   return (
-    <div className="text-gray-900 w-full overflow-x-hidden space-y-8">
+    <div className="text-slate-800 w-full overflow-x-hidden space-y-6">
+      
+      {/* Hero Section */}
       <section className="pt-14 md:pt-0">
-        <div className="relative overflow-hidden rounded-[2.2rem] bg-gradient-to-br from-rose-500 via-red-600 to-orange-600 text-white shadow-lg">
-          <div className="absolute -top-24 -right-20 w-80 h-80 bg-white/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-72 h-72 bg-yellow-300/30 rounded-full blur-3xl" />
-
+        <div className="relative overflow-hidden rounded-2xl bg-slate-900 text-white shadow-md">
+          {/* Elementos de fundo sutis */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+          
           <div className="relative p-6 md:p-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
-            <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-[2rem] bg-white/20 border border-white/30 flex items-center justify-center">
-                <ArrowUpCircle size={40} />
+            <div className="flex items-center gap-5">
+              <div className="w-16 h-16 rounded-xl bg-white/10 border border-white/10 backdrop-blur-sm flex items-center justify-center shrink-0">
+                <ArrowUpCircle size={32} className="text-rose-400" />
               </div>
 
               <div>
-                <p className="text-red-50 text-sm font-medium mb-1">
-                  Estoque Copystar
+                <p className="text-slate-400 text-sm font-medium mb-1 tracking-wide uppercase">
+                  Movimentação
                 </p>
 
-                <h1 className="text-4xl md:text-6xl font-extrabold">
+                <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
                   Saída de Estoque
                 </h1>
 
-                <p className="text-red-50 mt-2 max-w-2xl">
-                  Registre entregas, acompanhe locais e mantenha o estoque
-                  sempre atualizado.
+                <p className="text-slate-400 mt-2 text-sm md:text-base max-w-2xl">
+                  Registre as entregas para locais, controle a retirada de suprimentos e mantenha o inventário atualizado[cite: 16].
                 </p>
               </div>
             </div>
 
-            <div className="bg-white/15 border border-white/20 backdrop-blur rounded-[2rem] p-5 min-w-[240px]">
-              <p className="text-red-50 text-sm">Total de saídas</p>
+            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5 min-w-[240px]">
+              <p className="text-slate-400 text-sm font-medium">Total de saídas</p>
+              
+              <div className="flex items-end gap-2 mt-2">
+                <p className="text-3xl font-bold text-white">{saidas.length}</p>
+                <p className="text-slate-400 text-sm mb-1">registros</p>
+              </div>
 
-              <p className="text-4xl font-extrabold mt-2">{saidas.length}</p>
-
-              <p className="text-red-50 text-sm mt-1">registros realizados</p>
+              <div className="mt-4 pt-4 border-t border-slate-700">
+                <p className="text-xs font-medium text-rose-400 flex items-center gap-1.5">
+                  <CheckCircle size={14} />
+                  Sincronizado com o histórico
+                </p>
+              </div>
             </div>
           </div>
-
-          <div className="h-7 bg-white rounded-t-[100%] opacity-95" />
         </div>
       </section>
 
-      {/* Ajustado para 3 colunas já que o card de Clientes foi removido */}
+      {/* Cards de Métricas */}
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Produtos</p>
-              <h2 className="text-4xl font-extrabold mt-2">
-                {produtos.length}
-              </h2>
-              <p className="text-xs text-gray-400 mt-2">disponíveis</p>
-            </div>
-
-            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center">
-              <Package size={24} />
-            </div>
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start justify-between hover:shadow-md transition-shadow">
+          <div>
+            <p className="text-sm font-medium text-slate-500">Produtos</p>
+            <h2 className="text-3xl font-bold text-slate-800 mt-1">
+              {produtos.length}
+            </h2>
+            <p className="text-xs text-slate-400 mt-1">itens disponíveis</p>
+          </div>
+          <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+            <Package size={20} />
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Estoque</p>
-              <h2 className="text-4xl font-extrabold mt-2">{totalEstoque}</h2>
-              <p className="text-xs text-gray-400 mt-2">unidades</p>
-            </div>
-
-            <div className="w-12 h-12 rounded-2xl bg-violet-50 text-violet-700 flex items-center justify-center">
-              <Gauge size={24} />
-            </div>
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start justify-between hover:shadow-md transition-shadow">
+          <div>
+            <p className="text-sm font-medium text-slate-500">Estoque Físico</p>
+            <h2 className="text-3xl font-bold text-slate-800 mt-1">{totalEstoque}</h2>
+            <p className="text-xs text-slate-400 mt-1">unidades no sistema</p>
+          </div>
+          <div className="w-10 h-10 rounded-lg bg-slate-50 text-slate-600 flex items-center justify-center">
+            <Gauge size={20} />
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-[1.8rem] p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Locais</p>
-              <h2 className="text-4xl font-extrabold mt-2">{locais.length}</h2>
-              <p className="text-xs text-gray-400 mt-2">disponíveis</p>
-            </div>
-
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <MapPin size={24} />
-            </div>
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start justify-between hover:shadow-md transition-shadow">
+          <div>
+            <p className="text-sm font-medium text-slate-500">Destinos</p>
+            <h2 className="text-3xl font-bold text-slate-800 mt-1">{locais.length}</h2>
+            <p className="text-xs text-slate-400 mt-1">locais cadastrados</p>
+          </div>
+          <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <MapPin size={20} />
           </div>
         </div>
       </section>
 
+      {/* Formulário */}
       <form
         onSubmit={registrarSaida}
-        className="bg-white border border-gray-200 rounded-[2rem] p-4 md:p-8 shadow-sm space-y-6 w-full max-w-5xl"
+        className="bg-white border border-slate-200 rounded-xl p-5 md:p-6 shadow-sm space-y-6 w-full"
       >
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-11 h-11 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center">
-            <ClipboardList size={22} />
+        <div className="flex items-center gap-3 mb-4 border-b border-slate-100 pb-4">
+          <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+            <ClipboardList size={20} />
           </div>
 
           <div>
-            <h2 className="text-xl md:text-2xl font-extrabold">
-              Dados da saída
+            <h2 className="text-lg font-bold text-slate-800">
+              Dados da Saída
             </h2>
-
-            <p className="text-sm text-gray-500 mt-1">
-              Preencha os dados da entrega para o local
+            <p className="text-sm text-slate-500">
+              Preencha os detalhes da entrega para o local de destino.
             </p>
           </div>
         </div>
 
-        <div className="bg-blue-50/50 border border-blue-100 rounded-3xl p-4">
-          <label className="block text-sm font-medium mb-2">Produto</label>
-
+        {/* Produto */}
+        <div className="bg-slate-50/50 border border-slate-200 rounded-lg p-4">
+          <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+            Selecione o Produto <span className="text-rose-500">*</span>
+          </label>
           <select
             value={produtoId}
             onChange={(e) => setProdutoId(e.target.value)}
-            className="w-full bg-white border border-blue-200 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow appearance-none"
             required
           >
-            <option value="">Selecione um produto</option>
-
+            <option value="">Selecione um item do estoque...</option>
             {produtos.map((produto) => (
               <option key={produto.id} value={produto.id}>
-                {produto.nome} — Estoque: {produto.quantidade}
+                {produto.nome} — (Em Estoque: {produto.quantidade})
               </option>
             ))}
           </select>
 
           {produtoSelecionado && (
-            <p className="text-sm text-blue-700 mt-3">
-              Estoque atual deste produto:{" "}
-              <strong>{produtoSelecionado.quantidade} un.</strong>
+            <p className="text-sm text-blue-600 mt-2.5 font-medium flex items-center gap-1.5">
+              <CheckCircle size={14} />
+              Estoque atual liberado: {produtoSelecionado.quantidade} un.
             </p>
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-rose-50/60 border border-rose-100 rounded-3xl p-4">
-            <label className="block text-sm font-medium mb-2">Quantidade</label>
-
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Quantidade */}
+          <div className="bg-slate-50/50 border border-slate-200 rounded-lg p-4">
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+              Quantidade Retirada <span className="text-rose-500">*</span>
+            </label>
             <input
               type="number"
               value={quantidade}
               onChange={(e) => setQuantidade(e.target.value)}
-              className="w-full bg-white border border-rose-200 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-rose-500"
-              placeholder="0"
               min="1"
+              placeholder="0"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-shadow"
               required
             />
-
-            {produtoSelecionado &&
-              Number(quantidade) > Number(produtoSelecionado.quantidade) && (
-                <p className="text-sm text-red-600 mt-3 flex items-center gap-1">
-                  <AlertTriangle size={16} />
-                  Quantidade maior que o estoque disponível.
-                </p>
-              )}
+            {produtoSelecionado && Number(quantidade) > Number(produtoSelecionado.quantidade) && (
+              <p className="text-sm text-rose-600 mt-2 font-medium flex items-center gap-1.5">
+                <AlertTriangle size={14} />
+                Atenção: Quantidade superior ao estoque disponível.
+              </p>
+            )}
           </div>
 
-          <div className="bg-violet-50/60 border border-violet-100 rounded-3xl p-4">
-            <label className="text-sm font-medium mb-2 flex items-center gap-2">
-              <MapPin size={17} />
-              Local
+          {/* Local */}
+          <div className="bg-slate-50/50 border border-slate-200 rounded-lg p-4">
+            <label className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
+              Local de Destino <span className="text-rose-500">*</span>
             </label>
-
-            <select
-              value={local}
-              onChange={(e) => setLocal(e.target.value)}
-              className="w-full bg-white border border-violet-200 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-violet-500"
-              required
-            >
-              <option value="">Selecione o local</option>
-
-              {locais.map((item) => (
-                <option key={item.id} value={item.nome}>
-                  {item.nome}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <select
+                value={local}
+                onChange={(e) => setLocal(e.target.value)}
+                className="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow appearance-none"
+                required
+              >
+                <option value="">Selecione para onde vai...</option>
+                {locais.map((item) => (
+                  <option key={item.id} value={item.nome}>
+                    {item.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium mb-2">Contador</label>
-
-          <input
-            type="text"
-            value={contador}
-            onChange={(e) => setContador(e.target.value)}
-            className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-rose-500"
-            placeholder="Opcional"
-          />
-        </div>
-
-        <div>
-          <label className="text-sm font-medium mb-2 flex items-center gap-2">
-            <FileText size={17} />
-            Observações
-          </label>
-
-          <textarea
-            value={observacoes}
-            onChange={(e) => setObservacoes(e.target.value)}
-            placeholder="Opcional"
-            rows={4}
-            className="w-full border border-gray-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-rose-500 resize-none"
-          />
-        </div>
-
-        <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-4 flex items-start gap-3">
-          <CheckCircle className="text-emerald-700 shrink-0 mt-0.5" size={20} />
+        {/* Contador e Observações */}
+        <div className="space-y-5">
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+              Contador / Ordem de Serviço (Opcional)
+            </label>
+            <input
+              type="text"
+              value={contador}
+              onChange={(e) => setContador(e.target.value)}
+              placeholder="Ex: OS-1029 ou Referência do equipamento"
+              className="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+            />
+          </div>
 
           <div>
-            <p className="font-bold text-emerald-800">
-              Conferência antes de salvar
-            </p>
+            <label className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
+              <FileText size={16} className="text-slate-500" />
+              Observações Gerais
+            </label>
+            <textarea
+              value={observacoes}
+              onChange={(e) => setObservacoes(e.target.value)}
+              placeholder="Algum detalhe importante sobre essa saída? (Opcional)"
+              rows={3}
+              className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow resize-none"
+            />
+          </div>
+        </div>
 
-            <p className="text-sm text-emerald-700/80 mt-1">
-              Ao registrar a saída, o estoque do produto será atualizado
-              automaticamente.
+        {/* Info Box */}
+        <div className="bg-emerald-50 border border-emerald-200/60 rounded-lg p-4 flex items-start gap-3 mt-2">
+          <CheckCircle className="text-emerald-600 shrink-0 mt-0.5" size={18} />
+          <div>
+            <p className="font-semibold text-emerald-800 text-sm">Controle Preciso</p>
+            <p className="text-xs text-emerald-700/80 mt-1 leading-relaxed">
+              Ao registrar, o estoque do produto será atualizado automaticamente, garantindo que o sistema sempre exiba os valores reais disponíveis.
             </p>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 pt-2">
-          <button className="bg-rose-600 hover:bg-rose-700 text-white px-6 py-3 rounded-2xl font-bold transition flex items-center justify-center gap-2">
-            <Save size={20} />
-            Registrar Saída
+        {/* Botões */}
+        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100">
+          <button 
+            type="submit"
+            className="bg-rose-600 hover:bg-rose-700 text-white px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
+          >
+            <Save size={18} />
+            Confirmar Saída
           </button>
 
           <button
             type="button"
             onClick={() => router.push("/produtos")}
-            className="bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-2xl font-bold transition flex items-center justify-center gap-2"
+            className="bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
           >
-            <ArrowLeft size={20} />
-            Voltar
+            <ArrowLeft size={18} />
+            Cancelar e Voltar
           </button>
         </div>
       </form>
