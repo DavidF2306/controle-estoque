@@ -74,7 +74,7 @@ export default function Login() {
             </h1>
 
             <p className="text-slate-400 mt-5 text-lg max-w-md leading-relaxed">
-              Plataforma centralizada para controle de entradas, saídas, alocação de equipamentos e auditoria de usuários[cite: 19].
+              Plataforma centralizada para controle de entradas, saídas, alocação de equipamentos e auditoria de usuários.
             </p>
           </div>
 
@@ -87,7 +87,7 @@ export default function Login() {
             </div>
 
             <p className="text-sm text-slate-400 leading-relaxed ml-11">
-              Este é um sistema interno. O acesso é permitido exclusivamente para colaboradores previamente autorizados pela administração[cite: 19].
+              Este é um sistema interno. O acesso é permitido exclusivamente para colaboradores previamente autorizados pela administração.
             </p>
           </div>
         </div>
@@ -120,7 +120,7 @@ export default function Login() {
             </h2>
 
             <p className="text-slate-500 mt-2 text-sm font-medium">
-              Insira suas credenciais para acessar o painel[cite: 19].
+              Insira suas credenciais para acessar o painel.
             </p>
           </div>
 
