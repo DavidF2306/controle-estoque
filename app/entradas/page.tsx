@@ -136,7 +136,7 @@ export default function Entradas() {
                 </h1>
 
                 <p className="text-slate-400 mt-2 text-sm md:text-base max-w-2xl">
-                  Registre novos suprimentos recebidos, atualize quantidades e mantenha o catálogo sempre atualizado[cite: 15].
+                  Registre novos suprimentos recebidos, atualize quantidades e mantenha o catálogo sempre atualizado.
                 </p>
               </div>
             </div>

@@ -147,7 +147,7 @@ export default function Saidas() {
                 </h1>
 
                 <p className="text-slate-400 mt-2 text-sm md:text-base max-w-2xl">
-                  Registre as entregas para locais, controle a retirada de suprimentos e mantenha o inventário atualizado[cite: 16].
+                  Registre as entregas para locais, controle a retirada de suprimentos e mantenha o inventário atualizado.
                 </p>
               </div>
             </div>

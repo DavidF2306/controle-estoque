@@ -273,7 +273,7 @@ export default function Configuracoes() {
                 </h1>
 
                 <p className="text-slate-400 mt-2 text-sm md:text-base max-w-2xl">
-                  Gerencie credenciais de acesso, crie novos usuários e mantenha a segurança do sistema[cite: 18].
+                  Gerencie credenciais de acesso, crie novos usuários e mantenha a segurança do sistema.
                 </p>
               </div>
             </div>

@@ -115,7 +115,7 @@ export default function Locais() {
               </h1>
 
               <p className="text-slate-400 mt-2 text-sm md:text-base max-w-2xl">
-                Cadastre as localidades e setores disponíveis para alocação dos equipamentos[cite: 14].
+                Cadastre as localidades e setores disponíveis para alocação dos equipamentos.
               </p>
             </div>
           </div>
@@ -136,7 +136,7 @@ export default function Locais() {
                 Novo Local
               </h2>
               <p className="text-sm text-slate-500">
-                Adicione um novo setor ao sistema[cite: 14].
+                Adicione um novo setor ao sistema.
               </p>
             </div>
           </div>
@@ -169,7 +169,7 @@ export default function Locais() {
               <div>
                 <p className="font-semibold text-emerald-800 text-sm">Integração Automática</p>
                 <p className="text-xs text-emerald-700/80 mt-1 leading-relaxed">
-                  Todo local cadastrado aparecerá automaticamente como opção na tela de cadastro e edição de impressoras e saídas de estoque[cite: 14].
+                  Todo local cadastrado aparecerá automaticamente como opção na tela de cadastro e edição de impressoras e saídas de estoque.
                 </p>
               </div>
             </div>
