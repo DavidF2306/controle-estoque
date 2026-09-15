@@ -31,32 +31,38 @@ export async function POST(req: Request) {
       error: erroUsuario,
     } = await admin.auth.getUser(token);
 
-    if (erroUsuario || !user?.email) {
+    if (erroUsuario || !user?.id || !user?.email) {
       return NextResponse.json(
         { error: "Sessão inválida." },
         { status: 401 }
       );
     }
 
-    const { data: usuarioAdmin } = await admin
+    // Busca os dados do usuário logado no banco para ver se é admin
+    const { data: dadosUsuario } = await admin
       .from("usuarios_autorizados")
       .select("admin")
       .eq("email", user.email.toLowerCase())
       .maybeSingle();
 
-    if (!usuarioAdmin?.admin) {
-      return NextResponse.json(
-        { error: "Apenas administradores podem redefinir senhas." },
-        { status: 403 }
-      );
-    }
+    const ehAdmin = dadosUsuario?.admin === true;
 
+    // Pega os dados enviados pelo front-end
     const { userId, novaSenha } = await req.json();
 
     if (!userId || !novaSenha) {
       return NextResponse.json(
         { error: "Dados incompletos." },
         { status: 400 }
+      );
+    }
+
+    // REGRA DE SEGURANÇA: 
+    // Só permite continuar se a pessoa for admin OU se ela estiver tentando alterar a própria senha
+    if (!ehAdmin && user.id !== userId) {
+      return NextResponse.json(
+        { error: "Você não tem permissão para alterar a senha de outro usuário." },
+        { status: 403 }
       );
     }
 
@@ -67,6 +73,7 @@ export async function POST(req: Request) {
       );
     }
 
+    // Atualiza a senha no Supabase Auth usando a chave de serviço
     const { error } = await admin.auth.admin.updateUserById(userId, {
       password: novaSenha,
     });
