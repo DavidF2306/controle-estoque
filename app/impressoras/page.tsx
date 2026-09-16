@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import * as XLSX from "xlsx";
@@ -22,6 +22,7 @@ import {
   Building2,
   BarChart3,
   Eye,
+  ChevronDown,
 } from "lucide-react";
 
 export default function Impressoras() {
@@ -31,11 +32,26 @@ export default function Impressoras() {
 
   const [busca, setBusca] = useState("");
   const [localSelecionado, setLocalSelecionado] = useState("Todos");
-
   const [loading, setLoading] = useState(true);
+
+  // Estados para o Dropdown Customizado de Locais
+  const [dropdownAberto, setDropdownAberto] = useState(false);
+  const [buscaLocal, setBuscaLocal] = useState("");
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     carregarDados();
+  }, []);
+
+  // Fechar o dropdown de locais ao clicar fora dele
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownAberto(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   async function carregarDados() {
@@ -162,12 +178,15 @@ export default function Impressoras() {
     saveAs(blob, nomeArquivo);
   }
 
+  // Lógica da Busca Principal
   const impressorasFiltradas = useMemo(() => {
     return impressoras.filter((item) => {
+      // Agora a busca principal procura também pelo NOME DO LOCAL
       const pesquisa =
         item.nome?.toLowerCase().includes(busca.toLowerCase()) ||
         item.modelo?.toLowerCase().includes(busca.toLowerCase()) ||
-        item.numero_serie?.toLowerCase().includes(busca.toLowerCase());
+        item.numero_serie?.toLowerCase().includes(busca.toLowerCase()) ||
+        item.local?.toLowerCase().includes(busca.toLowerCase());
 
       const filtroLocal =
         localSelecionado === "Todos" ? true : item.local === localSelecionado;
@@ -175,6 +194,12 @@ export default function Impressoras() {
       return pesquisa && filtroLocal;
     });
   }, [impressoras, busca, localSelecionado]);
+
+  // Lógica do Filtro Interno do Dropdown de Locais
+  const locaisFiltradosParaDropdown = useMemo(() => {
+    if (!buscaLocal) return locais;
+    return locais.filter(l => l.nome.toLowerCase().includes(buscaLocal.toLowerCase()));
+  }, [locais, buscaLocal]);
 
   const totalImpressoras = impressoras.length;
   const totalLocais = locais.length;
@@ -184,7 +209,7 @@ export default function Impressoras() {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-slate-500">
+        <div className="flex flex-col items-center gap-3 text-slate-500 dark:text-slate-400">
           <div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
           <p className="font-medium">Carregando impressoras...</p>
         </div>
@@ -193,12 +218,11 @@ export default function Impressoras() {
   }
 
   return (
-    <div className="text-slate-800 w-full overflow-x-hidden space-y-6">
+    <div className="text-slate-800 dark:text-slate-200 w-full overflow-x-hidden space-y-6">
       
       {/* Hero Section */}
       <section className="pt-14 md:pt-0">
         <div className="relative overflow-hidden rounded-2xl bg-slate-900 text-white shadow-md">
-          {/* Elementos de fundo sutis */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
           
           <div className="relative p-6 md:p-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
@@ -235,49 +259,49 @@ export default function Impressoras() {
 
       {/* Cards de Métricas */}
       <section className="grid xl:grid-cols-4 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-500">Total de Impressoras</p>
-              <h2 className="text-3xl font-bold text-slate-800 mt-1">{totalImpressoras}</h2>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Total de Impressoras</p>
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mt-1">{totalImpressoras}</h2>
             </div>
-            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+            <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
               <Printer size={20} />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-500">Locais Atendidos</p>
-              <h2 className="text-3xl font-bold text-slate-800 mt-1">{totalLocais}</h2>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Locais Atendidos</p>
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mt-1">{totalLocais}</h2>
             </div>
-            <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
+            <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
               <Building2 size={20} />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-500">Sem Nº de Série</p>
-              <h2 className="text-3xl font-bold text-slate-800 mt-1">{impressorasSemSerie}</h2>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Sem Nº de Série</p>
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mt-1">{impressorasSemSerie}</h2>
             </div>
-            <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
+            <div className="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400">
               <Hash size={20} />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-500">Sem Contador</p>
-              <h2 className="text-3xl font-bold text-slate-800 mt-1">{impressorasSemContador}</h2>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Sem Contador</p>
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mt-1">{impressorasSemContador}</h2>
             </div>
-            <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600">
+            <div className="w-10 h-10 rounded-lg bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
               <BarChart3 size={20} />
             </div>
           </div>
@@ -285,11 +309,12 @@ export default function Impressoras() {
       </section>
 
       {/* Filtros e Exportação */}
-      <section className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+      <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm">
         <div className="grid lg:grid-cols-4 gap-4 items-end">
+          
           <div className="lg:col-span-2">
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-              Pesquisar Impressora
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              Pesquisar Impressora ou Local
             </label>
             <div className="relative">
               <Search
@@ -300,45 +325,80 @@ export default function Impressoras() {
                 type="text"
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                placeholder="Nome, modelo ou número de série..."
-                className="w-full border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+                placeholder="Nome, modelo, série ou local..."
+                className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-slate-800 dark:text-slate-100"
               />
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-              Filtrar por Local
+          {/* NOVO: Dropdown Inteligente de Locais */}
+          <div className="relative" ref={dropdownRef}>
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              Filtrar por Local Específico
             </label>
-            <div className="relative">
-              <MapPin
-                size={18}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
-              />
-              <select
-                value={localSelecionado}
-                onChange={(e) => setLocalSelecionado(e.target.value)}
-                className="w-full border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white transition-shadow"
-              >
-                <option value="Todos">Todos os locais</option>
-                {locais.map((local) => (
-                  <option key={local.id} value={local.nome}>
-                    {local.nome}
-                  </option>
-                ))}
-              </select>
+            <div
+              onClick={() => setDropdownAberto(!dropdownAberto)}
+              className={`w-full bg-white dark:bg-slate-950 border ${dropdownAberto ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700'} rounded-lg pl-10 pr-4 py-2.5 text-sm cursor-pointer flex items-center justify-between transition-all hover:border-blue-400`}
+            >
+              <MapPin size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <span className="truncate text-slate-700 dark:text-slate-200 ml-1">
+                {localSelecionado === "Todos" ? "Todos os locais" : localSelecionado}
+              </span>
+              <ChevronDown size={16} className={`text-slate-400 transition-transform ${dropdownAberto ? 'rotate-180' : ''}`} />
             </div>
+
+            {dropdownAberto && (
+              <div className="absolute z-50 top-full mt-1.5 left-0 w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl overflow-hidden flex flex-col">
+                <div className="p-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/80">
+                  <div className="relative">
+                    <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="Procurar local na lista..."
+                      value={buscaLocal}
+                      onChange={(e) => setBuscaLocal(e.target.value)}
+                      onClick={(e) => e.stopPropagation()} // Previne que feche ao clicar no input
+                      className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-md pl-8 pr-3 py-1.5 text-sm outline-none focus:border-blue-500 text-slate-800 dark:text-slate-100 placeholder-slate-400"
+                    />
+                  </div>
+                </div>
+                
+                <div className="max-h-60 overflow-y-auto custom-scrollbar">
+                  <button
+                    type="button"
+                    onClick={() => { setLocalSelecionado("Todos"); setDropdownAberto(false); setBuscaLocal(""); }}
+                    className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${localSelecionado === "Todos" ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 font-semibold" : "text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50"}`}
+                  >
+                    Todos os locais
+                  </button>
+                  {locaisFiltradosParaDropdown.length === 0 ? (
+                    <div className="px-4 py-3 text-sm text-slate-500 text-center">Nenhum local encontrado</div>
+                  ) : (
+                    locaisFiltradosParaDropdown.map(local => (
+                      <button
+                        key={local.id}
+                        type="button"
+                        onClick={() => { setLocalSelecionado(local.nome); setDropdownAberto(false); setBuscaLocal(""); }}
+                        className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${localSelecionado === local.nome ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 font-semibold" : "text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50"}`}
+                      >
+                        {local.nome}
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Exportar Relatório
             </label>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={exportarPDF}
-                className="flex-1 bg-white border border-slate-200 text-slate-700 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 rounded-lg py-2.5 text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+                className="flex-1 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-800/50 rounded-lg py-2.5 text-sm font-semibold transition-colors flex items-center justify-center gap-2"
               >
                 <FileText size={16} />
                 PDF
@@ -346,7 +406,7 @@ export default function Impressoras() {
               <button
                 type="button"
                 onClick={exportarExcel}
-                className="flex-1 bg-white border border-slate-200 text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 rounded-lg py-2.5 text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+                className="flex-1 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-200 dark:hover:border-emerald-800/50 rounded-lg py-2.5 text-sm font-semibold transition-colors flex items-center justify-center gap-2"
               >
                 <Download size={16} />
                 Excel
@@ -354,7 +414,7 @@ export default function Impressoras() {
             </div>
           </div>
         </div>
-        <p className="text-xs text-slate-500 mt-3 font-medium">
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 font-medium">
           Exibindo {impressorasFiltradas.length} impressora(s)
         </p>
       </section>
@@ -364,36 +424,36 @@ export default function Impressoras() {
         {impressorasFiltradas.map((item) => (
           <div
             key={item.id}
-            className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow"
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow"
           >
             <div className="flex flex-col xl:flex-row xl:justify-between gap-6">
               <div className="space-y-4 flex-1">
                 <div>
-                  <h2 className="text-xl font-bold text-slate-800">
+                  <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">
                     {item.nome}
                   </h2>
-                  <p className="text-sm font-medium text-slate-500 mt-0.5">
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-0.5">
                     Modelo: {item.modelo}
                   </p>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                  <div className="bg-blue-50 text-blue-700 border border-blue-100 px-3 py-1.5 rounded-md flex items-center gap-1.5 text-xs font-semibold">
+                  <div className="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-800/50 px-3 py-1.5 rounded-md flex items-center gap-1.5 text-xs font-semibold">
                     <MapPin size={14} />
                     {item.local}
                   </div>
-                  <div className="bg-slate-100 text-slate-700 border border-slate-200 px-3 py-1.5 rounded-md flex items-center gap-1.5 text-xs font-semibold">
+                  <div className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-md flex items-center gap-1.5 text-xs font-semibold">
                     <Hash size={14} />
                     {item.numero_serie || "Sem número de série"}
                   </div>
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-3 pt-2 border-t border-slate-100">
+                <div className="grid sm:grid-cols-2 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
                   <div>
                     <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
                       Contador
                     </p>
-                    <h3 className="text-lg font-bold text-slate-800">
+                    <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">
                       {item.contador || 0}
                     </h3>
                   </div>
@@ -401,7 +461,7 @@ export default function Impressoras() {
                     <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
                       Observações
                     </p>
-                    <p className="text-sm text-slate-600 line-clamp-2">
+                    <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
                       {item.observacoes || "Nenhuma observação registrada."}
                     </p>
                   </div>
@@ -409,10 +469,10 @@ export default function Impressoras() {
               </div>
 
               {/* Botões de Ação do Card */}
-              <div className="flex flex-col sm:flex-row xl:flex-col gap-2 min-w-[140px] shrink-0 border-t xl:border-t-0 xl:border-l border-slate-100 pt-4 xl:pt-0 xl:pl-6 justify-center">
+              <div className="flex flex-col sm:flex-row xl:flex-col gap-2 min-w-[140px] shrink-0 border-t xl:border-t-0 xl:border-l border-slate-100 dark:border-slate-800 pt-4 xl:pt-0 xl:pl-6 justify-center">
                 <button
                   onClick={() => router.push(`/impressoras/${item.id}`)}
-                  className="w-full bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
+                  className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900 px-4 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
                 >
                   <Eye size={16} />
                   Ver Detalhes
@@ -420,7 +480,7 @@ export default function Impressoras() {
 
                 <Link
                   href={`/impressoras/editar/${item.id}`}
-                  className="w-full bg-white border border-slate-200 text-slate-700 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 px-4 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
+                  className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-800/50 px-4 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
                 >
                   <Pencil size={16} />
                   Editar
@@ -428,7 +488,7 @@ export default function Impressoras() {
 
                 <button
                   onClick={() => excluirImpressora(item.id)}
-                  className="w-full bg-white border border-slate-200 text-slate-700 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 px-4 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
+                  className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-rose-50 dark:hover:bg-rose-900/30 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-800/50 px-4 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
                 >
                   <Trash2 size={16} />
                   Excluir
@@ -440,12 +500,12 @@ export default function Impressoras() {
 
         {/* Empty State */}
         {impressorasFiltradas.length === 0 && (
-          <div className="bg-white border border-slate-200 rounded-xl p-12 text-center shadow-sm">
-            <Printer size={48} className="mx-auto text-slate-300 mb-4" />
-            <h2 className="text-xl font-bold text-slate-700">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-12 text-center shadow-sm">
+            <Printer size={48} className="mx-auto text-slate-300 dark:text-slate-600 mb-4" />
+            <h2 className="text-xl font-bold text-slate-700 dark:text-slate-200">
               Nenhuma impressora encontrada
             </h2>
-            <p className="text-slate-500 mt-2 text-sm">
+            <p className="text-slate-500 dark:text-slate-400 mt-2 text-sm">
               Não existem registros que correspondam aos filtros informados.
             </p>
             <Link
