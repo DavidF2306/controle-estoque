@@ -554,18 +554,18 @@ export default function Configuracoes() {
                     
                     <div className="flex flex-wrap gap-2 mt-2.5">
                       {usuario.admin ? (
-                        <span className="inline-flex items-center gap-1 bg-violet-50 text-violet-700 border border-violet-100 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
+                        <span className="inline-flex items-center gap-1 bg-violet-50 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 border border-violet-100 dark:border-violet-800/50 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
                           <Crown size={10} />
                           Admin
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-600 border border-slate-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
+                        <span className="inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
                           Usuário
                         </span>
                       )}
 
                       {!usuario.auth_id && (
-                        <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
+                        <span className="inline-flex items-center gap-1 bg-amber-50 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
                           Sem Auth_ID
                         </span>
                       )}

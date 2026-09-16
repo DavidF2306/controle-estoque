@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   LayoutDashboard,
@@ -19,6 +19,8 @@ import {
   X,
   PanelLeftClose,
   PanelLeftOpen,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 import { supabase } from "@/lib/supabase";
@@ -29,6 +31,30 @@ export default function Sidebar() {
 
   const [abertoMobile, setAbertoMobile] = useState(false);
   const [abertoDesktop, setAbertoDesktop] = useState(true);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const temaSalvo = localStorage.getItem("tema_vallente");
+    if (temaSalvo === "dark") {
+      setIsDark(true);
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      setIsDark(false);
+    }
+  }, []);
+
+  const alternarTema = () => {
+    if (isDark) {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("tema_vallente", "light");
+      setIsDark(false);
+    } else {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("tema_vallente", "dark");
+      setIsDark(true);
+    }
+  };
 
   const menu = [
     { name: "Início", icon: LayoutDashboard, path: "/" },
@@ -55,7 +81,7 @@ export default function Sidebar() {
       {/* Botão Mobile */}
       <button
         onClick={() => setAbertoMobile(true)}
-        className="md:hidden fixed top-4 left-4 z-50 bg-white text-slate-800 p-2.5 rounded-lg shadow-sm border border-slate-200 hover:bg-slate-50 transition-colors"
+        className="md:hidden fixed top-4 left-4 z-50 bg-white dark:bg-slate-800 text-slate-800 dark:text-white p-2.5 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-colors"
       >
         <Menu size={22} />
       </button>
@@ -72,8 +98,8 @@ export default function Sidebar() {
         className={`
           fixed md:sticky top-0 left-0 z-50
           min-h-screen h-screen
-          bg-white
-          border-r border-slate-200
+          bg-white dark:bg-slate-900
+          border-r border-slate-200 dark:border-slate-800
           flex flex-col justify-between
           transition-all duration-300 ease-in-out
           shadow-[4px_0_24px_rgba(0,0,0,0.02)]
@@ -92,7 +118,7 @@ export default function Sidebar() {
             `}
           >
             <div className={`flex items-center gap-3 ${abertoDesktop ? "" : "md:hidden"}`}>
-              <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-center overflow-hidden shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center overflow-hidden shrink-0">
                 <Image
                   src="/logo.png"
                   alt="Logo Copystar"
@@ -105,10 +131,10 @@ export default function Sidebar() {
 
               {/* Título visível no Desktop Aberto e no Mobile */}
               <div className={`flex flex-col ${abertoDesktop ? "hidden md:flex" : "md:hidden"}`}>
-                <h1 className="text-base font-bold tracking-tight text-slate-900">
+                <h1 className="text-base font-bold tracking-tight text-slate-900 dark:text-white">
                   Copystar
                 </h1>
-                <p className="text-slate-500 text-[11px] font-medium uppercase tracking-wider">
+                <p className="text-slate-500 dark:text-slate-400 text-[11px] font-medium uppercase tracking-wider">
                   Gestão de Estoque
                 </p>
               </div>
@@ -116,7 +142,7 @@ export default function Sidebar() {
 
             {/* Ícone isolado para quando o menu desktop estiver fechado */}
             {!abertoDesktop && (
-              <div className="hidden md:flex w-10 h-10 rounded-xl bg-white border border-slate-200 shadow-sm items-center justify-center overflow-hidden shrink-0 mx-auto">
+              <div className="hidden md:flex w-10 h-10 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm items-center justify-center overflow-hidden shrink-0 mx-auto">
                 <Image
                   src="/logo.png"
                   alt="Logo Copystar"
@@ -130,7 +156,7 @@ export default function Sidebar() {
 
             <button
               onClick={fecharMenuMobile}
-              className="md:hidden text-slate-400 hover:text-slate-700 transition-colors p-1"
+              className="md:hidden text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors p-1"
             >
               <X size={20} />
             </button>
@@ -143,9 +169,9 @@ export default function Sidebar() {
               hidden md:flex
               w-full mb-6
               items-center justify-center gap-2
-              bg-slate-50 hover:bg-slate-100
-              border border-slate-200
-              text-slate-500 hover:text-slate-800
+              bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700
+              border border-slate-200 dark:border-slate-700
+              text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200
               rounded-lg
               px-3 py-2
               transition-colors duration-200
@@ -155,9 +181,7 @@ export default function Sidebar() {
             {abertoDesktop ? (
               <>
                 <PanelLeftClose size={18} />
-                <span className="text-sm font-medium">
-                  Recolher painel
-                </span>
+                <span className="text-sm font-medium">Recolher painel</span>
               </>
             ) : (
               <PanelLeftOpen size={18} />
@@ -185,15 +209,15 @@ export default function Sidebar() {
                     ${abertoDesktop ? "md:justify-start" : "md:justify-center"}
                     ${
                       ativo
-                        ? "bg-blue-50 text-blue-700"
-                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                        ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400"
+                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200"
                     }
                   `}
                 >
                   <Icon 
                     size={20} 
                     strokeWidth={ativo ? 2.5 : 2}
-                    className={`shrink-0 transition-colors ${ativo ? "text-blue-600" : "text-slate-400 group-hover:text-slate-700"}`} 
+                    className={`shrink-0 transition-colors ${ativo ? "text-blue-600 dark:text-blue-400" : "text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200"}`} 
                   />
 
                   {abertoDesktop && (
@@ -212,22 +236,55 @@ export default function Sidebar() {
         </div>
 
         {/* Rodapé da Sidebar */}
-        <div className="p-4 border-t border-slate-100 bg-slate-50/50">
+        <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col gap-3">
           
-          <div className={`mb-4 ${abertoDesktop ? "hidden md:block" : "md:hidden"}`}>
-            <div className="bg-white border border-slate-200 rounded-lg p-3 shadow-sm">
+          <div className={`mb-1 ${abertoDesktop ? "hidden md:block" : "md:hidden"}`}>
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-3 shadow-sm">
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <p className="text-xs font-semibold text-slate-700">
+                <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">
                   Sistema Online
                 </p>
               </div>
-              <p className="text-[10px] text-slate-500 leading-tight">
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">
                 Acesso restrito por email.
               </p>
             </div>
           </div>
 
+          {/* Botão de Alternar Tema Integrado */}
+          <button
+            onClick={alternarTema}
+            title={isDark ? "Mudar para Modo Claro" : "Mudar para Modo Escuro"}
+            className={`
+              w-full
+              flex items-center 
+              ${abertoDesktop ? "justify-start px-3" : "justify-center md:px-0"}
+              text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800
+              transition-colors duration-200
+              py-2.5 rounded-lg
+              font-medium text-sm
+              gap-3
+            `}
+          >
+            {isDark ? (
+              <Sun size={20} className="text-amber-400 shrink-0" />
+            ) : (
+              <Moon size={20} className="text-slate-500 shrink-0" />
+            )}
+
+            {abertoDesktop && (
+              <span className="hidden md:inline">
+                {isDark ? "Modo Claro" : "Modo Escuro"}
+              </span>
+            )}
+
+            <span className="md:hidden">
+              {isDark ? "Modo Claro" : "Modo Escuro"}
+            </span>
+          </button>
+
+          {/* Botão Sair da Conta */}
           <button
             onClick={sair}
             title="Sair do sistema"
@@ -235,7 +292,7 @@ export default function Sidebar() {
               w-full
               flex items-center 
               ${abertoDesktop ? "justify-start px-3" : "justify-center md:px-0"}
-              text-slate-500 hover:text-rose-600 hover:bg-rose-50
+              text-slate-500 dark:text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30
               transition-colors duration-200
               py-2.5 rounded-lg
               font-medium text-sm

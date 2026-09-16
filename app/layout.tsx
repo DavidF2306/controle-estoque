@@ -17,8 +17,7 @@ export default function RootLayout({
   const [loading, setLoading] = useState(true);
   const [autorizado, setAutorizado] = useState(false);
 
-  const rotasPublicas = [ "/login",];
-
+  const rotasPublicas = ["/login"];
   const rotaPublica = rotasPublicas.includes(pathname);
 
   useEffect(() => {
@@ -42,22 +41,16 @@ export default function RootLayout({
         return;
       }
 
-      const emailUsuario =
-        session.user.email?.trim().toLowerCase();
+      const emailUsuario = session.user.email?.trim().toLowerCase();
 
-      const { data: usuarioAutorizado, error } =
-        await supabase
-          .from("usuarios_autorizados")
-          .select("email")
-          .eq("email", emailUsuario)
-          .maybeSingle();
+      const { data: usuarioAutorizado, error } = await supabase
+        .from("usuarios_autorizados")
+        .select("email")
+        .eq("email", emailUsuario)
+        .maybeSingle();
 
       if (error) {
-        console.error(
-          "Erro ao verificar autorização:",
-          error.message
-        );
-
+        console.error("Erro ao verificar autorização:", error.message);
         setAutorizado(true);
         setLoading(false);
         return;
@@ -65,11 +58,7 @@ export default function RootLayout({
 
       if (!usuarioAutorizado) {
         await supabase.auth.signOut();
-
-        alert(
-          "Seu email não possui autorização para acessar o sistema."
-        );
-
+        alert("Seu email não possui autorização para acessar o sistema.");
         setAutorizado(false);
         router.replace("/login");
         setLoading(false);
@@ -86,10 +75,8 @@ export default function RootLayout({
   if (loading || !autorizado) {
     return (
       <html lang="pt-BR">
-        <body className="min-h-screen bg-gray-100 flex items-center justify-center">
-          <div className="text-gray-600">
-            Carregando...
-          </div>
+        <body className="min-h-screen bg-gray-100 dark:bg-slate-950 flex items-center justify-center">
+          <div className="text-gray-600 dark:text-slate-300">Carregando...</div>
         </body>
       </html>
     );
@@ -97,14 +84,14 @@ export default function RootLayout({
 
   return (
     <html lang="pt-BR">
-      <body className="overflow-x-hidden">
+      <body className="overflow-x-hidden bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100">
         {rotaPublica ? (
           children
         ) : (
-          <div className="flex w-full max-w-full overflow-x-hidden">
+          <div className="flex w-full max-w-full overflow-x-hidden min-h-screen">
             <Sidebar />
 
-            <main className="flex-1 min-w-0 bg-gray-100 p-4 md:p-10 min-h-screen overflow-x-hidden">
+            <main className="flex-1 min-w-0 bg-slate-50 dark:bg-slate-950 p-4 md:p-10 min-h-screen overflow-x-hidden">
               {children}
             </main>
           </div>
