@@ -194,7 +194,7 @@ export default function NovoProduto() {
             <div>
               <p className="font-semibold text-amber-800 text-sm">Alerta Personalizado</p>
               <p className="text-xs text-amber-700/80 mt-1 leading-relaxed">
-                Quando a quantidade ficar igual ou abaixo do estoque mínimo, o painel indicará que a reposição é necessária[cite: 9].
+                Quando a quantidade ficar igual ou abaixo do estoque mínimo, o painel indicará que a reposição é necessária.
               </p>
             </div>
           </div>
@@ -204,7 +204,7 @@ export default function NovoProduto() {
             <div>
               <p className="font-semibold text-emerald-800 text-sm">Cadastro Seguro</p>
               <p className="text-xs text-emerald-700/80 mt-1 leading-relaxed">
-                Após salvar, o produto ficará imediatamente disponível para registros de entradas e saídas no sistema[cite: 9].
+                Após salvar, o produto ficará imediatamente disponível para registros de entradas e saídas no sistema.
               </p>
             </div>
           </div>
