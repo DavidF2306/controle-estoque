@@ -15,6 +15,7 @@ import {
   MapPin,
   FileText,
   Package,
+  Archive,
 } from "lucide-react";
 
 export default function Historico() {
@@ -144,8 +145,8 @@ export default function Historico() {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-slate-500">
-          <div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
+        <div className="flex flex-col items-center gap-3 text-slate-500 dark:text-slate-400">
+          <div className="w-8 h-8 border-4 border-slate-200 dark:border-slate-700 border-t-blue-600 dark:border-t-blue-500 rounded-full animate-spin" />
           <p className="font-medium">Carregando histórico...</p>
         </div>
       </div>
@@ -153,7 +154,7 @@ export default function Historico() {
   }
 
   return (
-    <div className="text-slate-800 w-full overflow-x-hidden space-y-6">
+    <div className="text-slate-800 dark:text-slate-200 w-full overflow-x-hidden space-y-6">
       
       {/* Hero Section */}
       <section className="pt-14 md:pt-0">
@@ -211,53 +212,53 @@ export default function Historico() {
 
       {/* Cards de Métricas */}
       <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-500">Total de Entradas</p>
-              <h2 className="text-3xl font-bold text-slate-800 mt-1">{totalEntradas}</h2>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Total de Entradas</p>
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mt-1">{totalEntradas}</h2>
               <p className="text-xs text-slate-400 mt-1">registros listados</p>
             </div>
-            <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
               <ArrowDownCircle size={20} />
             </div>
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-500">Total de Saídas</p>
-              <h2 className="text-3xl font-bold text-slate-800 mt-1">{totalSaidas}</h2>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Total de Saídas</p>
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mt-1">{totalSaidas}</h2>
               <p className="text-xs text-slate-400 mt-1">registros listados</p>
             </div>
-            <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 flex items-center justify-center">
               <ArrowUpCircle size={20} />
             </div>
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-500">Volume Movimentado</p>
-              <h2 className="text-3xl font-bold text-slate-800 mt-1">{totalItensMovimentados}</h2>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Volume Movimentado</p>
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mt-1">{totalItensMovimentados}</h2>
               <p className="text-xs text-slate-400 mt-1">unidades no total</p>
             </div>
-            <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
               <Package size={20} />
             </div>
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-500">Usuários Ativos</p>
-              <h2 className="text-3xl font-bold text-slate-800 mt-1">{usuariosUnicos.length}</h2>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Usuários Ativos</p>
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mt-1">{usuariosUnicos.length}</h2>
               <p className="text-xs text-slate-400 mt-1">com ações registradas</p>
             </div>
-            <div className="w-10 h-10 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 flex items-center justify-center">
               <User size={20} />
             </div>
           </div>
@@ -265,16 +266,16 @@ export default function Historico() {
       </section>
 
       {/* Área de Filtros */}
-      <section className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-        <div className="flex items-center gap-3 mb-5 border-b border-slate-100 pb-4">
-          <div className="w-10 h-10 rounded-lg bg-slate-50 text-slate-600 flex items-center justify-center shrink-0">
+      <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm">
+        <div className="flex items-center gap-3 mb-5 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div className="w-10 h-10 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0">
             <Search size={20} />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-slate-800">
+            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">
               Filtros Avançados
             </h2>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Refine a busca por produto, local, usuário, ou período.
             </p>
           </div>
@@ -282,7 +283,7 @@ export default function Historico() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="md:col-span-2">
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Busca em Texto
             </label>
             <div className="relative">
@@ -295,13 +296,13 @@ export default function Historico() {
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder="Ex: Toner, Recepção, João, NF-123..."
-                className="w-full bg-white border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+                className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-slate-800 dark:text-slate-100"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Filtrar por Mês
             </label>
             <div className="relative">
@@ -313,15 +314,15 @@ export default function Historico() {
                 type="month"
                 value={mesFiltro}
                 onChange={(e) => setMesFiltro(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+                className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-slate-800 dark:text-slate-100"
               />
             </div>
           </div>
         </div>
 
-        <div className="mt-5 pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <p className="text-sm font-medium text-slate-500">
-            Mostrando <span className="text-slate-800 font-bold">{movimentacoesFiltradas.length}</span> resultado(s)
+        <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+            Mostrando <span className="text-slate-800 dark:text-slate-200 font-bold">{movimentacoesFiltradas.length}</span> resultado(s)
           </p>
 
           <button
@@ -329,7 +330,7 @@ export default function Historico() {
               setMesFiltro("");
               setBusca("");
             }}
-            className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 px-5 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm font-semibold shadow-sm"
+            className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-100 px-5 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm font-semibold shadow-sm"
           >
             <RotateCcw size={16} />
             Limpar Filtros
@@ -337,184 +338,201 @@ export default function Historico() {
         </div>
       </section>
 
+      {/* Empty State */}
+      {movimentacoesFiltradas.length === 0 && (
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-12 text-center shadow-sm">
+          <Archive size={48} className="mx-auto text-slate-300 dark:text-slate-600 mb-4" />
+          <h2 className="text-xl font-bold text-slate-700 dark:text-slate-200">
+            Nenhuma movimentação encontrada
+          </h2>
+          <p className="text-slate-500 dark:text-slate-400 mt-2 text-sm">
+            Tente ajustar os filtros ou limpar a pesquisa para ver mais resultados.
+          </p>
+        </div>
+      )}
+
       {/* Lista Mobile */}
-      <section className="xl:hidden space-y-4">
-        {movimentacoesFiltradas.map((mov, index) => {
-          const entrada = mov.tipo === "Entrada";
+      {movimentacoesFiltradas.length > 0 && (
+        <section className="xl:hidden space-y-4">
+          {movimentacoesFiltradas.map((mov, index) => {
+            const entrada = mov.tipo === "Entrada";
 
-          return (
-            <div
-              key={index}
-              className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm"
-            >
-              <div className="flex items-start justify-between gap-3 mb-4 border-b border-slate-100 pb-4">
-                <div className="flex gap-3">
-                  <div
-                    className={`mt-1 w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
-                      entrada
-                        ? "bg-emerald-50 text-emerald-600"
-                        : "bg-rose-50 text-rose-600"
-                    }`}
-                  >
-                    {entrada ? <ArrowDownCircle size={20} /> : <ArrowUpCircle size={20} />}
-                  </div>
-
-                  <div>
-                    <span
-                      className={`inline-block px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider mb-1 ${
+            return (
+              <div
+                key={index}
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm"
+              >
+                <div className="flex items-start justify-between gap-3 mb-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+                  <div className="flex gap-3">
+                    <div
+                      className={`mt-1 w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
                         entrada
-                          ? "bg-emerald-100 text-emerald-700"
-                          : "bg-rose-100 text-rose-700"
+                          ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
+                          : "bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400"
                       }`}
                     >
-                      {mov.tipo}
-                    </span>
-                    <h3 className="font-bold text-slate-800 leading-tight">
-                      {mov.produto}
-                    </h3>
+                      {entrada ? <ArrowDownCircle size={20} /> : <ArrowUpCircle size={20} />}
+                    </div>
+
+                    <div>
+                      <span
+                        className={`inline-block px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider mb-1 border ${
+                          entrada
+                            ? "bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
+                            : "bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800"
+                        }`}
+                      >
+                        {mov.tipo}
+                      </span>
+                      <h3 className="font-bold text-slate-800 dark:text-slate-100 leading-tight">
+                        {mov.produto}
+                      </h3>
+                    </div>
                   </div>
-                </div>
 
-                <div className="text-right">
-                  <p
-                    className={`font-bold text-lg ${
-                      entrada ? "text-emerald-600" : "text-rose-600"
-                    }`}
-                  >
-                    {entrada ? "+" : "-"}
-                    {mov.quantidade} <span className="text-sm font-medium text-slate-500">un.</span>
-                  </p>
-                  <p className="text-[11px] font-medium text-slate-400 mt-0.5">
-                    {formatarDataHora(mov.data)}
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                <div className="bg-slate-50 border border-slate-100 rounded-lg p-3">
-                  <p className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-0.5">Local / Origem</p>
-                  <p className="font-semibold text-slate-700">{mov.local}</p>
-                </div>
-
-                <div className="bg-slate-50 border border-slate-100 rounded-lg p-3">
-                  <p className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-0.5">Nota Fiscal</p>
-                  <p className="font-semibold text-slate-700">{mov.notaFiscal}</p>
-                </div>
-
-                <div className="bg-slate-50 border border-slate-100 rounded-lg p-3">
-                  <p className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-0.5">Contador</p>
-                  <p className="font-semibold text-slate-700">{mov.contador}</p>
-                </div>
-
-                <div className="sm:col-span-2 bg-blue-50/50 border border-blue-100/50 rounded-lg p-3">
-                  <p className="text-blue-600 flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-semibold mb-0.5">
-                    <User size={13} />
-                    Responsável
-                  </p>
-                  <p className="font-semibold text-blue-900 break-all">
-                    {mov.usuario}
-                  </p>
-                </div>
-
-                {mov.observacoes !== "-" && (
-                  <div className="sm:col-span-2 bg-slate-50 border border-slate-100 rounded-lg p-3">
-                    <p className="text-slate-500 flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-semibold mb-0.5">
-                      <FileText size={13} />
-                      Observações
+                  <div className="text-right">
+                    <p
+                      className={`font-bold text-lg ${
+                        entrada ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+                      }`}
+                    >
+                      {entrada ? "+" : "-"}
+                      {mov.quantidade} <span className="text-sm font-medium text-slate-500 dark:text-slate-400">un.</span>
                     </p>
-                    <p className="font-medium text-slate-700 whitespace-pre-wrap mt-1">
-                      {mov.observacoes}
+                    <p className="text-[11px] font-medium text-slate-400 dark:text-slate-500 mt-0.5">
+                      {formatarDataHora(mov.data)}
                     </p>
                   </div>
-                )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 rounded-lg p-3">
+                    <p className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 dark:text-slate-500 mb-0.5">Local / Origem</p>
+                    <p className="font-semibold text-slate-700 dark:text-slate-300">{mov.local}</p>
+                  </div>
+
+                  <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 rounded-lg p-3">
+                    <p className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 dark:text-slate-500 mb-0.5">Nota Fiscal</p>
+                    <p className="font-semibold text-slate-700 dark:text-slate-300">{mov.notaFiscal}</p>
+                  </div>
+
+                  <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 rounded-lg p-3">
+                    <p className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 dark:text-slate-500 mb-0.5">Contador</p>
+                    <p className="font-semibold text-slate-700 dark:text-slate-300">{mov.contador}</p>
+                  </div>
+
+                  <div className="sm:col-span-2 bg-blue-50/50 dark:bg-blue-900/20 border border-blue-100/50 dark:border-blue-800/30 rounded-lg p-3">
+                    <p className="text-blue-600 dark:text-blue-400 flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-semibold mb-0.5">
+                      <User size={13} />
+                      Responsável
+                    </p>
+                    <p className="font-semibold text-blue-900 dark:text-blue-300 break-all">
+                      {mov.usuario}
+                    </p>
+                  </div>
+
+                  {mov.observacoes !== "-" && (
+                    <div className="sm:col-span-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 rounded-lg p-3">
+                      <p className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-semibold mb-0.5">
+                        <FileText size={13} />
+                        Observações
+                      </p>
+                      <p className="font-medium text-slate-700 dark:text-slate-300 whitespace-pre-wrap mt-1">
+                        {mov.observacoes}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </section>
+            );
+          })}
+        </section>
+      )}
 
       {/* Tabela Desktop */}
-      <section className="hidden xl:block bg-white border border-slate-200 rounded-xl shadow-sm overflow-x-auto">
-        <table className="w-full min-w-[1200px] text-sm text-left">
-          <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
-            <tr>
-              <th className="px-6 py-4">Tipo</th>
-              <th className="px-6 py-4">Produto</th>
-              <th className="px-6 py-4">Qtd</th>
-              <th className="px-6 py-4">Local / Origem</th>
-              <th className="px-6 py-4">NF</th>
-              <th className="px-6 py-4">Contador</th>
-              <th className="px-6 py-4">Observações</th>
-              <th className="px-6 py-4">Realizado por</th>
-              <th className="px-6 py-4">Data / Hora</th>
-            </tr>
-          </thead>
+      {movimentacoesFiltradas.length > 0 && (
+        <section className="hidden xl:block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-x-auto">
+          <table className="w-full min-w-[1200px] text-sm text-left">
+            <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 font-medium border-b border-slate-200 dark:border-slate-700">
+              <tr>
+                <th className="px-6 py-4">Tipo</th>
+                <th className="px-6 py-4">Produto</th>
+                <th className="px-6 py-4">Qtd</th>
+                <th className="px-6 py-4">Local / Origem</th>
+                <th className="px-6 py-4">NF</th>
+                <th className="px-6 py-4">Contador</th>
+                <th className="px-6 py-4">Observações</th>
+                <th className="px-6 py-4">Realizado por</th>
+                <th className="px-6 py-4">Data / Hora</th>
+              </tr>
+            </thead>
 
-          <tbody className="divide-y divide-slate-100">
-            {movimentacoesFiltradas.map((mov, index) => {
-              const entrada = mov.tipo === "Entrada";
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              {movimentacoesFiltradas.map((mov, index) => {
+                const entrada = mov.tipo === "Entrada";
 
-              return (
-                <tr
-                  key={index}
-                  className="hover:bg-slate-50/50 transition-colors"
-                >
-                  <td className="px-6 py-4">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${
-                        entrada
-                          ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
-                          : "bg-rose-50 text-rose-700 border border-rose-100"
+                return (
+                  <tr
+                    key={index}
+                    className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors"
+                  >
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${
+                          entrada
+                            ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/50"
+                            : "bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-800/50"
+                        }`}
+                      >
+                        {mov.tipo}
+                      </span>
+                    </td>
+
+                    <td className="px-6 py-4 font-semibold text-slate-800 dark:text-slate-200">
+                      {mov.produto}
+                    </td>
+
+                    <td
+                      className={`px-6 py-4 font-bold ${
+                        entrada ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
                       }`}
                     >
-                      {mov.tipo}
-                    </span>
-                  </td>
+                      {entrada ? "+" : "-"}
+                      {mov.quantidade}
+                    </td>
 
-                  <td className="px-6 py-4 font-semibold text-slate-800">
-                    {mov.produto}
-                  </td>
+                    <td className="px-6 py-4 text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                      {mov.local}
+                    </td>
 
-                  <td
-                    className={`px-6 py-4 font-bold ${
-                      entrada ? "text-emerald-600" : "text-rose-600"
-                    }`}
-                  >
-                    {entrada ? "+" : "-"}
-                    {mov.quantidade}
-                  </td>
+                    <td className="px-6 py-4 text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                      {mov.notaFiscal}
+                    </td>
 
-                  <td className="px-6 py-4 text-slate-600 whitespace-nowrap">
-                    {mov.local}
-                  </td>
+                    <td className="px-6 py-4 text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                      {mov.contador}
+                    </td>
 
-                  <td className="px-6 py-4 text-slate-600 whitespace-nowrap">
-                    {mov.notaFiscal}
-                  </td>
+                    <td className="px-6 py-4 text-slate-500 dark:text-slate-500 max-w-[260px]">
+                      <span className="line-clamp-2" title={mov.observacoes}>
+                        {mov.observacoes}
+                      </span>
+                    </td>
 
-                  <td className="px-6 py-4 text-slate-600 whitespace-nowrap">
-                    {mov.contador}
-                  </td>
+                    <td className="px-6 py-4 text-slate-600 dark:text-slate-400 max-w-[200px] truncate" title={mov.usuario}>
+                      {mov.usuario}
+                    </td>
 
-                  <td className="px-6 py-4 text-slate-500 max-w-[260px]">
-                    <span className="line-clamp-2" title={mov.observacoes}>
-                      {mov.observacoes}
-                    </span>
-                  </td>
-
-                  <td className="px-6 py-4 text-slate-600 max-w-[200px] truncate" title={mov.usuario}>
-                    {mov.usuario}
-                  </td>
-
-                  <td className="px-6 py-4 text-slate-500 font-medium whitespace-nowrap">
-                    {formatarDataHora(mov.data)}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </section>
+                    <td className="px-6 py-4 text-slate-500 dark:text-slate-500 font-medium whitespace-nowrap">
+                      {formatarDataHora(mov.data)}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </section>
+      )}
     </div>
   );
 }
