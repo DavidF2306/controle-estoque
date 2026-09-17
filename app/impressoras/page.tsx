@@ -106,37 +106,97 @@ export default function Impressoras() {
   }
 
   function exportarPDF() {
-    const pdf = new jsPDF();
+    if (impressorasFiltradas.length === 0) {
+      alert("Não há dados para exportar.");
+      return;
+    }
 
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(18);
-    pdf.text("COPYSTAR", 14, 18);
+    const doc = new jsPDF("portrait", "mm", "a4");
 
-    pdf.setFontSize(13);
-    pdf.text("Relatório de Impressoras", 14, 28);
+    const corPrimaria = [30, 58, 138];     // Azul escuro corporativo
+    const corTextoCinza = [100, 116, 139]; // Cinza elegante
+    const corLinhaBorda = [226, 232, 240]; // Borda clara
 
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(11);
-    pdf.text(`Local: ${localSelecionado}`, 14, 38);
-    pdf.text(`Total: ${impressorasFiltradas.length} impressoras`, 14, 45);
-    pdf.text(`Data: ${new Date().toLocaleDateString("pt-BR")}`, 14, 52);
+    // --- CABEÇALHO DO DOCUMENTO ---
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.setTextColor(corPrimaria[0], corPrimaria[1], corPrimaria[2]);
+    doc.text("COPYSTAR", 14, 16);
 
-    autoTable(pdf, {
-      startY: 60,
-      head: [["Nome", "Modelo", "Local", "Série", "Contador"]],
-      body: impressorasFiltradas.map((item) => [
-        item.nome,
-        item.modelo,
-        item.local,
-        item.numero_serie || "-",
-        item.contador ?? 0,
-      ]),
+    doc.setFontSize(12);
+    doc.setTextColor(51, 65, 85);
+    doc.text("Relatório do Parque de Impressão", 14, 23);
+
+    // Subtítulo com filtros e data de emissão
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(corTextoCinza[0], corTextoCinza[1], corTextoCinza[2]);
+
+    const filtroTexto = localSelecionado === "Todos" ? "Local: Todos os locais" : `Local Filtrado: ${localSelecionado}`;
+    const dataEmissao = `Emitido em: ${new Date().toLocaleDateString("pt-BR")}`;
+
+    doc.text(filtroTexto, 14, 29);
+    doc.text(dataEmissao, 210 - 14, 29, { align: "right" });
+
+    // Linha divisória sutil
+    doc.setDrawColor(corLinhaBorda[0], corLinhaBorda[1], corLinhaBorda[2]);
+    doc.setLineWidth(0.5);
+    doc.line(14, 33, 210 - 14, 33);
+
+    // --- PREPARAÇÃO DOS DADOS DA TABELA ---
+    const colunas = ["Nome", "Modelo", "Local / Setor", "Nº de Série", "Contador"];
+    const linhas = impressorasFiltradas.map((item) => [
+      item.nome || "-",
+      item.modelo || "-",
+      item.local || "-",
+      item.numero_serie || "-",
+      item.contador ?? 0,
+    ]);
+
+    // --- GERAÇÃO DA TABELA ---
+    autoTable(doc, {
+      head: [colunas],
+      body: linhas,
+      startY: 37,
+      margin: { left: 14, right: 14 },
       styles: {
-        fontSize: 9,
-        cellPadding: 3,
+        font: "helvetica",
+        fontSize: 8.5,
+        cellPadding: 4,
+        textColor: [51, 65, 85],
       },
       headStyles: {
-        fillColor: [30, 58, 138], // Azul escuro
+        fillColor: [30, 58, 138],
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+        halign: "left",
+      },
+      alternateRowStyles: {
+        fillColor: [248, 250, 252],
+      },
+      columnStyles: {
+        0: { cellWidth: 45, fontStyle: "bold" }, // Nome
+        1: { cellWidth: 40 }, // Modelo
+        2: { cellWidth: 45 }, // Local
+        3: { cellWidth: 32 }, // Série
+        4: { cellWidth: 20, halign: "center" }, // Contador
+      },
+      // --- RODAPÉ AUTOMÁTICO EM CADA PÁGINA ---
+      didDrawPage: () => {
+        const paginasTotales = (doc as any).internal.getNumberOfPages();
+        const paginaAtual = doc.getCurrentPageInfo().pageNumber;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(148, 163, 184);
+
+        doc.text("Copystar Gestão de Estoque - Relatório de Impressoras", 14, doc.internal.pageSize.height - 10);
+        doc.text(
+          `Página ${paginaAtual} de ${paginasTotales}`,
+          doc.internal.pageSize.width - 14,
+          doc.internal.pageSize.height - 10,
+          { align: "right" }
+        );
       },
     });
 
@@ -145,18 +205,17 @@ export default function Impressoras() {
         ? "Relatorio_Impressoras.pdf"
         : `Relatorio_${localSelecionado}.pdf`;
 
-    pdf.save(nomeArquivo);
+    doc.save(nomeArquivo);
   }
 
   function exportarExcel() {
-    // 1. Organiza os dados com nomes de colunas mais amigáveis
     const dados = impressorasFiltradas.map((item) => ({
       "Nome da Impressora": item.nome || "-",
       "Modelo": item.modelo || "-",
       "Localidade / Setor": item.local || "-",
-      "Número de Série": item.numero_serie || "-",
+      "Número de Série": item.numero_serie || "",
       "Contador": item.contador ?? 0,
-      "Observações": item.observacoes || "-",
+      "Observações": item.observacoes || "",
     }));
 
     if (dados.length === 0) {
@@ -166,21 +225,15 @@ export default function Impressoras() {
 
     const worksheet = XLSX.utils.json_to_sheet(dados);
 
-    // 2. Calcula dinamicamente a largura (Auto-fit) de cada coluna
     const chaves = Object.keys(dados[0]);
     const larguras = chaves.map((chave) => {
-      // Pega o tamanho do título da coluna ou o maior texto daquela coluna nos dados
       const tamanhoMaximo = Math.max(
         chave.length,
         ...dados.map((d) => String(d[chave as keyof typeof d] || "").length)
       );
-      
-      // Define um limite de 65 caracteres para a coluna não ficar absurdamente gigante,
-      // e soma +3 para dar um espaço visual (respiro) nas bordas.
       return { wch: Math.min(65, tamanhoMaximo + 3) };
     });
 
-    // 3. Aplica as larguras na planilha
     worksheet["!cols"] = larguras;
 
     const workbook = XLSX.utils.book_new();

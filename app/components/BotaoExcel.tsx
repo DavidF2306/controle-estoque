@@ -15,9 +15,7 @@ export default function BotaoExcelHistorico({ movimentacoes, mesFiltro }: BotaoE
       return;
     }
 
-    // Prepara os dados formatados para a planilha
     const dadosPlanilha = movimentacoes.map((mov) => {
-      // Ajusta o fuso horário da data para exibição correta
       const dataCorrigida = new Date(mov.data);
       dataCorrigida.setHours(dataCorrigida.getHours() - 3);
       const dataFormatada = dataCorrigida.toLocaleString("pt-BR", {
@@ -29,30 +27,41 @@ export default function BotaoExcelHistorico({ movimentacoes, mesFiltro }: BotaoE
       });
 
       return {
-        "Tipo": mov.tipo,
-        "Produto": mov.produto,
-        "Quantidade": mov.quantidade,
-        "Cliente": mov.cliente,
-        "Local / Origem": mov.local,
-        "Nota Fiscal": mov.notaFiscal,
-        "Contador": mov.contador,
-        "Observações": mov.observacoes,
-        "Realizado por": mov.usuario,
+        "Tipo": mov.tipo || "-",
+        "Produto": mov.produto || "-",
+        "Quantidade": mov.quantidade || 0,
+        "Cliente": mov.cliente || "-",
+        "Local / Origem": mov.local || "-",
+        "Nota Fiscal": mov.notaFiscal || "-",
+        "Contador": mov.contador || "-",
+        "Observações": mov.observacoes || "-",
+        "Realizado por": mov.usuario || "-",
         "Data / Hora": dataFormatada,
       };
     });
 
-    // Cria a planilha e adiciona os dados
     const worksheet = XLSX.utils.json_to_sheet(dadosPlanilha);
+
+    const chaves = Object.keys(dadosPlanilha[0]);
+    const larguras = chaves.map((chave) => {
+   
+      const tamanhoMaximo = Math.max(
+        chave.length,
+        ...dadosPlanilha.map((d) => String(d[chave as keyof typeof d] || "").length)
+      );
+      
+      return { wch: Math.min(65, tamanhoMaximo + 3) };
+    });
+
+    worksheet["!cols"] = larguras;
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Histórico");
 
-    // Define o nome do arquivo dinamicamente com base no filtro
     const nomeArquivo = mesFiltro
       ? `Historico_Estoque_${mesFiltro}.xlsx`
       : `Historico_Estoque_Completo.xlsx`;
 
-    // Dispara o download
     XLSX.writeFile(workbook, nomeArquivo);
   }
 
