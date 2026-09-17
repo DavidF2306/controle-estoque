@@ -23,6 +23,8 @@ import {
   BarChart3,
   Eye,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 export default function Impressoras() {
@@ -34,6 +36,10 @@ export default function Impressoras() {
   const [localSelecionado, setLocalSelecionado] = useState("Todos");
   const [loading, setLoading] = useState(true);
 
+  // Estados da Paginação
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const itensPorPagina = 10; // Exibe 10 impressoras por vez
+
   // Estados para o Dropdown Customizado de Locais
   const [dropdownAberto, setDropdownAberto] = useState(false);
   const [buscaLocal, setBuscaLocal] = useState("");
@@ -42,6 +48,11 @@ export default function Impressoras() {
   useEffect(() => {
     carregarDados();
   }, []);
+
+  // Sempre que o usuário digitar uma busca ou mudar o local, volta para a página 1
+  useEffect(() => {
+    setPaginaAtual(1);
+  }, [busca, localSelecionado]);
 
   // Fechar o dropdown de locais ao clicar fora dele
   useEffect(() => {
@@ -181,7 +192,6 @@ export default function Impressoras() {
   // Lógica da Busca Principal
   const impressorasFiltradas = useMemo(() => {
     return impressoras.filter((item) => {
-      // Agora a busca principal procura também pelo NOME DO LOCAL
       const pesquisa =
         item.nome?.toLowerCase().includes(busca.toLowerCase()) ||
         item.modelo?.toLowerCase().includes(busca.toLowerCase()) ||
@@ -194,6 +204,12 @@ export default function Impressoras() {
       return pesquisa && filtroLocal;
     });
   }, [impressoras, busca, localSelecionado]);
+
+  // Lógica de Paginação na Lista Filtrada
+  const totalPaginas = Math.ceil(impressorasFiltradas.length / itensPorPagina);
+  const indexUltimoItem = paginaAtual * itensPorPagina;
+  const indexPrimeiroItem = indexUltimoItem - itensPorPagina;
+  const impressorasPaginadas = impressorasFiltradas.slice(indexPrimeiroItem, indexUltimoItem);
 
   // Lógica do Filtro Interno do Dropdown de Locais
   const locaisFiltradosParaDropdown = useMemo(() => {
@@ -331,7 +347,7 @@ export default function Impressoras() {
             </div>
           </div>
 
-          {/* NOVO: Dropdown Inteligente de Locais */}
+          {/* Dropdown Inteligente de Locais */}
           <div className="relative" ref={dropdownRef}>
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Filtrar por Local Específico
@@ -357,7 +373,7 @@ export default function Impressoras() {
                       placeholder="Procurar local na lista..."
                       value={buscaLocal}
                       onChange={(e) => setBuscaLocal(e.target.value)}
-                      onClick={(e) => e.stopPropagation()} // Previne que feche ao clicar no input
+                      onClick={(e) => e.stopPropagation()} 
                       className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-md pl-8 pr-3 py-1.5 text-sm outline-none focus:border-blue-500 text-slate-800 dark:text-slate-100 placeholder-slate-400"
                     />
                   </div>
@@ -414,14 +430,11 @@ export default function Impressoras() {
             </div>
           </div>
         </div>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 font-medium">
-          Exibindo {impressorasFiltradas.length} impressora(s)
-        </p>
       </section>
 
-      {/* Lista de Impressoras */}
+      {/* Lista de Impressoras Paginada */}
       <section className="space-y-4">
-        {impressorasFiltradas.map((item) => (
+        {impressorasPaginadas.map((item) => (
           <div
             key={item.id}
             className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow"
@@ -515,6 +528,35 @@ export default function Impressoras() {
               <Plus size={18} />
               Cadastrar Impressora
             </Link>
+          </div>
+        )}
+
+        {/* Controles de Paginação */}
+        {totalPaginas > 1 && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm mt-4">
+            <p className="text-sm text-slate-500 dark:text-slate-400 text-center sm:text-left">
+              Mostrando <span className="font-bold text-slate-800 dark:text-slate-200">{indexPrimeiroItem + 1}</span> a <span className="font-bold text-slate-800 dark:text-slate-200">{Math.min(indexUltimoItem, impressorasFiltradas.length)}</span> de <span className="font-bold text-slate-800 dark:text-slate-200">{impressorasFiltradas.length}</span> resultados
+            </p>
+            
+            <div className="flex items-center justify-center gap-2">
+              <button
+                onClick={() => setPaginaAtual(prev => Math.max(prev - 1, 1))}
+                disabled={paginaAtual === 1}
+                className="p-2 rounded-md border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300 px-3">
+                Página {paginaAtual} de {totalPaginas}
+              </span>
+              <button
+                onClick={() => setPaginaAtual(prev => Math.min(prev + 1, totalPaginas))}
+                disabled={paginaAtual === totalPaginas}
+                className="p-2 rounded-md border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
           </div>
         )}
       </section>
