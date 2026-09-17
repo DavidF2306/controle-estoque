@@ -149,25 +149,39 @@ export default function Impressoras() {
   }
 
   function exportarExcel() {
+    // 1. Organiza os dados com nomes de colunas mais amigáveis
     const dados = impressorasFiltradas.map((item) => ({
-      Nome: item.nome,
-      Modelo: item.modelo,
-      Local: item.local,
-      "Número de Série": item.numero_serie || "",
-      Contador: item.contador ?? 0,
-      Observações: item.observacoes || "",
+      "Nome da Impressora": item.nome || "-",
+      "Modelo": item.modelo || "-",
+      "Localidade / Setor": item.local || "-",
+      "Número de Série": item.numero_serie || "-",
+      "Contador": item.contador ?? 0,
+      "Observações": item.observacoes || "-",
     }));
+
+    if (dados.length === 0) {
+      alert("Não há dados para exportar.");
+      return;
+    }
 
     const worksheet = XLSX.utils.json_to_sheet(dados);
 
-    worksheet["!cols"] = [
-      { wch: 30 },
-      { wch: 25 },
-      { wch: 25 },
-      { wch: 25 },
-      { wch: 15 },
-      { wch: 40 },
-    ];
+    // 2. Calcula dinamicamente a largura (Auto-fit) de cada coluna
+    const chaves = Object.keys(dados[0]);
+    const larguras = chaves.map((chave) => {
+      // Pega o tamanho do título da coluna ou o maior texto daquela coluna nos dados
+      const tamanhoMaximo = Math.max(
+        chave.length,
+        ...dados.map((d) => String(d[chave as keyof typeof d] || "").length)
+      );
+      
+      // Define um limite de 65 caracteres para a coluna não ficar absurdamente gigante,
+      // e soma +3 para dar um espaço visual (respiro) nas bordas.
+      return { wch: Math.min(65, tamanhoMaximo + 3) };
+    });
+
+    // 3. Aplica as larguras na planilha
+    worksheet["!cols"] = larguras;
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Impressoras");
