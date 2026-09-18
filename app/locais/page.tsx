@@ -238,9 +238,7 @@ export default function Locais() {
                       <h3 className="font-semibold text-slate-800 dark:text-slate-200">
                         {local.nome}
                       </h3>
-                      <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wider mt-0.5">
-                        ID: {local.id}
-                      </p>
+                      {/* O parágrafo com o ID foi removido daqui */}
                     </div>
 
                     <button
