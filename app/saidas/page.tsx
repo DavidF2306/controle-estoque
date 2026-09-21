@@ -14,7 +14,7 @@ import {
   Gauge,
   AlertTriangle,
   CheckCircle,
-  Search, // Ícone de pesquisa adicionado
+  Search,
 } from "lucide-react";
 
 export default function Saidas() {
@@ -30,8 +30,9 @@ export default function Saidas() {
   const [contador, setContador] = useState("");
   const [observacoes, setObservacoes] = useState("");
   
-  // Novo estado para a busca de produtos
+  // Estados para busca de produtos e locais
   const [buscaProduto, setBuscaProduto] = useState("");
+  const [buscaLocal, setBuscaLocal] = useState("");
 
   useEffect(() => {
     buscarDados();
@@ -126,9 +127,13 @@ export default function Saidas() {
     (produto) => produto.id === Number(produtoId)
   );
 
-  // Filtra os produtos com base na pesquisa
+  // Filtros de busca
   const produtosFiltrados = produtos.filter((produto) =>
     produto.nome.toLowerCase().includes(buscaProduto.toLowerCase())
+  );
+
+  const locaisFiltrados = locais.filter((item) =>
+    item.nome.toLowerCase().includes(buscaLocal.toLowerCase())
   );
 
   return (
@@ -137,7 +142,6 @@ export default function Saidas() {
       {/* Hero Section */}
       <section className="pt-14 md:pt-0">
         <div className="relative overflow-hidden rounded-2xl bg-slate-900 text-white shadow-md">
-          {/* Elementos de fundo sutis */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
           
           <div className="relative p-6 md:p-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
@@ -286,19 +290,21 @@ export default function Saidas() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Quantidade */}
-          <div className="bg-slate-50/50 border border-slate-200 rounded-lg p-4">
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-              Quantidade Retirada <span className="text-rose-500">*</span>
-            </label>
-            <input
-              type="number"
-              value={quantidade}
-              onChange={(e) => setQuantidade(e.target.value)}
-              min="1"
-              placeholder="0"
-              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-shadow"
-              required
-            />
+          <div className="bg-slate-50/50 border border-slate-200 rounded-lg p-4 flex flex-col justify-between">
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                Quantidade Retirada <span className="text-rose-500">*</span>
+              </label>
+              <input
+                type="number"
+                value={quantidade}
+                onChange={(e) => setQuantidade(e.target.value)}
+                min="1"
+                placeholder="0"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-shadow"
+                required
+              />
+            </div>
             {produtoSelecionado && Number(quantidade) > Number(produtoSelecionado.quantidade) && (
               <p className="text-sm text-rose-600 mt-2 font-medium flex items-center gap-1.5">
                 <AlertTriangle size={14} />
@@ -309,11 +315,26 @@ export default function Saidas() {
 
           {/* Local */}
           <div className="bg-slate-50/50 border border-slate-200 rounded-lg p-4">
-            <label className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
-              Local de Destino <span className="text-rose-500">*</span>
-            </label>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+              <label className="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
+                Local de Destino <span className="text-rose-500">*</span>
+              </label>
+
+              {/* Input de Pesquisa do Local */}
+              <div className="relative w-full sm:w-64">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  value={buscaLocal}
+                  onChange={(e) => setBuscaLocal(e.target.value)}
+                  placeholder="Pesquisar local..."
+                  className="w-full bg-white border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+                />
+              </div>
+            </div>
+
             <div className="relative">
-              <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               <select
                 value={local}
                 onChange={(e) => setLocal(e.target.value)}
@@ -321,11 +342,15 @@ export default function Saidas() {
                 required
               >
                 <option value="">Selecione para onde vai...</option>
-                {locais.map((item) => (
-                  <option key={item.id} value={item.nome}>
-                    {item.nome}
-                  </option>
-                ))}
+                {locaisFiltrados.length > 0 ? (
+                  locaisFiltrados.map((item) => (
+                    <option key={item.id} value={item.nome}>
+                      {item.nome}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>Nenhum local encontrado...</option>
+                )}
               </select>
             </div>
           </div>
