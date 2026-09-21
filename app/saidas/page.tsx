@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import {
@@ -15,6 +15,7 @@ import {
   AlertTriangle,
   CheckCircle,
   Search,
+  ChevronDown,
 } from "lucide-react";
 
 export default function Saidas() {
@@ -29,13 +30,35 @@ export default function Saidas() {
   const [local, setLocal] = useState("");
   const [contador, setContador] = useState("");
   const [observacoes, setObservacoes] = useState("");
-  
-  // Estados para busca de produtos e locais
+
+  // Estados para busca e controle dos dropdowns customizados
   const [buscaProduto, setBuscaProduto] = useState("");
   const [buscaLocal, setBuscaLocal] = useState("");
+  
+  const [produtoDropdownOpen, setProdutoDropdownOpen] = useState(false);
+  const [localDropdownOpen, setLocalDropdownOpen] = useState(false);
+
+  // Refs para fechar os dropdowns ao clicar fora
+  const produtoRef = useRef<HTMLDivElement>(null);
+  const localRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     buscarDados();
+
+    // Função para fechar dropdowns se o clique for fora deles
+    function handleClickOutside(event: MouseEvent) {
+      if (produtoRef.current && !produtoRef.current.contains(event.target as Node)) {
+        setProdutoDropdownOpen(false);
+      }
+      if (localRef.current && !localRef.current.contains(event.target as Node)) {
+        setLocalDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   async function buscarDados() {
@@ -62,6 +85,16 @@ export default function Saidas() {
   async function registrarSaida(e: React.FormEvent) {
     e.preventDefault();
 
+    if (!produtoId) {
+      alert("Por favor, pesquise e selecione um produto.");
+      return;
+    }
+    
+    if (!local) {
+      alert("Por favor, pesquise e selecione o local de destino.");
+      return;
+    }
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -71,11 +104,6 @@ export default function Saidas() {
     const produtoSelecionado = produtos.find(
       (produto) => produto.id === Number(produtoId)
     );
-
-    if (!produtoSelecionado) {
-      alert("Selecione um produto.");
-      return;
-    }
 
     if (Number(quantidade) > Number(produtoSelecionado.quantidade)) {
       alert("Quantidade maior que o estoque disponível.");
@@ -93,7 +121,7 @@ export default function Saidas() {
         contador: contador || null,
         observacoes: observacoes || null,
         usuario_email: emailUsuario,
-        destino: local, 
+        destino: local,
       },
     ]);
 
@@ -127,7 +155,7 @@ export default function Saidas() {
     (produto) => produto.id === Number(produtoId)
   );
 
-  // Filtros de busca
+  // Filtros em tempo real
   const produtosFiltrados = produtos.filter((produto) =>
     produto.nome.toLowerCase().includes(buscaProduto.toLowerCase())
   );
@@ -137,7 +165,7 @@ export default function Saidas() {
   );
 
   return (
-    <div className="text-slate-800 w-full overflow-x-hidden space-y-6">
+    <div className="text-slate-800 w-full overflow-x-hidden space-y-6 pb-10">
       
       {/* Hero Section */}
       <section className="pt-14 md:pt-0">
@@ -186,12 +214,10 @@ export default function Saidas() {
 
       {/* Cards de Métricas */}
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start justify-between hover:shadow-md transition-shadow">
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
           <div>
             <p className="text-sm font-medium text-slate-500">Produtos</p>
-            <h2 className="text-3xl font-bold text-slate-800 mt-1">
-              {produtos.length}
-            </h2>
+            <h2 className="text-3xl font-bold text-slate-800 mt-1">{produtos.length}</h2>
             <p className="text-xs text-slate-400 mt-1">itens disponíveis</p>
           </div>
           <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
@@ -199,7 +225,7 @@ export default function Saidas() {
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start justify-between hover:shadow-md transition-shadow">
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
           <div>
             <p className="text-sm font-medium text-slate-500">Estoque Físico</p>
             <h2 className="text-3xl font-bold text-slate-800 mt-1">{totalEstoque}</h2>
@@ -210,7 +236,7 @@ export default function Saidas() {
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start justify-between hover:shadow-md transition-shadow">
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
           <div>
             <p className="text-sm font-medium text-slate-500">Destinos</p>
             <h2 className="text-3xl font-bold text-slate-800 mt-1">{locais.length}</h2>
@@ -225,7 +251,7 @@ export default function Saidas() {
       {/* Formulário */}
       <form
         onSubmit={registrarSaida}
-        className="bg-white border border-slate-200 rounded-xl p-5 md:p-6 shadow-sm space-y-6 w-full"
+        className="bg-white border border-slate-200 rounded-xl p-5 md:p-6 shadow-sm space-y-6 w-full relative"
       >
         <div className="flex items-center gap-3 mb-4 border-b border-slate-100 pb-4">
           <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
@@ -233,125 +259,187 @@ export default function Saidas() {
           </div>
 
           <div>
-            <h2 className="text-lg font-bold text-slate-800">
-              Dados da Saída
-            </h2>
+            <h2 className="text-lg font-bold text-slate-800">Dados da Saída</h2>
             <p className="text-sm text-slate-500">
               Preencha os detalhes da entrega para o local de destino.
             </p>
           </div>
         </div>
 
-        {/* Produto */}
+        {/* Produto (Dropdown com Pesquisa) */}
         <div className="bg-slate-50/50 border border-slate-200 rounded-lg p-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-            <label className="block text-sm font-semibold text-slate-700">
+          <div className="relative" ref={produtoRef}>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
               Selecione o Produto <span className="text-rose-500">*</span>
             </label>
-            
-            {/* Input de Pesquisa do Produto */}
-            <div className="relative w-full sm:w-64">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                value={buscaProduto}
-                onChange={(e) => setBuscaProduto(e.target.value)}
-                placeholder="Pesquisar produto..."
-                className="w-full bg-white border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+
+            {/* Input Fake (Botão do Select) */}
+            <div
+              onClick={() => setProdutoDropdownOpen(!produtoDropdownOpen)}
+              className={`w-full bg-white border ${
+                produtoDropdownOpen ? "border-blue-500 ring-2 ring-blue-100" : "border-slate-200"
+              } rounded-lg px-4 py-2.5 text-sm flex justify-between items-center cursor-pointer transition-shadow`}
+            >
+              <span className={produtoSelecionado ? "text-slate-800 font-medium" : "text-slate-400"}>
+                {produtoSelecionado
+                  ? `${produtoSelecionado.nome} — (Em Estoque: ${produtoSelecionado.quantidade})`
+                  : "Selecione um item do estoque..."}
+              </span>
+              <ChevronDown
+                size={16}
+                className={`text-slate-400 transition-transform ${
+                  produtoDropdownOpen ? "rotate-180" : ""
+                }`}
               />
             </div>
+
+            {/* Painel da Lista (Abre ao clicar) */}
+            {produtoDropdownOpen && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden">
+                <div className="p-2 border-b border-slate-100 bg-slate-50">
+                  <div className="relative">
+                    <Search
+                      size={14}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                    />
+                    <input
+                      type="text"
+                      autoFocus
+                      value={buscaProduto}
+                      onChange={(e) => setBuscaProduto(e.target.value)}
+                      placeholder="Pesquisar produto pelo nome..."
+                      className="w-full bg-white border border-slate-200 rounded-md pl-8 pr-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+                <ul className="max-h-60 overflow-y-auto p-1">
+                  {produtosFiltrados.length > 0 ? (
+                    produtosFiltrados.map((produto) => (
+                      <li
+                        key={produto.id}
+                        onClick={() => {
+                          setProdutoId(String(produto.id));
+                          setProdutoDropdownOpen(false);
+                          setBuscaProduto(""); // limpa a busca ao selecionar
+                        }}
+                        className="px-3 py-2.5 text-sm hover:bg-blue-50 hover:text-blue-700 cursor-pointer rounded-md flex justify-between items-center transition-colors"
+                      >
+                        <span className="font-medium">{produto.nome}</span>
+                        <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-medium border border-slate-200">
+                          Estoque: {produto.quantidade}
+                        </span>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="px-3 py-4 text-sm text-center text-slate-500">
+                      Nenhum produto encontrado.
+                    </li>
+                  )}
+                </ul>
+              </div>
+            )}
           </div>
 
-          <select
-            value={produtoId}
-            onChange={(e) => setProdutoId(e.target.value)}
-            className="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow appearance-none"
-            required
-          >
-            <option value="">Selecione um item do estoque...</option>
-            {produtosFiltrados.length > 0 ? (
-              produtosFiltrados.map((produto) => (
-                <option key={produto.id} value={produto.id}>
-                  {produto.nome} — (Em Estoque: {produto.quantidade})
-                </option>
-              ))
-            ) : (
-              <option value="" disabled>Nenhum produto encontrado...</option>
-            )}
-          </select>
-
           {produtoSelecionado && (
-            <p className="text-sm text-blue-600 mt-2.5 font-medium flex items-center gap-1.5">
+            <p className="text-sm text-blue-600 mt-3 font-medium flex items-center gap-1.5">
               <CheckCircle size={14} />
-              Estoque atual liberado: {produtoSelecionado.quantidade} un.
+              Estoque atual liberado para retirada: {produtoSelecionado.quantidade} un.
             </p>
           )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Quantidade */}
-          <div className="bg-slate-50/50 border border-slate-200 rounded-lg p-4 flex flex-col justify-between">
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-                Quantidade Retirada <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="number"
-                value={quantidade}
-                onChange={(e) => setQuantidade(e.target.value)}
-                min="1"
-                placeholder="0"
-                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-shadow"
-                required
-              />
-            </div>
-            {produtoSelecionado && Number(quantidade) > Number(produtoSelecionado.quantidade) && (
-              <p className="text-sm text-rose-600 mt-2 font-medium flex items-center gap-1.5">
-                <AlertTriangle size={14} />
-                Atenção: Quantidade superior ao estoque disponível.
-              </p>
-            )}
+          <div className="bg-slate-50/50 border border-slate-200 rounded-lg p-4">
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+              Quantidade Retirada <span className="text-rose-500">*</span>
+            </label>
+            <input
+              type="number"
+              value={quantidade}
+              onChange={(e) => setQuantidade(e.target.value)}
+              min="1"
+              placeholder="Ex: 5"
+              className="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-shadow"
+              required
+            />
+            {produtoSelecionado &&
+              Number(quantidade) > Number(produtoSelecionado.quantidade) && (
+                <p className="text-sm text-rose-600 mt-2 font-medium flex items-center gap-1.5">
+                  <AlertTriangle size={14} />
+                  Atenção: Quantidade superior ao estoque.
+                </p>
+              )}
           </div>
 
-          {/* Local */}
+          {/* Local (Dropdown com Pesquisa) */}
           <div className="bg-slate-50/50 border border-slate-200 rounded-lg p-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-              <label className="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
+            <div className="relative" ref={localRef}>
+              <label className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                <MapPin size={16} className="text-slate-400" />
                 Local de Destino <span className="text-rose-500">*</span>
               </label>
 
-              {/* Input de Pesquisa do Local */}
-              <div className="relative w-full sm:w-64">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="text"
-                  value={buscaLocal}
-                  onChange={(e) => setBuscaLocal(e.target.value)}
-                  placeholder="Pesquisar local..."
-                  className="w-full bg-white border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+              {/* Input Fake (Botão do Select) */}
+              <div
+                onClick={() => setLocalDropdownOpen(!localDropdownOpen)}
+                className={`w-full bg-white border ${
+                  localDropdownOpen ? "border-blue-500 ring-2 ring-blue-100" : "border-slate-200"
+                } rounded-lg px-4 py-2.5 text-sm flex justify-between items-center cursor-pointer transition-shadow`}
+              >
+                <span className={local ? "text-slate-800 font-medium" : "text-slate-400"}>
+                  {local || "Selecione para onde vai..."}
+                </span>
+                <ChevronDown
+                  size={16}
+                  className={`text-slate-400 transition-transform ${
+                    localDropdownOpen ? "rotate-180" : ""
+                  }`}
                 />
               </div>
-            </div>
 
-            <div className="relative">
-              <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-              <select
-                value={local}
-                onChange={(e) => setLocal(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow appearance-none"
-                required
-              >
-                <option value="">Selecione para onde vai...</option>
-                {locaisFiltrados.length > 0 ? (
-                  locaisFiltrados.map((item) => (
-                    <option key={item.id} value={item.nome}>
-                      {item.nome}
-                    </option>
-                  ))
-                ) : (
-                  <option value="" disabled>Nenhum local encontrado...</option>
-                )}
-              </select>
+              {/* Painel da Lista (Abre ao clicar) */}
+              {localDropdownOpen && (
+                <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden">
+                  <div className="p-2 border-b border-slate-100 bg-slate-50">
+                    <div className="relative">
+                      <Search
+                        size={14}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                      />
+                      <input
+                        type="text"
+                        autoFocus
+                        value={buscaLocal}
+                        onChange={(e) => setBuscaLocal(e.target.value)}
+                        placeholder="Pesquisar local..."
+                        className="w-full bg-white border border-slate-200 rounded-md pl-8 pr-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                  <ul className="max-h-60 overflow-y-auto p-1">
+                    {locaisFiltrados.length > 0 ? (
+                      locaisFiltrados.map((item) => (
+                        <li
+                          key={item.id}
+                          onClick={() => {
+                            setLocal(item.nome);
+                            setLocalDropdownOpen(false);
+                            setBuscaLocal(""); // limpa a busca ao selecionar
+                          }}
+                          className="px-3 py-2.5 text-sm hover:bg-blue-50 hover:text-blue-700 cursor-pointer rounded-md font-medium transition-colors"
+                        >
+                          {item.nome}
+                        </li>
+                      ))
+                    ) : (
+                      <li className="px-3 py-4 text-sm text-center text-slate-500">
+                        Nenhum local encontrado.
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -399,7 +487,7 @@ export default function Saidas() {
 
         {/* Botões */}
         <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100">
-          <button 
+          <button
             type="submit"
             className="bg-rose-600 hover:bg-rose-700 text-white px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
           >
