@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import {
@@ -13,6 +13,8 @@ import {
   ClipboardList,
   Truck,
   CheckCircle,
+  Search,
+  ChevronDown,
 } from "lucide-react";
 
 export default function Entradas() {
@@ -28,8 +30,25 @@ export default function Entradas() {
   const [contador, setContador] = useState("");
   const [observacoes, setObservacoes] = useState("");
 
+  // Estados e ref para o dropdown customizado de busca de produtos
+  const [buscaProduto, setBuscaProduto] = useState("");
+  const [produtoDropdownOpen, setProdutoDropdownOpen] = useState(false);
+  const produtoRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     buscarDados();
+
+    // Função para fechar o dropdown se o clique for fora dele
+    function handleClickOutside(event: MouseEvent) {
+      if (produtoRef.current && !produtoRef.current.contains(event.target as Node)) {
+        setProdutoDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   async function buscarDados() {
@@ -50,6 +69,11 @@ export default function Entradas() {
   async function registrarEntrada(e: React.FormEvent) {
     e.preventDefault();
 
+    if (!produtoId) {
+      alert("Por favor, pesquise e selecione um produto.");
+      return;
+    }
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -61,7 +85,7 @@ export default function Entradas() {
     );
 
     if (!produtoSelecionado) {
-      alert("Selecione um produto.");
+      alert("Produto não encontrado no sistema.");
       return;
     }
 
@@ -98,7 +122,6 @@ export default function Entradas() {
     }
 
     alert("Entrada registrada com sucesso!");
-
     router.push("/produtos");
   }
 
@@ -111,8 +134,17 @@ export default function Entradas() {
 
   const ultimaEntrada = entradas[0];
 
+  const produtoSelecionado = produtos.find(
+    (produto) => produto.id === Number(produtoId)
+  );
+
+  // Filtro em tempo real do produto
+  const produtosFiltrados = produtos.filter((produto) =>
+    produto.nome.toLowerCase().includes(buscaProduto.toLowerCase())
+  );
+
   return (
-    <div className="text-slate-800 w-full overflow-x-hidden space-y-6">
+    <div className="text-slate-800 w-full overflow-x-hidden space-y-6 pb-10">
       
       {/* Hero Section */}
       <section className="pt-14 md:pt-0">
@@ -217,7 +249,7 @@ export default function Entradas() {
       {/* Formulário */}
       <form
         onSubmit={registrarEntrada}
-        className="bg-white border border-slate-200 rounded-xl p-5 md:p-6 shadow-sm space-y-6 w-full"
+        className="bg-white border border-slate-200 rounded-xl p-5 md:p-6 shadow-sm space-y-6 w-full relative"
       >
         <div className="flex items-center gap-3 mb-4 border-b border-slate-100 pb-4">
           <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
@@ -234,24 +266,79 @@ export default function Entradas() {
           </div>
         </div>
 
-        {/* Produto */}
-        <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-            Selecione o Produto <span className="text-rose-500">*</span>
-          </label>
-          <select
-            value={produtoId}
-            onChange={(e) => setProdutoId(e.target.value)}
-            className="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-shadow appearance-none"
-            required
-          >
-            <option value="">Selecione um produto cadastrado...</option>
-            {produtos.map((produto) => (
-              <option key={produto.id} value={produto.id}>
-                {produto.nome} — (Estoque Atual: {produto.quantidade})
-              </option>
-            ))}
-          </select>
+        {/* Produto (Dropdown com Pesquisa Integrada) */}
+        <div className="bg-slate-50/50 border border-slate-200 rounded-lg p-4">
+          <div className="relative" ref={produtoRef}>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+              Selecione o Produto <span className="text-rose-500">*</span>
+            </label>
+
+            {/* Input Fake (Botão que abre o Select) */}
+            <div
+              onClick={() => setProdutoDropdownOpen(!produtoDropdownOpen)}
+              className={`w-full bg-white border ${
+                produtoDropdownOpen ? "border-emerald-500 ring-2 ring-emerald-100" : "border-slate-200"
+              } rounded-lg px-4 py-2.5 text-sm flex justify-between items-center cursor-pointer transition-shadow`}
+            >
+              <span className={produtoSelecionado ? "text-slate-800 font-medium" : "text-slate-400"}>
+                {produtoSelecionado
+                  ? `${produtoSelecionado.nome} — (Estoque Atual: ${produtoSelecionado.quantidade})`
+                  : "Selecione um produto cadastrado..."}
+              </span>
+              <ChevronDown
+                size={16}
+                className={`text-slate-400 transition-transform ${
+                  produtoDropdownOpen ? "rotate-180" : ""
+                }`}
+              />
+            </div>
+
+            {/* Painel da Lista com Busca (Abre ao clicar) */}
+            {produtoDropdownOpen && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden">
+                <div className="p-2 border-b border-slate-100 bg-slate-50">
+                  <div className="relative">
+                    <Search
+                      size={14}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                    />
+                    <input
+                      type="text"
+                      autoFocus
+                      value={buscaProduto}
+                      onChange={(e) => setBuscaProduto(e.target.value)}
+                      placeholder="Pesquisar produto pelo nome..."
+                      className="w-full bg-white border border-slate-200 rounded-md pl-8 pr-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                    />
+                  </div>
+                </div>
+                <ul className="max-h-60 overflow-y-auto p-1">
+                  {produtosFiltrados.length > 0 ? (
+                    produtosFiltrados.map((produto) => (
+                      <li
+                        key={produto.id}
+                        onClick={() => {
+                          setProdutoId(String(produto.id));
+                          setProdutoDropdownOpen(false);
+                          setBuscaProduto(""); // limpa a busca ao selecionar
+                        }}
+                        className="px-3 py-2.5 text-sm hover:bg-emerald-50 hover:text-emerald-700 cursor-pointer rounded-md flex justify-between items-center transition-colors"
+                      >
+                        <span className="font-medium">{produto.nome}</span>
+                        <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-medium border border-slate-200">
+                          Estoque: {produto.quantidade}
+                        </span>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="px-3 py-4 text-sm text-center text-slate-500">
+                      Nenhum produto encontrado.
+                    </li>
+                  )}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
