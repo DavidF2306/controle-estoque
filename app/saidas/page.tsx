@@ -14,6 +14,7 @@ import {
   Gauge,
   AlertTriangle,
   CheckCircle,
+  Search, // Ícone de pesquisa adicionado
 } from "lucide-react";
 
 export default function Saidas() {
@@ -28,6 +29,9 @@ export default function Saidas() {
   const [local, setLocal] = useState("");
   const [contador, setContador] = useState("");
   const [observacoes, setObservacoes] = useState("");
+  
+  // Novo estado para a busca de produtos
+  const [buscaProduto, setBuscaProduto] = useState("");
 
   useEffect(() => {
     buscarDados();
@@ -120,6 +124,11 @@ export default function Saidas() {
 
   const produtoSelecionado = produtos.find(
     (produto) => produto.id === Number(produtoId)
+  );
+
+  // Filtra os produtos com base na pesquisa
+  const produtosFiltrados = produtos.filter((produto) =>
+    produto.nome.toLowerCase().includes(buscaProduto.toLowerCase())
   );
 
   return (
@@ -231,9 +240,24 @@ export default function Saidas() {
 
         {/* Produto */}
         <div className="bg-slate-50/50 border border-slate-200 rounded-lg p-4">
-          <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-            Selecione o Produto <span className="text-rose-500">*</span>
-          </label>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+            <label className="block text-sm font-semibold text-slate-700">
+              Selecione o Produto <span className="text-rose-500">*</span>
+            </label>
+            
+            {/* Input de Pesquisa do Produto */}
+            <div className="relative w-full sm:w-64">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={buscaProduto}
+                onChange={(e) => setBuscaProduto(e.target.value)}
+                placeholder="Pesquisar produto..."
+                className="w-full bg-white border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+              />
+            </div>
+          </div>
+
           <select
             value={produtoId}
             onChange={(e) => setProdutoId(e.target.value)}
@@ -241,11 +265,15 @@ export default function Saidas() {
             required
           >
             <option value="">Selecione um item do estoque...</option>
-            {produtos.map((produto) => (
-              <option key={produto.id} value={produto.id}>
-                {produto.nome} — (Em Estoque: {produto.quantidade})
-              </option>
-            ))}
+            {produtosFiltrados.length > 0 ? (
+              produtosFiltrados.map((produto) => (
+                <option key={produto.id} value={produto.id}>
+                  {produto.nome} — (Em Estoque: {produto.quantidade})
+                </option>
+              ))
+            ) : (
+              <option value="" disabled>Nenhum produto encontrado...</option>
+            )}
           </select>
 
           {produtoSelecionado && (
