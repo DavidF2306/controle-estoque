@@ -1,76 +1,67 @@
 "use client";
 
-import { FileSpreadsheet } from "lucide-react";
 import * as XLSX from "xlsx";
+import { FileSpreadsheet } from "lucide-react";
 
-interface BotaoExcelProps {
-  movimentacoes: any[];
-  mesFiltro: string;
+interface Produto {
+  id: number;
+  nome: string;
+  tipo?: string;
+  quantidade: number;
+  estoque_minimo?: number;
 }
 
-export default function BotaoExcelHistorico({ movimentacoes, mesFiltro }: BotaoExcelProps) {
-  function exportarParaExcel() {
-    if (movimentacoes.length === 0) {
-      alert("Não há dados para exportar.");
+interface BotaoExcelProps {
+  produtos: Produto[];
+}
+
+export default function BotaoExcel({ produtos }: BotaoExcelProps) {
+  function exportarExcel() {
+    if (!produtos || produtos.length === 0) {
+      alert("Nenhum produto disponível para exportar.");
       return;
     }
 
-    const dadosPlanilha = movimentacoes.map((mov) => {
-      const dataCorrigida = new Date(mov.data);
-      dataCorrigida.setHours(dataCorrigida.getHours() - 3);
-      const dataFormatada = dataCorrigida.toLocaleString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-
+    // 1. Mapeia e organiza a estrutura dos dados
+    const dados = produtos.map((produto, index) => {
+      const baixo = Number(produto.quantidade || 0) <= Number(produto.estoque_minimo || 5);
       return {
-        "Tipo": mov.tipo || "-",
-        "Produto": mov.produto || "-",
-        "Quantidade": mov.quantidade || 0,
-        "Cliente": mov.cliente || "-",
-        "Local / Origem": mov.local || "-",
-        "Nota Fiscal": mov.notaFiscal || "-",
-        "Contador": mov.contador || "-",
-        "Observações": mov.observacoes || "-",
-        "Realizado por": mov.usuario || "-",
-        "Data / Hora": dataFormatada,
+        "Nº": index + 1,
+        "Nome do Produto": produto.nome || "-",
+        "Categoria / Tipo": produto.tipo || "-",
+        "Qtd. Atual": Number(produto.quantidade || 0),
+        "Estoque Mínimo": Number(produto.estoque_minimo || 5),
+        "Status do Estoque": baixo ? "ATENÇÃO (Abaixo do Mínimo)" : "NORMAL",
       };
     });
 
-    const worksheet = XLSX.utils.json_to_sheet(dadosPlanilha);
+    // 2. Cria a folha de dados (worksheet)
+    const worksheet = XLSX.utils.json_to_sheet(dados);
 
-    const chaves = Object.keys(dadosPlanilha[0]);
-    const larguras = chaves.map((chave) => {
-   
-      const tamanhoMaximo = Math.max(
-        chave.length,
-        ...dadosPlanilha.map((d) => String(d[chave as keyof typeof d] || "").length)
-      );
-      
-      return { wch: Math.min(65, tamanhoMaximo + 3) };
-    });
+    // 3. Define as larguras das colunas para evitar textos cortados ou "###"
+    worksheet["!cols"] = [
+      { wch: 6 },  // Nº
+      { wch: 42 }, // Nome do Produto
+      { wch: 22 }, // Categoria / Tipo
+      { wch: 15 }, // Qtd. Atual
+      { wch: 16 }, // Estoque Mínimo
+      { wch: 30 }, // Status do Estoque
+    ];
 
-    worksheet["!cols"] = larguras;
-
+    // 4. Monta a pasta de trabalho (workbook) e faz o download
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Histórico");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Produtos");
 
-    const nomeArquivo = mesFiltro
-      ? `Historico_Estoque_${mesFiltro}.xlsx`
-      : `Historico_Estoque_Completo.xlsx`;
-
-    XLSX.writeFile(workbook, nomeArquivo);
+    const dataAtual = new Date().toISOString().split("T")[0];
+    XLSX.writeFile(workbook, `Relatorio_Produtos_${dataAtual}.xlsx`);
   }
 
   return (
     <button
-      onClick={exportarParaExcel}
-      className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-2xl font-bold transition flex items-center justify-center gap-2 w-full"
+      onClick={exportarExcel}
+      className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm text-sm"
     >
-      <FileSpreadsheet size={20} />
+      <FileSpreadsheet size={18} />
       Exportar Excel
     </button>
   );

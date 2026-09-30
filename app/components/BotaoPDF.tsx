@@ -1,117 +1,144 @@
 "use client";
 
-import { FileText } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { FileText } from "lucide-react";
 
-export default function BotaoPDF({ produtos }: any) {
+interface Produto {
+  id: number;
+  nome: string;
+  tipo?: string;
+  quantidade: number;
+  estoque_minimo?: number;
+}
+
+interface BotaoPDFProps {
+  produtos: Produto[];
+}
+
+export default function BotaoPDF({ produtos }: BotaoPDFProps) {
   function gerarPDF() {
-    if (!produtos || produtos.length === 0) {
-      alert("Não há dados para exportar.");
-      return;
-    }
+    const doc = new jsPDF();
+    const dataHora = new Date().toLocaleString("pt-BR");
 
-    const doc = new jsPDF("portrait", "mm", "a4");
+    // Métricas para o relatório
+    const totalProdutos = produtos.length;
+    const totalEstoque = produtos.reduce((acc, p) => acc + Number(p.quantidade || 0), 0);
+    const estoqueBaixo = produtos.filter(
+      (p) => Number(p.quantidade || 0) <= Number(p.estoque_minimo || 5)
+    ).length;
 
-    // Cores padrão corporativas (RGB)
-    const corPrimaria = [30, 58, 138];     // Azul escuro corporativo
-    const corTextoCinza = [100, 116, 139]; // Cinza elegante
-    const corLinhaBorda = [226, 232, 240]; // Borda clara
+    // --- CABEÇALHO ---
+    doc.setFillColor(15, 23, 42); // slate-900
+    doc.rect(0, 0, 210, 32, "F");
 
-    // --- CABEÇALHO DO DOCUMENTO ---
+    doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(20);
-    doc.setTextColor(corPrimaria[0], corPrimaria[1], corPrimaria[2]);
-    doc.text("COPYSTAR", 14, 16);
+    doc.setFontSize(18);
+    doc.text("RELATÓRIO DE ESTOQUE DE PRODUTOS", 14, 18);
 
-    doc.setFontSize(12);
-    doc.setTextColor(51, 65, 85); // Slate 700
-    doc.text("Relatório Geral de Estoque e Produtos", 14, 23);
-
-    // Subtítulo com data de emissão
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
-    doc.setTextColor(corTextoCinza[0], corTextoCinza[1], corTextoCinza[2]);
-    
-    const dataEmissao = `Emitido em: ${new Date().toLocaleDateString("pt-BR")} às ${new Date().toLocaleTimeString("pt-BR", { hour: '2-digit', minute: '2-digit' })}` ;
-    doc.text(dataEmissao, 14, 29);
+    doc.setTextColor(148, 163, 184); // slate-400
+    doc.text(`Gerado em: ${dataHora}`, 14, 26);
 
-    // Linha divisória sutil abaixo do cabeçalho
-    doc.setDrawColor(corLinhaBorda[0], corLinhaBorda[1], corLinhaBorda[2]);
-    doc.setLineWidth(0.5);
-    doc.line(14, 33, 210 - 14, 33);
+    // --- RESUMO / CARD DE MÉTRICAS ---
+    doc.setFillColor(248, 250, 252); // slate-50
+    doc.setDrawColor(226, 232, 240); // slate-200
+    doc.roundedRect(14, 38, 182, 18, 2, 2, "FD");
 
-    // --- PREPARAÇÃO DOS DADOS DA TABELA ---
-    const colunas = [
-      "Produto",
-      "Tipo / Categoria",
-      "Qtd Atual",
-      "Estoque Mínimo",
-    ];
+    doc.setFontSize(9);
+    doc.setTextColor(71, 85, 105); // slate-600
 
-    const linhas = produtos.map((produto: any) => [
-      produto.nome || "-",
-      produto.tipo || produto.categoria || "-",
-      produto.quantidade ?? 0,
-      produto.estoque_minimo ?? 5,
-    ]);
+    doc.setFont("helvetica", "bold");
+    doc.text("Total de Produtos:", 20, 49);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${totalProdutos}`, 52, 49);
 
-    // --- GERAÇÃO DA TABELA COM AUTOTABLE ---
-    autoTable(doc, {
-      head: [colunas],
-      body: linhas,
-      startY: 37,
-      margin: { left: 14, right: 14 },
-      styles: {
-        font: "helvetica",
-        fontSize: 9,
-        cellPadding: 4,
-        textColor: [51, 65, 85], // Texto cinza escuro legível
-      },
-      headStyles: {
-        fillColor: [30, 58, 138], // Azul escuro corporativo
-        textColor: [255, 255, 255],
-        fontStyle: "bold",
-        halign: "left",
-      },
-      alternateRowStyles: {
-        fillColor: [248, 250, 252], // Fundo levemente zebrado (Slate 50)
-      },
-      columnStyles: {
-        0: { cellWidth: 80, fontStyle: "bold" }, // Produto
-        1: { cellWidth: 50 }, // Tipo
-        2: { cellWidth: 30, halign: "center" }, // Quantidade
-        3: { cellWidth: 22, halign: "center" }, // Estoque Mínimo
-      },
-      // --- RODAPÉ AUTOMÁTICO EM CADA PÁGINA ---
-      didDrawPage: () => {
-        const paginasTotales = (doc as any).internal.getNumberOfPages();
-        const paginaAtual = doc.getCurrentPageInfo().pageNumber;
+    doc.setFont("helvetica", "bold");
+    doc.text("Itens em Estoque:", 80, 49);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${totalEstoque} un.`, 112, 49);
 
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(8);
-        doc.setTextColor(148, 163, 184); // Slate 400
+    doc.setFont("helvetica", "bold");
+    doc.text("Em Alerta / Baixo:", 142, 49);
+    doc.setTextColor(217, 119, 6); // amber-600
+    doc.setFont("helvetica", "bold");
+    doc.text(`${estoqueBaixo}`, 174, 49);
 
-        // Texto à esquerda no rodapé
-        doc.text("Copystar Gestão de Estoque - Relatório de Produtos", 14, doc.internal.pageSize.height - 10);
-
-        // Numeração de página à direita
-        doc.text(
-          `Página ${paginaAtual} de ${paginasTotales}`,
-          doc.internal.pageSize.width - 14,
-          doc.internal.pageSize.height - 10,
-          { align: "right" }
-        );
-      },
+    // --- MONTAGEM DA TABELA ---
+    const linhas = produtos.map((produto, index) => {
+      const baixo = Number(produto.quantidade || 0) <= Number(produto.estoque_minimo || 5);
+      return [
+        (index + 1).toString().padStart(2, "0"),
+        produto.nome || "-",
+        produto.tipo || "-",
+        `${produto.quantidade || 0} un.`,
+        `${produto.estoque_minimo || 5} un.`,
+        baixo ? "ATENÇÃO" : "NORMAL",
+      ];
     });
 
-    doc.save("relatorio-estoque-copystar.pdf");
+    autoTable(doc, {
+      startY: 62,
+      head: [["#", "Produto", "Categoria", "Qtd. Atual", "Qtd. Mínima", "Status"]],
+      body: linhas,
+      theme: "striped",
+      headStyles: {
+        fillColor: [30, 41, 59], // slate-800
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+        fontSize: 9,
+        halign: "left",
+      },
+      bodyStyles: {
+        fontSize: 8.5,
+        textColor: [51, 65, 85],
+      },
+      columnStyles: {
+        0: { cellWidth: 12, halign: "center" },
+        1: { cellWidth: 70 },
+        2: { cellWidth: 35 },
+        3: { cellWidth: 25, halign: "center" },
+        4: { cellWidth: 25, halign: "center" },
+        5: { cellWidth: 23, halign: "center" },
+      },
+      didParseCell: (data) => {
+        // Formatação visual da coluna Status
+        if (data.section === "body" && data.column.index === 5) {
+          if (data.cell.raw === "ATENÇÃO") {
+            data.cell.styles.textColor = [180, 83, 9]; // amber-700
+            data.cell.styles.fontStyle = "bold";
+          } else {
+            data.cell.styles.textColor = [4, 120, 87]; // emerald-700
+            data.cell.styles.fontStyle = "bold";
+          }
+        }
+      },
+      margin: { left: 14, right: 14 },
+    });
+
+    // --- RODAPÉ COM PAGINAÇÃO ---
+    const pageCount = doc.internal.pages.length - 1;
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(148, 163, 184);
+      doc.text(
+        `Página ${i} de ${pageCount}`,
+        196,
+        doc.internal.pageSize.height - 10,
+        { align: "right" }
+      );
+    }
+
+    doc.save("Relatorio_Produtos.pdf");
   }
 
   return (
     <button
       onClick={gerarPDF}
-      className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
+      className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm text-sm"
     >
       <FileText size={18} />
       Exportar PDF
