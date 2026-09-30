@@ -97,11 +97,11 @@ export default function Produtos() {
   const estoqueNormal = totalProdutos - estoqueBaixo;
 
   return (
-    <div className="text-slate-800 w-full overflow-x-hidden space-y-6">
+    <div className="text-slate-800 dark:text-slate-100 w-full overflow-x-hidden space-y-6">
       
       {/* Hero Section */}
       <section className="pt-14 md:pt-0">
-        <div className="relative overflow-hidden rounded-2xl bg-slate-900 text-white shadow-md">
+        <div className="relative overflow-hidden rounded-2xl bg-slate-900 text-white shadow-md border border-slate-800">
           <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
           
           <div className="relative p-6 md:p-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
@@ -150,38 +150,38 @@ export default function Produtos() {
 
       {/* Cards de Métricas */}
       <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
-          <p className="text-sm font-medium text-slate-500">Produtos Cadastrados</p>
-          <h2 className="text-3xl font-bold text-slate-800 mt-1">{totalProdutos}</h2>
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Produtos Cadastrados</p>
+          <h2 className="text-3xl font-bold text-slate-800 dark:text-white mt-1">{totalProdutos}</h2>
           <p className="text-xs text-slate-400 mt-1">itens no sistema</p>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
-          <p className="text-sm font-medium text-slate-500">Estoque Físico</p>
-          <h2 className="text-3xl font-bold text-slate-800 mt-1">{totalEstoque}</h2>
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Estoque Físico</p>
+          <h2 className="text-3xl font-bold text-slate-800 dark:text-white mt-1">{totalEstoque}</h2>
           <p className="text-xs text-slate-400 mt-1">unidades totais</p>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
-          <p className="text-sm font-medium text-slate-500">Estoque Saudável</p>
-          <h2 className="text-3xl font-bold text-emerald-600 mt-1">{estoqueNormal}</h2>
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Estoque Saudável</p>
+          <h2 className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{estoqueNormal}</h2>
           <p className="text-xs text-slate-400 mt-1">produtos acima do mínimo</p>
         </div>
 
-        <div className="bg-white border border-amber-200/60 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10 text-amber-600">
+        <div className="bg-white dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-500/40 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-10 dark:opacity-20 text-amber-600 dark:text-amber-400">
             <AlertTriangle size={64} />
           </div>
-          <p className="text-sm font-medium text-slate-500 relative z-10">Atenção Necessária</p>
-          <h2 className="text-3xl font-bold text-amber-600 mt-1 relative z-10">
+          <p className="text-sm font-medium text-slate-500 dark:text-amber-300/80 relative z-10">Atenção Necessária</p>
+          <h2 className="text-3xl font-bold text-amber-600 dark:text-amber-400 mt-1 relative z-10">
             {estoqueBaixo}
           </h2>
-          <p className="text-xs text-amber-600/70 font-medium mt-1 relative z-10">produtos em baixa</p>
+          <p className="text-xs text-amber-600/70 dark:text-amber-400/80 font-medium mt-1 relative z-10">produtos em baixa</p>
         </div>
       </section>
 
       {/* Barra de Busca */}
-      <section className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col md:flex-row md:items-center gap-4">
+      <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm flex flex-col md:flex-row md:items-center gap-4">
         <div className="flex-1 w-full relative">
           <Search
             size={18}
@@ -192,10 +192,10 @@ export default function Produtos() {
             placeholder="Buscar por nome ou categoria..."
             value={busca}
             onChange={(e) => handleBusca(e.target.value)}
-            className="w-full border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+            className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-800/80 dark:text-white rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
           />
         </div>
-        <p className="text-sm font-medium text-slate-500 whitespace-nowrap">
+        <p className="text-sm font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap">
           {produtosFiltrados.length} resultados
         </p>
       </section>
@@ -203,8 +203,8 @@ export default function Produtos() {
       {/* Lista Mobile */}
       <section className="xl:hidden space-y-4">
         {produtosExibidos.length === 0 ? (
-          <div className="bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-500 shadow-sm">
-            <Archive size={32} className="mx-auto mb-3 text-slate-300" />
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-8 text-center text-slate-500 dark:text-slate-400 shadow-sm">
+            <Archive size={32} className="mx-auto mb-3 text-slate-300 dark:text-slate-600" />
             Nenhum produto encontrado.
           </div>
         ) : (
@@ -214,43 +214,43 @@ export default function Produtos() {
             return (
               <div
                 key={produto.id}
-                className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col gap-4"
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm flex flex-col gap-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h2 className="font-bold text-slate-800 leading-tight">
+                    <h2 className="font-bold text-slate-800 dark:text-white leading-tight">
                       {produto.nome}
                     </h2>
-                    <p className="text-xs font-medium text-slate-500 mt-1">
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">
                       Categoria: {produto.tipo || "-"}
                     </p>
                   </div>
                   <span
                     className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider whitespace-nowrap ${
                       baixo
-                        ? "bg-amber-50 text-amber-700 border border-amber-200"
-                        : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        ? "bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/50"
+                        : "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/40"
                     }`}
                   >
-                    {baixo ? "Baixo" : "Normal"}
+                    {baixo ? "Atenção" : "Normal"}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-800">
                   <div>
-                    <p className="text-[11px] font-semibold uppercase text-slate-500 mb-0.5">Em Estoque</p>
+                    <p className="text-[11px] font-semibold uppercase text-slate-500 dark:text-slate-400 mb-0.5">Em Estoque</p>
                     <p
                       className={`font-bold text-lg ${
-                        baixo ? "text-amber-600" : "text-slate-800"
+                        baixo ? "text-amber-600 dark:text-amber-400" : "text-slate-800 dark:text-slate-100"
                       }`}
                     >
-                      {produto.quantidade} <span className="text-sm font-medium text-slate-500">un.</span>
+                      {produto.quantidade} <span className="text-sm font-medium text-slate-500 dark:text-slate-400">un.</span>
                     </p>
                   </div>
                   <div>
-                    <p className="text-[11px] font-semibold uppercase text-slate-500 mb-0.5">Mínimo Ideal</p>
-                    <p className="font-bold text-lg text-slate-800">
-                      {produto.estoque_minimo || 5} <span className="text-sm font-medium text-slate-500">un.</span>
+                    <p className="text-[11px] font-semibold uppercase text-slate-500 dark:text-slate-400 mb-0.5">Mínimo Ideal</p>
+                    <p className="font-bold text-lg text-slate-800 dark:text-slate-100">
+                      {produto.estoque_minimo || 5} <span className="text-sm font-medium text-slate-500 dark:text-slate-400">un.</span>
                     </p>
                   </div>
                 </div>
@@ -258,7 +258,7 @@ export default function Produtos() {
                 <div className="flex gap-2 pt-1">
                   <Link
                     href={`/produtos/editar/${produto.id}`}
-                    className="flex-1 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-blue-600 px-3 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 font-semibold text-sm shadow-sm"
+                    className="flex-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 font-semibold text-sm shadow-sm"
                   >
                     <Pencil size={15} />
                     Editar
@@ -266,7 +266,7 @@ export default function Produtos() {
 
                   <button
                     onClick={() => excluirProduto(produto.id)}
-                    className="flex-1 bg-white border border-slate-200 text-slate-700 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 px-3 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 font-semibold text-sm shadow-sm"
+                    className="flex-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-800 px-3 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 font-semibold text-sm shadow-sm"
                   >
                     <Trash2 size={15} />
                     Excluir
@@ -279,15 +279,15 @@ export default function Produtos() {
       </section>
 
       {/* Tabela Desktop */}
-      <section className="hidden xl:block bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+      <section className="hidden xl:block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden">
         {produtosExibidos.length === 0 ? (
-          <div className="p-12 text-center text-slate-500">
-            <Archive size={40} className="mx-auto mb-3 text-slate-300" />
+          <div className="p-12 text-center text-slate-500 dark:text-slate-400">
+            <Archive size={40} className="mx-auto mb-3 text-slate-300 dark:text-slate-600" />
             Nenhum produto encontrado.
           </div>
         ) : (
           <table className="w-full text-sm text-left min-w-[850px]">
-            <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
+            <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 font-medium border-b border-slate-200 dark:border-slate-800">
               <tr>
                 <th className="px-6 py-4">Produto</th>
                 <th className="px-6 py-4">Categoria/Tipo</th>
@@ -298,32 +298,32 @@ export default function Produtos() {
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
               {produtosExibidos.map((produto) => {
                 const baixo = estaBaixo(produto);
 
                 return (
                   <tr
                     key={produto.id}
-                    className="hover:bg-slate-50/50 transition-colors"
+                    className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors"
                   >
-                    <td className="px-6 py-4 font-semibold text-slate-800">
+                    <td className="px-6 py-4 font-semibold text-slate-800 dark:text-slate-100">
                       {produto.nome}
                     </td>
 
-                    <td className="px-6 py-4 text-slate-600">
+                    <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
                       {produto.tipo || "-"}
                     </td>
 
                     <td
                       className={`px-6 py-4 font-bold ${
-                        baixo ? "text-amber-600" : "text-slate-800"
+                        baixo ? "text-amber-600 dark:text-amber-400" : "text-slate-800 dark:text-slate-200"
                       }`}
                     >
                       {produto.quantidade} un.
                     </td>
 
-                    <td className="px-6 py-4 text-slate-500 font-medium">
+                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400 font-medium">
                       {produto.estoque_minimo || 5} un.
                     </td>
 
@@ -331,8 +331,8 @@ export default function Produtos() {
                       <span
                         className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${
                           baixo
-                            ? "bg-amber-50 text-amber-700 border border-amber-200"
-                            : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            ? "bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/50"
+                            : "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/40"
                         }`}
                       >
                         {baixo ? "Atenção" : "Normal"}
@@ -344,7 +344,7 @@ export default function Produtos() {
                         <Link
                           href={`/produtos/editar/${produto.id}`}
                           title="Editar"
-                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100"
+                          className="p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-lg transition-colors border border-transparent hover:border-blue-100 dark:hover:border-blue-900/50"
                         >
                           <Pencil size={16} />
                         </Link>
@@ -352,7 +352,7 @@ export default function Produtos() {
                         <button
                           onClick={() => excluirProduto(produto.id)}
                           title="Excluir"
-                          className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-100"
+                          className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors border border-transparent hover:border-rose-100 dark:hover:border-rose-900/50"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -368,33 +368,33 @@ export default function Produtos() {
 
       {/* Controle de Paginação */}
       {produtosFiltrados.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-slate-500">
-            Mostrando <span className="font-semibold text-slate-800">{inicio + 1}</span> até{" "}
-            <span className="font-semibold text-slate-800">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Mostrando <span className="font-semibold text-slate-800 dark:text-slate-200">{inicio + 1}</span> até{" "}
+            <span className="font-semibold text-slate-800 dark:text-slate-200">
               {Math.min(fim, produtosFiltrados.length)}
             </span>{" "}
-            de <span className="font-semibold text-slate-800">{produtosFiltrados.length}</span> produtos
+            de <span className="font-semibold text-slate-800 dark:text-slate-200">{produtosFiltrados.length}</span> produtos
           </p>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => setPaginaAtual((prev) => Math.max(prev - 1, 1))}
               disabled={paginaAtual === 1}
-              className="p-2 border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-slate-600"
+              className="p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-slate-600 dark:text-slate-300"
               title="Página Anterior"
             >
               <ChevronLeft size={18} />
             </button>
 
-            <span className="text-sm font-semibold text-slate-700 px-3">
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 px-3">
               Página {paginaAtual} de {totalPaginas}
             </span>
 
             <button
               onClick={() => setPaginaAtual((prev) => Math.min(prev + 1, totalPaginas))}
               disabled={paginaAtual === totalPaginas}
-              className="p-2 border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-slate-600"
+              className="p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-slate-600 dark:text-slate-300"
               title="Próxima Página"
             >
               <ChevronRight size={18} />
