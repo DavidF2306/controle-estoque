@@ -226,10 +226,10 @@ export default function Produtos() {
                     </p>
                   </div>
                   <span
-                    className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider whitespace-nowrap ${
+                    className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider whitespace-nowrap border ${
                       baixo
-                        ? "bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/50"
-                        : "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/40"
+                        ? "bg-amber-100 text-amber-900 border-amber-300 dark:!bg-amber-500/25 dark:!text-amber-300 dark:!border-amber-400/60"
+                        : "bg-emerald-100 text-emerald-900 border-emerald-300 dark:!bg-emerald-500/25 dark:!text-emerald-300 dark:!border-emerald-400/60"
                     }`}
                   >
                     {baixo ? "Atenção" : "Normal"}
@@ -241,7 +241,7 @@ export default function Produtos() {
                     <p className="text-[11px] font-semibold uppercase text-slate-500 dark:text-slate-400 mb-0.5">Em Estoque</p>
                     <p
                       className={`font-bold text-lg ${
-                        baixo ? "text-amber-600 dark:text-amber-400" : "text-slate-800 dark:text-slate-100"
+                        baixo ? "text-amber-600 dark:!text-amber-400" : "text-slate-800 dark:text-slate-100"
                       }`}
                     >
                       {produto.quantidade} <span className="text-sm font-medium text-slate-500 dark:text-slate-400">un.</span>
@@ -317,7 +317,7 @@ export default function Produtos() {
 
                     <td
                       className={`px-6 py-4 font-bold ${
-                        baixo ? "text-amber-600 dark:text-amber-400" : "text-slate-800 dark:text-slate-200"
+                        baixo ? "text-amber-600 dark:!text-amber-400" : "text-slate-800 dark:text-slate-200"
                       }`}
                     >
                       {produto.quantidade} un.
@@ -329,10 +329,10 @@ export default function Produtos() {
 
                     <td className="px-6 py-4">
                       <span
-                        className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${
+                        className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border ${
                           baixo
-                            ? "bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/50"
-                            : "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/40"
+                            ? "bg-amber-100 text-amber-900 border-amber-300 dark:!bg-amber-500/30 dark:!text-amber-300 dark:!border-amber-400/60"
+                            : "bg-emerald-100 text-emerald-900 border-emerald-300 dark:!bg-emerald-500/30 dark:!text-emerald-300 dark:!border-emerald-400/60"
                         }`}
                       >
                         {baixo ? "Atenção" : "Normal"}
