@@ -4,15 +4,14 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import BotaoPDF from "../components/BotaoPDF";
+import BotaoExcel from "../components/BotaoExcel"; // <--- 1. IMPORTAR O COMPONENTE AQUI
 
-import * as XLSX from "xlsx";
 import {
   Package,
   Plus,
   Search,
   Pencil,
   Trash2,
-  FileSpreadsheet,
   AlertTriangle,
   Archive,
   ChevronLeft,
@@ -53,20 +52,7 @@ export default function Produtos() {
     return Number(produto.quantidade || 0) <= Number(produto.estoque_minimo || 5);
   }
 
-  function exportarExcel() {
-    const dados = produtos.map((produto) => ({
-      Produto: produto.nome,
-      Tipo: produto.tipo || "-",
-      Quantidade: produto.quantidade,
-      "Estoque Mínimo": produto.estoque_minimo || 5,
-      Status: estaBaixo(produto) ? "Estoque Baixo" : "Normal",
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(dados);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Produtos");
-    XLSX.writeFile(workbook, "Produtos.xlsx");
-  }
+  // (A função exportarExcel antiga foi apagada daqui, pois agora ela vive dentro do BotaoExcel.tsx)
 
   // Filtro
   const produtosFiltrados = produtos.filter(
@@ -128,13 +114,8 @@ export default function Produtos() {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full xl:w-auto">
               <BotaoPDF produtos={produtos} />
 
-              <button
-                onClick={exportarExcel}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm text-sm"
-              >
-                <FileSpreadsheet size={18} />
-                Exportar Excel
-              </button>
+              {/* <--- 2. USAR O COMPONENTE AQUI */}
+              <BotaoExcel produtos={produtos} />
 
               <Link
                 href="/produtos/novo"

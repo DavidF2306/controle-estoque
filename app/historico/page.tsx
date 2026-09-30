@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import BotaoPDFHistorico from "../components/BotaoPDFHistorico";
-import BotaoExcelHistorico from "../components/BotaoExcel";
+import BotaoExcelHistorico from "../components/BotaoExcelHistorico";
 import {
   History,
   Search,
@@ -201,9 +201,9 @@ export default function Historico() {
                 />
                 
                 <BotaoExcelHistorico
-                  movimentacoes={movimentacoesFiltradas}
-                  mesFiltro={mesFiltro}
-                />
+  movimentacoes={movimentacoesFiltradas}
+  mesFiltro={mesFiltro}
+/>
               </div>
             </div>
           </div>
