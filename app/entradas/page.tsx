@@ -320,7 +320,7 @@ export default function Entradas() {
                         onClick={() => {
                           setProdutoId(String(produto.id));
                           setProdutoDropdownOpen(false);
-                          setBuscaProduto(""); // limpa a busca ao selecionar
+                          setBuscaProduto(""); 
                         }}
                         className="px-3 py-2.5 text-sm hover:bg-emerald-50 hover:text-emerald-700 cursor-pointer rounded-md flex justify-between items-center transition-colors"
                       >

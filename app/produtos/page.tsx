@@ -15,12 +15,15 @@ import {
   FileSpreadsheet,
   AlertTriangle,
   Archive,
-  CheckCircle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 export default function Produtos() {
   const [produtos, setProdutos] = useState<any[]>([]);
   const [busca, setBusca] = useState("");
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const ITENS_POR_PAGINA = 10;
 
   useEffect(() => {
     buscarProdutos();
@@ -65,19 +68,31 @@ export default function Produtos() {
     XLSX.writeFile(workbook, "Produtos.xlsx");
   }
 
+  // Filtro
   const produtosFiltrados = produtos.filter(
     (produto) =>
       produto.nome?.toLowerCase().includes(busca.toLowerCase()) ||
       produto.tipo?.toLowerCase().includes(busca.toLowerCase())
   );
 
-  const totalProdutos = produtos.length;
+  // Lógica de Paginação
+  const totalPaginas = Math.ceil(produtosFiltrados.length / ITENS_POR_PAGINA) || 1;
+  const inicio = (paginaAtual - 1) * ITENS_POR_PAGINA;
+  const fim = inicio + ITENS_POR_PAGINA;
+  const produtosExibidos = produtosFiltrados.slice(inicio, fim);
 
+  // Mudar de busca reseta a página para a 1
+  const handleBusca = (valor: string) => {
+    setBusca(valor);
+    setPaginaAtual(1);
+  };
+
+  // Métricas gerais
+  const totalProdutos = produtos.length;
   const totalEstoque = produtos.reduce(
     (total, produto) => total + Number(produto.quantidade || 0),
     0
   );
-
   const estoqueBaixo = produtos.filter((produto) => estaBaixo(produto)).length;
   const estoqueNormal = totalProdutos - estoqueBaixo;
 
@@ -87,7 +102,6 @@ export default function Produtos() {
       {/* Hero Section */}
       <section className="pt-14 md:pt-0">
         <div className="relative overflow-hidden rounded-2xl bg-slate-900 text-white shadow-md">
-          {/* Elementos de fundo sutis */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
           
           <div className="relative p-6 md:p-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
@@ -112,7 +126,6 @@ export default function Produtos() {
             </div>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full xl:w-auto">
-              {/* Mantendo seu Botão PDF */}
               <BotaoPDF produtos={produtos} />
 
               <button
@@ -178,7 +191,7 @@ export default function Produtos() {
             type="text"
             placeholder="Buscar por nome ou categoria..."
             value={busca}
-            onChange={(e) => setBusca(e.target.value)}
+            onChange={(e) => handleBusca(e.target.value)}
             className="w-full border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
           />
         </div>
@@ -189,13 +202,13 @@ export default function Produtos() {
 
       {/* Lista Mobile */}
       <section className="xl:hidden space-y-4">
-        {produtosFiltrados.length === 0 ? (
+        {produtosExibidos.length === 0 ? (
           <div className="bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-500 shadow-sm">
             <Archive size={32} className="mx-auto mb-3 text-slate-300" />
             Nenhum produto encontrado.
           </div>
         ) : (
-          produtosFiltrados.map((produto) => {
+          produtosExibidos.map((produto) => {
             const baixo = estaBaixo(produto);
 
             return (
@@ -267,7 +280,7 @@ export default function Produtos() {
 
       {/* Tabela Desktop */}
       <section className="hidden xl:block bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-        {produtosFiltrados.length === 0 ? (
+        {produtosExibidos.length === 0 ? (
           <div className="p-12 text-center text-slate-500">
             <Archive size={40} className="mx-auto mb-3 text-slate-300" />
             Nenhum produto encontrado.
@@ -286,7 +299,7 @@ export default function Produtos() {
             </thead>
 
             <tbody className="divide-y divide-slate-100">
-              {produtosFiltrados.map((produto) => {
+              {produtosExibidos.map((produto) => {
                 const baixo = estaBaixo(produto);
 
                 return (
@@ -352,6 +365,44 @@ export default function Produtos() {
           </table>
         )}
       </section>
+
+      {/* Controle de Paginação */}
+      {produtosFiltrados.length > 0 && (
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-slate-500">
+            Mostrando <span className="font-semibold text-slate-800">{inicio + 1}</span> até{" "}
+            <span className="font-semibold text-slate-800">
+              {Math.min(fim, produtosFiltrados.length)}
+            </span>{" "}
+            de <span className="font-semibold text-slate-800">{produtosFiltrados.length}</span> produtos
+          </p>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPaginaAtual((prev) => Math.max(prev - 1, 1))}
+              disabled={paginaAtual === 1}
+              className="p-2 border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-slate-600"
+              title="Página Anterior"
+            >
+              <ChevronLeft size={18} />
+            </button>
+
+            <span className="text-sm font-semibold text-slate-700 px-3">
+              Página {paginaAtual} de {totalPaginas}
+            </span>
+
+            <button
+              onClick={() => setPaginaAtual((prev) => Math.min(prev + 1, totalPaginas))}
+              disabled={paginaAtual === totalPaginas}
+              className="p-2 border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-slate-600"
+              title="Próxima Página"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
