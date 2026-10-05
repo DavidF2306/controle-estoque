@@ -179,15 +179,15 @@ export default function Saidas() {
   );
 
   return (
-    <div className="text-slate-800 w-full overflow-x-hidden space-y-6 pb-10">
+    <div className="text-slate-100 w-full overflow-x-hidden space-y-6 pb-10">
       {/* Hero Section */}
       <section className="pt-14 md:pt-0">
-        <div className="relative overflow-hidden rounded-2xl bg-slate-900 text-white shadow-md">
+        <div className="relative overflow-hidden rounded-2xl bg-slate-900 border border-slate-800 text-white shadow-md">
           <div className="absolute top-0 right-0 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
 
           <div className="relative p-6 md:p-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
             <div className="flex items-center gap-5">
-              <div className="w-16 h-16 rounded-xl bg-white/10 border border-white/10 backdrop-blur-sm flex items-center justify-center shrink-0">
+              <div className="w-16 h-16 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-center shrink-0">
                 <ArrowUpCircle size={32} className="text-rose-400" />
               </div>
 
@@ -230,41 +230,41 @@ export default function Saidas() {
 
       {/* Cards de Métricas */}
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex items-start justify-between">
           <div>
-            <p className="text-sm font-medium text-slate-500">Produtos</p>
-            <h2 className="text-3xl font-bold text-slate-800 mt-1">
+            <p className="text-sm font-medium text-slate-400">Produtos</p>
+            <h2 className="text-3xl font-bold text-slate-100 mt-1">
               {produtos.length}
             </h2>
-            <p className="text-xs text-slate-400 mt-1">itens disponíveis</p>
+            <p className="text-xs text-slate-500 mt-1">itens disponíveis</p>
           </div>
-          <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
             <Package size={20} />
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex items-start justify-between">
           <div>
-            <p className="text-sm font-medium text-slate-500">Estoque Físico</p>
-            <h2 className="text-3xl font-bold text-slate-800 mt-1">
+            <p className="text-sm font-medium text-slate-400">Estoque Físico</p>
+            <h2 className="text-3xl font-bold text-slate-100 mt-1">
               {totalEstoque}
             </h2>
-            <p className="text-xs text-slate-400 mt-1">unidades no sistema</p>
+            <p className="text-xs text-slate-500 mt-1">unidades no sistema</p>
           </div>
-          <div className="w-10 h-10 rounded-lg bg-slate-50 text-slate-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 flex items-center justify-center">
             <Gauge size={20} />
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex items-start justify-between">
           <div>
-            <p className="text-sm font-medium text-slate-500">Destinos</p>
-            <h2 className="text-3xl font-bold text-slate-800 mt-1">
+            <p className="text-sm font-medium text-slate-400">Destinos</p>
+            <h2 className="text-3xl font-bold text-slate-100 mt-1">
               {locais.length}
             </h2>
-            <p className="text-xs text-slate-400 mt-1">locais cadastrados</p>
+            <p className="text-xs text-slate-500 mt-1">locais cadastrados</p>
           </div>
-          <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
             <MapPin size={20} />
           </div>
         </div>
@@ -273,53 +273,62 @@ export default function Saidas() {
       {/* Formulário */}
       <form
         onSubmit={registrarSaida}
-        className="bg-white border border-slate-200 rounded-xl p-5 md:p-6 shadow-sm space-y-6 w-full relative"
+        className="bg-slate-900 border border-slate-800 rounded-xl p-5 md:p-6 shadow-sm space-y-6 w-full relative"
       >
-        <div className="flex items-center gap-3 mb-4 border-b border-slate-100 pb-4">
-          <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+        <div className="flex items-center gap-3 mb-4 border-b border-slate-800 pb-4">
+          <div className="w-10 h-10 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
             <ClipboardList size={20} />
           </div>
 
           <div>
-            <h2 className="text-lg font-bold text-slate-800">Dados da Saída</h2>
-            <p className="text-sm text-slate-500">
+            <h2 className="text-lg font-bold text-slate-100">Dados da Saída</h2>
+            <p className="text-sm text-slate-400">
               Preencha os detalhes da entrega para o local de destino.
             </p>
           </div>
         </div>
 
         {/* Produto (Dropdown com Pesquisa) */}
-        <div className="bg-slate-50/50 border border-slate-200 rounded-lg p-4">
+        <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
           <div className="relative" ref={produtoRef}>
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-              Selecione o Produto <span className="text-rose-500">*</span>
+            <label className="block text-sm font-semibold text-slate-300 mb-1.5">
+              Selecione o Produto <span className="text-rose-400">*</span>
             </label>
 
             {/* Input Fake (Botão do Select) */}
             <div
               onClick={() => setProdutoDropdownOpen(!produtoDropdownOpen)}
-              className={`w-full bg-white border ${
+              className={`w-full bg-slate-900 border ${
                 produtoDropdownOpen
-                  ? "border-blue-500 ring-2 ring-blue-100"
-                  : "border-slate-200"
-              } rounded-lg px-4 py-2.5 text-sm flex justify-between items-center cursor-pointer transition-shadow`}
+                  ? "border-blue-500 ring-2 ring-blue-500/20"
+                  : "border-slate-700/80"
+              } rounded-lg px-4 py-2.5 text-sm flex justify-between items-center cursor-pointer transition-all`}
             >
               <span
                 className={
                   produtoSelecionado
-                    ? "text-slate-800 font-medium flex items-center gap-2 flex-wrap"
-                    : "text-slate-400"
+                    ? "text-slate-100 font-medium flex items-center gap-2 flex-wrap"
+                    : "text-slate-500"
                 }
               >
                 {produtoSelecionado ? (
                   <>
                     <span>{produtoSelecionado.nome}</span>
                     {(produtoSelecionado.tipo || produtoSelecionado.categoria) && (
-                      <span className="text-xs px-2 py-0.5 rounded font-semibold border bg-slate-100 text-slate-700 border-slate-300">
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded font-medium border ${
+                          (produtoSelecionado.tipo || produtoSelecionado.categoria)
+                            ?.toString()
+                            .toLowerCase()
+                            .includes("original")
+                            ? "bg-blue-500/15 text-blue-400 border-blue-500/30"
+                            : "bg-purple-500/15 text-purple-300 border-purple-500/30"
+                        }`}
+                      >
                         {produtoSelecionado.tipo || produtoSelecionado.categoria}
                       </span>
                     )}
-                    <span className="text-slate-500 text-xs font-normal">
+                    <span className="text-slate-400 text-xs font-normal">
                       — (Em Estoque: {produtoSelecionado.quantidade})
                     </span>
                   </>
@@ -337,8 +346,8 @@ export default function Saidas() {
 
             {/* Painel da Lista (Abre ao clicar) */}
             {produtoDropdownOpen && (
-              <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden">
-                <div className="p-2 border-b border-slate-100 bg-slate-50">
+              <div className="absolute z-50 w-full mt-1 bg-slate-900 border border-slate-800 rounded-lg shadow-xl overflow-hidden">
+                <div className="p-2 border-b border-slate-800 bg-slate-950/50">
                   <div className="relative">
                     <Search
                       size={14}
@@ -349,8 +358,8 @@ export default function Saidas() {
                       autoFocus
                       value={buscaProduto}
                       onChange={(e) => setBuscaProduto(e.target.value)}
-                      placeholder="Pesquisar por nome ou variação (Original, Compatível...)"
-                      className="w-full bg-white border border-slate-200 rounded-md pl-8 pr-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      placeholder="Pesquisar por nome, variação (Original, Compatível)..."
+                      className="w-full bg-slate-900 border border-slate-700 text-slate-200 placeholder-slate-500 rounded-md pl-8 pr-3 py-2 text-sm outline-none focus:border-blue-500"
                     />
                   </div>
                 </div>
@@ -369,21 +378,21 @@ export default function Saidas() {
                           onClick={() => {
                             setProdutoId(String(produto.id));
                             setProdutoDropdownOpen(false);
-                            setBuscaProduto(""); // limpa a busca ao selecionar
+                            setBuscaProduto("");
                           }}
-                          className="px-3 py-2.5 text-sm hover:bg-blue-50 hover:text-blue-700 cursor-pointer rounded-md flex justify-between items-center transition-colors gap-2"
+                          className="px-3 py-2.5 text-sm hover:bg-slate-800/70 cursor-pointer rounded-md flex justify-between items-center transition-colors gap-2"
                         >
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-medium text-slate-800">
+                            <span className="font-medium text-slate-200">
                               {produto.nome}
                             </span>
 
                             {rotuloTipo && (
                               <span
-                                className={`text-xs px-2 py-0.5 rounded font-semibold border ${
+                                className={`text-xs px-2 py-0.5 rounded font-medium border ${
                                   isOriginal
-                                    ? "bg-blue-50 text-blue-700 border-blue-200"
-                                    : "bg-purple-50 text-purple-700 border-purple-200"
+                                    ? "bg-blue-500/15 text-blue-400 border-blue-500/30"
+                                    : "bg-purple-500/15 text-purple-300 border-purple-500/30"
                                 }`}
                               >
                                 {rotuloTipo}
@@ -391,14 +400,14 @@ export default function Saidas() {
                             )}
                           </div>
 
-                          <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-medium border border-slate-200 shrink-0">
+                          <span className="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded font-medium border border-slate-700/80 shrink-0">
                             Estoque: {produto.quantidade}
                           </span>
                         </li>
                       );
                     })
                   ) : (
-                    <li className="px-3 py-4 text-sm text-center text-slate-500">
+                    <li className="px-3 py-4 text-sm text-center text-slate-400">
                       Nenhum produto encontrado.
                     </li>
                   )}
@@ -408,7 +417,7 @@ export default function Saidas() {
           </div>
 
           {produtoSelecionado && (
-            <p className="text-sm text-blue-600 mt-3 font-medium flex items-center gap-1.5">
+            <p className="text-sm text-blue-400 mt-3 font-medium flex items-center gap-1.5">
               <CheckCircle size={14} />
               Estoque atual liberado para retirada: {produtoSelecionado.quantidade} un.
             </p>
@@ -417,9 +426,9 @@ export default function Saidas() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Quantidade */}
-          <div className="bg-slate-50/50 border border-slate-200 rounded-lg p-4">
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-              Quantidade Retirada <span className="text-rose-500">*</span>
+          <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
+            <label className="block text-sm font-semibold text-slate-300 mb-1.5">
+              Quantidade Retirada <span className="text-rose-400">*</span>
             </label>
             <input
               type="number"
@@ -427,12 +436,12 @@ export default function Saidas() {
               onChange={(e) => setQuantidade(e.target.value)}
               min="1"
               placeholder="Ex: 5"
-              className="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-shadow"
+              className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 transition-all"
               required
             />
             {produtoSelecionado &&
               Number(quantidade) > Number(produtoSelecionado.quantidade) && (
-                <p className="text-sm text-rose-600 mt-2 font-medium flex items-center gap-1.5">
+                <p className="text-sm text-rose-400 mt-2 font-medium flex items-center gap-1.5">
                   <AlertTriangle size={14} />
                   Atenção: Quantidade superior ao estoque.
                 </p>
@@ -440,25 +449,25 @@ export default function Saidas() {
           </div>
 
           {/* Local (Dropdown com Pesquisa) */}
-          <div className="bg-slate-50/50 border border-slate-200 rounded-lg p-4">
+          <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
             <div className="relative" ref={localRef}>
-              <label className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
+              <label className="text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
                 <MapPin size={16} className="text-slate-400" />
-                Local de Destino <span className="text-rose-500">*</span>
+                Local de Destino <span className="text-rose-400">*</span>
               </label>
 
               {/* Input Fake (Botão do Select) */}
               <div
                 onClick={() => setLocalDropdownOpen(!localDropdownOpen)}
-                className={`w-full bg-white border ${
+                className={`w-full bg-slate-900 border ${
                   localDropdownOpen
-                    ? "border-blue-500 ring-2 ring-blue-100"
-                    : "border-slate-200"
-                } rounded-lg px-4 py-2.5 text-sm flex justify-between items-center cursor-pointer transition-shadow`}
+                    ? "border-blue-500 ring-2 ring-blue-500/20"
+                    : "border-slate-700/80"
+                } rounded-lg px-4 py-2.5 text-sm flex justify-between items-center cursor-pointer transition-all`}
               >
                 <span
                   className={
-                    local ? "text-slate-800 font-medium" : "text-slate-400"
+                    local ? "text-slate-100 font-medium" : "text-slate-500"
                   }
                 >
                   {local || "Selecione para onde vai..."}
@@ -473,8 +482,8 @@ export default function Saidas() {
 
               {/* Painel da Lista (Abre ao clicar) */}
               {localDropdownOpen && (
-                <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden">
-                  <div className="p-2 border-b border-slate-100 bg-slate-50">
+                <div className="absolute z-50 w-full mt-1 bg-slate-900 border border-slate-800 rounded-lg shadow-xl overflow-hidden">
+                  <div className="p-2 border-b border-slate-800 bg-slate-950/50">
                     <div className="relative">
                       <Search
                         size={14}
@@ -486,7 +495,7 @@ export default function Saidas() {
                         value={buscaLocal}
                         onChange={(e) => setBuscaLocal(e.target.value)}
                         placeholder="Pesquisar local..."
-                        className="w-full bg-white border border-slate-200 rounded-md pl-8 pr-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        className="w-full bg-slate-900 border border-slate-700 text-slate-200 placeholder-slate-500 rounded-md pl-8 pr-3 py-2 text-sm outline-none focus:border-blue-500"
                       />
                     </div>
                   </div>
@@ -498,15 +507,15 @@ export default function Saidas() {
                           onClick={() => {
                             setLocal(item.nome);
                             setLocalDropdownOpen(false);
-                            setBuscaLocal(""); // limpa a busca ao selecionar
+                            setBuscaLocal("");
                           }}
-                          className="px-3 py-2.5 text-sm hover:bg-blue-50 hover:text-blue-700 cursor-pointer rounded-md font-medium transition-colors"
+                          className="px-3 py-2.5 text-sm hover:bg-slate-800/70 text-slate-200 cursor-pointer rounded-md font-medium transition-colors"
                         >
                           {item.nome}
                         </li>
                       ))
                     ) : (
-                      <li className="px-3 py-4 text-sm text-center text-slate-500">
+                      <li className="px-3 py-4 text-sm text-center text-slate-400">
                         Nenhum local encontrado.
                       </li>
                     )}
@@ -520,7 +529,7 @@ export default function Saidas() {
         {/* Contador e Observações */}
         <div className="space-y-5">
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+            <label className="block text-sm font-semibold text-slate-300 mb-1.5">
               Contador / Ordem de Serviço (Opcional)
             </label>
             <input
@@ -528,13 +537,13 @@ export default function Saidas() {
               value={contador}
               onChange={(e) => setContador(e.target.value)}
               placeholder="Ex: OS-1029 ou Referência do equipamento"
-              className="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+              className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
             />
           </div>
 
           <div>
-            <label className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
-              <FileText size={16} className="text-slate-500" />
+            <label className="text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
+              <FileText size={16} className="text-slate-400" />
               Observações Gerais
             </label>
             <textarea
@@ -542,19 +551,19 @@ export default function Saidas() {
               onChange={(e) => setObservacoes(e.target.value)}
               placeholder="Algum detalhe importante sobre essa saída? (Opcional)"
               rows={3}
-              className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow resize-none"
+              className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all resize-none"
             />
           </div>
         </div>
 
         {/* Info Box */}
-        <div className="bg-emerald-50 border border-emerald-200/60 rounded-lg p-4 flex items-start gap-3 mt-2">
-          <CheckCircle className="text-emerald-600 shrink-0 mt-0.5" size={18} />
+        <div className="bg-emerald-950/30 border border-emerald-800/40 rounded-lg p-4 flex items-start gap-3 mt-2">
+          <CheckCircle className="text-emerald-400 shrink-0 mt-0.5" size={18} />
           <div>
-            <p className="font-semibold text-emerald-800 text-sm">
+            <p className="font-semibold text-emerald-300 text-sm">
               Controle Preciso
             </p>
-            <p className="text-xs text-emerald-700/80 mt-1 leading-relaxed">
+            <p className="text-xs text-emerald-400/80 mt-1 leading-relaxed">
               Ao registrar, o estoque do produto será atualizado automaticamente,
               garantindo que o sistema sempre exiba os valores reais disponíveis.
             </p>
@@ -562,7 +571,7 @@ export default function Saidas() {
         </div>
 
         {/* Botões */}
-        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100">
+        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-800">
           <button
             type="submit"
             className="bg-rose-600 hover:bg-rose-700 text-white px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
@@ -574,7 +583,7 @@ export default function Saidas() {
           <button
             type="button"
             onClick={() => router.push("/produtos")}
-            className="bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
+            className="bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
           >
             <ArrowLeft size={18} />
             Cancelar e Voltar
