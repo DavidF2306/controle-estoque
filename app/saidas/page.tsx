@@ -34,7 +34,7 @@ export default function Saidas() {
   // Estados para busca e controle dos dropdowns customizados
   const [buscaProduto, setBuscaProduto] = useState("");
   const [buscaLocal, setBuscaLocal] = useState("");
-  
+
   const [produtoDropdownOpen, setProdutoDropdownOpen] = useState(false);
   const [localDropdownOpen, setLocalDropdownOpen] = useState(false);
 
@@ -45,12 +45,17 @@ export default function Saidas() {
   useEffect(() => {
     buscarDados();
 
-    // Função para fechar dropdowns se o clique for fora deles
     function handleClickOutside(event: MouseEvent) {
-      if (produtoRef.current && !produtoRef.current.contains(event.target as Node)) {
+      if (
+        produtoRef.current &&
+        !produtoRef.current.contains(event.target as Node)
+      ) {
         setProdutoDropdownOpen(false);
       }
-      if (localRef.current && !localRef.current.contains(event.target as Node)) {
+      if (
+        localRef.current &&
+        !localRef.current.contains(event.target as Node)
+      ) {
         setLocalDropdownOpen(false);
       }
     }
@@ -89,7 +94,7 @@ export default function Saidas() {
       alert("Por favor, pesquise e selecione um produto.");
       return;
     }
-    
+
     if (!local) {
       alert("Por favor, pesquise e selecione o local de destino.");
       return;
@@ -105,7 +110,7 @@ export default function Saidas() {
       (produto) => produto.id === Number(produtoId)
     );
 
-    if (Number(quantidade) > Number(produtoSelecionado.quantidade)) {
+    if (Number(quantidade) > Number(produtoSelecionado?.quantidade || 0)) {
       alert("Quantidade maior que o estoque disponível.");
       return;
     }
@@ -155,10 +160,19 @@ export default function Saidas() {
     (produto) => produto.id === Number(produtoId)
   );
 
-  // Filtros em tempo real
-  const produtosFiltrados = produtos.filter((produto) =>
-    produto.nome.toLowerCase().includes(buscaProduto.toLowerCase())
-  );
+  // Filtros em tempo real (Pesquisa por Nome, Tipo e Categoria)
+  const produtosFiltrados = produtos.filter((produto) => {
+    const termo = buscaProduto.toLowerCase();
+    const nome = produto.nome ? produto.nome.toLowerCase() : "";
+    const tipo = produto.tipo ? produto.tipo.toLowerCase() : "";
+    const categoria = produto.categoria ? produto.categoria.toLowerCase() : "";
+
+    return (
+      nome.includes(termo) ||
+      tipo.includes(termo) ||
+      categoria.includes(termo)
+    );
+  });
 
   const locaisFiltrados = locais.filter((item) =>
     item.nome.toLowerCase().includes(buscaLocal.toLowerCase())
@@ -166,12 +180,11 @@ export default function Saidas() {
 
   return (
     <div className="text-slate-800 w-full overflow-x-hidden space-y-6 pb-10">
-      
       {/* Hero Section */}
       <section className="pt-14 md:pt-0">
         <div className="relative overflow-hidden rounded-2xl bg-slate-900 text-white shadow-md">
           <div className="absolute top-0 right-0 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
-          
+
           <div className="relative p-6 md:p-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
             <div className="flex items-center gap-5">
               <div className="w-16 h-16 rounded-xl bg-white/10 border border-white/10 backdrop-blur-sm flex items-center justify-center shrink-0">
@@ -188,14 +201,17 @@ export default function Saidas() {
                 </h1>
 
                 <p className="text-slate-400 mt-2 text-sm md:text-base max-w-2xl">
-                  Registre as entregas para locais, controle a retirada de suprimentos e mantenha o inventário atualizado.
+                  Registre as entregas para locais, controle a retirada de
+                  suprimentos e mantenha o inventário atualizado.
                 </p>
               </div>
             </div>
 
             <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5 min-w-[240px]">
-              <p className="text-slate-400 text-sm font-medium">Total de saídas</p>
-              
+              <p className="text-slate-400 text-sm font-medium">
+                Total de saídas
+              </p>
+
               <div className="flex items-end gap-2 mt-2">
                 <p className="text-3xl font-bold text-white">{saidas.length}</p>
                 <p className="text-slate-400 text-sm mb-1">registros</p>
@@ -217,7 +233,9 @@ export default function Saidas() {
         <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
           <div>
             <p className="text-sm font-medium text-slate-500">Produtos</p>
-            <h2 className="text-3xl font-bold text-slate-800 mt-1">{produtos.length}</h2>
+            <h2 className="text-3xl font-bold text-slate-800 mt-1">
+              {produtos.length}
+            </h2>
             <p className="text-xs text-slate-400 mt-1">itens disponíveis</p>
           </div>
           <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
@@ -228,7 +246,9 @@ export default function Saidas() {
         <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
           <div>
             <p className="text-sm font-medium text-slate-500">Estoque Físico</p>
-            <h2 className="text-3xl font-bold text-slate-800 mt-1">{totalEstoque}</h2>
+            <h2 className="text-3xl font-bold text-slate-800 mt-1">
+              {totalEstoque}
+            </h2>
             <p className="text-xs text-slate-400 mt-1">unidades no sistema</p>
           </div>
           <div className="w-10 h-10 rounded-lg bg-slate-50 text-slate-600 flex items-center justify-center">
@@ -239,7 +259,9 @@ export default function Saidas() {
         <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
           <div>
             <p className="text-sm font-medium text-slate-500">Destinos</p>
-            <h2 className="text-3xl font-bold text-slate-800 mt-1">{locais.length}</h2>
+            <h2 className="text-3xl font-bold text-slate-800 mt-1">
+              {locais.length}
+            </h2>
             <p className="text-xs text-slate-400 mt-1">locais cadastrados</p>
           </div>
           <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
@@ -277,13 +299,33 @@ export default function Saidas() {
             <div
               onClick={() => setProdutoDropdownOpen(!produtoDropdownOpen)}
               className={`w-full bg-white border ${
-                produtoDropdownOpen ? "border-blue-500 ring-2 ring-blue-100" : "border-slate-200"
+                produtoDropdownOpen
+                  ? "border-blue-500 ring-2 ring-blue-100"
+                  : "border-slate-200"
               } rounded-lg px-4 py-2.5 text-sm flex justify-between items-center cursor-pointer transition-shadow`}
             >
-              <span className={produtoSelecionado ? "text-slate-800 font-medium" : "text-slate-400"}>
-                {produtoSelecionado
-                  ? `${produtoSelecionado.nome} — (Em Estoque: ${produtoSelecionado.quantidade})`
-                  : "Selecione um item do estoque..."}
+              <span
+                className={
+                  produtoSelecionado
+                    ? "text-slate-800 font-medium flex items-center gap-2 flex-wrap"
+                    : "text-slate-400"
+                }
+              >
+                {produtoSelecionado ? (
+                  <>
+                    <span>{produtoSelecionado.nome}</span>
+                    {(produtoSelecionado.tipo || produtoSelecionado.categoria) && (
+                      <span className="text-xs px-2 py-0.5 rounded font-semibold border bg-slate-100 text-slate-700 border-slate-300">
+                        {produtoSelecionado.tipo || produtoSelecionado.categoria}
+                      </span>
+                    )}
+                    <span className="text-slate-500 text-xs font-normal">
+                      — (Em Estoque: {produtoSelecionado.quantidade})
+                    </span>
+                  </>
+                ) : (
+                  "Selecione um item do estoque..."
+                )}
               </span>
               <ChevronDown
                 size={16}
@@ -307,29 +349,54 @@ export default function Saidas() {
                       autoFocus
                       value={buscaProduto}
                       onChange={(e) => setBuscaProduto(e.target.value)}
-                      placeholder="Pesquisar produto pelo nome..."
+                      placeholder="Pesquisar por nome ou variação (Original, Compatível...)"
                       className="w-full bg-white border border-slate-200 rounded-md pl-8 pr-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
                 </div>
                 <ul className="max-h-60 overflow-y-auto p-1">
                   {produtosFiltrados.length > 0 ? (
-                    produtosFiltrados.map((produto) => (
-                      <li
-                        key={produto.id}
-                        onClick={() => {
-                          setProdutoId(String(produto.id));
-                          setProdutoDropdownOpen(false);
-                          setBuscaProduto(""); // limpa a busca ao selecionar
-                        }}
-                        className="px-3 py-2.5 text-sm hover:bg-blue-50 hover:text-blue-700 cursor-pointer rounded-md flex justify-between items-center transition-colors"
-                      >
-                        <span className="font-medium">{produto.nome}</span>
-                        <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-medium border border-slate-200">
-                          Estoque: {produto.quantidade}
-                        </span>
-                      </li>
-                    ))
+                    produtosFiltrados.map((produto) => {
+                      const rotuloTipo = produto.tipo || produto.categoria;
+                      const isOriginal = rotuloTipo
+                        ?.toString()
+                        .toLowerCase()
+                        .includes("original");
+
+                      return (
+                        <li
+                          key={produto.id}
+                          onClick={() => {
+                            setProdutoId(String(produto.id));
+                            setProdutoDropdownOpen(false);
+                            setBuscaProduto(""); // limpa a busca ao selecionar
+                          }}
+                          className="px-3 py-2.5 text-sm hover:bg-blue-50 hover:text-blue-700 cursor-pointer rounded-md flex justify-between items-center transition-colors gap-2"
+                        >
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-medium text-slate-800">
+                              {produto.nome}
+                            </span>
+
+                            {rotuloTipo && (
+                              <span
+                                className={`text-xs px-2 py-0.5 rounded font-semibold border ${
+                                  isOriginal
+                                    ? "bg-blue-50 text-blue-700 border-blue-200"
+                                    : "bg-purple-50 text-purple-700 border-purple-200"
+                                }`}
+                              >
+                                {rotuloTipo}
+                              </span>
+                            )}
+                          </div>
+
+                          <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-medium border border-slate-200 shrink-0">
+                            Estoque: {produto.quantidade}
+                          </span>
+                        </li>
+                      );
+                    })
                   ) : (
                     <li className="px-3 py-4 text-sm text-center text-slate-500">
                       Nenhum produto encontrado.
@@ -384,10 +451,16 @@ export default function Saidas() {
               <div
                 onClick={() => setLocalDropdownOpen(!localDropdownOpen)}
                 className={`w-full bg-white border ${
-                  localDropdownOpen ? "border-blue-500 ring-2 ring-blue-100" : "border-slate-200"
+                  localDropdownOpen
+                    ? "border-blue-500 ring-2 ring-blue-100"
+                    : "border-slate-200"
                 } rounded-lg px-4 py-2.5 text-sm flex justify-between items-center cursor-pointer transition-shadow`}
               >
-                <span className={local ? "text-slate-800 font-medium" : "text-slate-400"}>
+                <span
+                  className={
+                    local ? "text-slate-800 font-medium" : "text-slate-400"
+                  }
+                >
                   {local || "Selecione para onde vai..."}
                 </span>
                 <ChevronDown
@@ -478,9 +551,12 @@ export default function Saidas() {
         <div className="bg-emerald-50 border border-emerald-200/60 rounded-lg p-4 flex items-start gap-3 mt-2">
           <CheckCircle className="text-emerald-600 shrink-0 mt-0.5" size={18} />
           <div>
-            <p className="font-semibold text-emerald-800 text-sm">Controle Preciso</p>
+            <p className="font-semibold text-emerald-800 text-sm">
+              Controle Preciso
+            </p>
             <p className="text-xs text-emerald-700/80 mt-1 leading-relaxed">
-              Ao registrar, o estoque do produto será atualizado automaticamente, garantindo que o sistema sempre exiba os valores reais disponíveis.
+              Ao registrar, o estoque do produto será atualizado automaticamente,
+              garantindo que o sistema sempre exiba os valores reais disponíveis.
             </p>
           </div>
         </div>
