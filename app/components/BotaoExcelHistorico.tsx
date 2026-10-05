@@ -80,7 +80,31 @@ export default function BotaoExcelHistorico({
           "-";
       }
 
-      // 3. Local / Origem / Destino
+      // 3. Classificação (Original / Compatível)
+      let classificacaoBruta =
+        item.classificacao ||
+        item.tipoProduto ||
+        item.tipo_produto ||
+        item.tipoItem ||
+        item.categoria ||
+        (item.produtos && (item.produtos.tipo || item.produtos.classificacao)) ||
+        "";
+
+      let classificacaoFinal = "-";
+
+      if (classificacaoBruta && classificacaoBruta !== "-") {
+        classificacaoFinal = String(classificacaoBruta).toUpperCase();
+      } else {
+        // Fallback inteligente baseando-se no nome do produto
+        const nomeProdLower = String(nomeDoProduto || "").toLowerCase();
+        if (nomeProdLower.includes("compativel") || nomeProdLower.includes("compatível")) {
+          classificacaoFinal = "COMPATÍVEL";
+        } else if (nomeDoProduto && nomeDoProduto !== "-") {
+          classificacaoFinal = "ORIGINAL";
+        }
+      }
+
+      // 4. Local / Origem / Destino
       const localOrigem =
         item.local_origem ||
         item.origem ||
@@ -92,7 +116,7 @@ export default function BotaoExcelHistorico({
         item.cliente ||
         "-";
 
-      // 4. Nota Fiscal
+      // 5. Nota Fiscal
       const notaFiscal =
         item.nota_fiscal ||
         item.nf ||
@@ -101,21 +125,21 @@ export default function BotaoExcelHistorico({
         item.notaFiscal ||
         "-";
 
-      // 5. Contador
+      // 6. Contador
       const contador =
         item.contador ||
         item.contador_impressora ||
         item.contador_inicial ||
         "-";
 
-      // 6. Observação
+      // 7. Observação
       const observacao =
         item.observacao ||
         item.observacoes ||
         item.obs ||
         "-";
 
-      // 7. Realizado Por / Utilizador
+      // 8. Realizado Por / Utilizador
       const realizadoPor =
         item.usuario ||
         item.realizado_por ||
@@ -128,15 +152,16 @@ export default function BotaoExcelHistorico({
         "-";
 
       return {
-        "Data e Hora": dataFormatada,
         "Tipo": item.tipo ? String(item.tipo).toUpperCase() : "-",
         "Produto": nomeDoProduto,
+        "Classificação": classificacaoFinal,
         "Qtd": item.quantidade ?? 0,
         "Local / Origem": localOrigem,
         "NF": notaFiscal,
         "Contador": contador,
         "Observações": observacao,
         "Realizado por": realizadoPor,
+        "Data e Hora": dataFormatada,
       };
     });
 
@@ -145,15 +170,16 @@ export default function BotaoExcelHistorico({
 
     // Definir a largura ideal das colunas
     worksheet["!cols"] = [
-      { wch: 18 }, // Data e Hora
       { wch: 12 }, // Tipo
-      { wch: 35 }, // Produto
+      { wch: 38 }, // Produto
+      { wch: 16 }, // Classificação
       { wch: 10 }, // Qtd
-      { wch: 30 }, // Local / Origem
+      { wch: 32 }, // Local / Origem
       { wch: 14 }, // NF
       { wch: 14 }, // Contador
       { wch: 35 }, // Observações
-      { wch: 18 }, // Realizado por
+      { wch: 20 }, // Realizado por
+      { wch: 18 }, // Data e Hora
     ];
 
     const workbook = XLSX.utils.book_new();
