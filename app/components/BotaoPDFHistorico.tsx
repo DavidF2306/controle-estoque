@@ -45,7 +45,7 @@ export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDF
       periodoTexto = `Período Filtrado: Mês ${mes}/${ano}`;
     }
 
-    const dataEmissao = `Emitido em: ${new Date().toLocaleDateString("pt-BR")} às ${new Date().toLocaleTimeString("pt-BR", { hour: '2-digit', minute: '2-digit' })}` ;
+    const dataEmissao = `Emitido em: ${new Date().toLocaleDateString("pt-BR")} às ${new Date().toLocaleTimeString("pt-BR", { hour: '2-digit', minute: '2-digit' })}`;
 
     doc.text(periodoTexto, 14, 29);
     doc.text(dataEmissao, 283 - 14, 29, { align: "right" });
@@ -59,6 +59,7 @@ export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDF
     const colunas = [
       "Tipo",
       "Produto",
+      "Tipo Item",
       "Qtd",
       "Local / Origem",
       "NF",
@@ -82,6 +83,7 @@ export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDF
       return [
         mov.tipo || "-",
         mov.produto || "-",
+        mov.tipoProduto || "-",
         mov.quantidade || 0,
         mov.local || "-",
         mov.notaFiscal || "-",
@@ -114,19 +116,20 @@ export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDF
         fillColor: [248, 250, 252], // Fundo levemente zebrado (Slate 50)
       },
       columnStyles: {
-        0: { cellWidth: 20, fontStyle: "bold" }, // Tipo
-        1: { cellWidth: 40 }, // Produto
-        2: { cellWidth: 15, halign: "center" }, // Qtd
-        3: { cellWidth: 35 }, // Local
-        4: { cellWidth: 20 }, // NF
-        5: { cellWidth: 20 }, // Contador
-        6: { cellWidth: 45 }, // Observações
-        7: { cellWidth: 30 }, // Realizado por
-        8: { cellWidth: 30 }, // Data / Hora
+        0: { cellWidth: 18, fontStyle: "bold" }, // Tipo (Entrada/Saída)
+        1: { cellWidth: 38 },                     // Produto
+        2: { cellWidth: 22 },                     // Tipo Item (Original/Compatível)
+        3: { cellWidth: 12, halign: "center" },   // Qtd
+        4: { cellWidth: 32 },                     // Local / Origem
+        5: { cellWidth: 18 },                     // NF
+        6: { cellWidth: 18 },                     // Contador
+        7: { cellWidth: 38 },                     // Observações
+        8: { cellWidth: 28 },                     // Realizado por
+        9: { cellWidth: 28 },                     // Data / Hora
       },
       // --- RODAPÉ AUTOMÁTICO EM CADA PÁGINA ---
-      didDrawPage: (data) => {
-        const paginasTotales = (doc as any).internal.getNumberOfPages();
+      didDrawPage: () => {
+        const paginasTotais = (doc as any).internal.getNumberOfPages();
         const paginaAtual = doc.getCurrentPageInfo().pageNumber;
 
         doc.setFont("helvetica", "normal");
@@ -138,7 +141,7 @@ export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDF
 
         // Numeração de página à direita
         doc.text(
-          `Página ${paginaAtual} de ${paginasTotales}`,
+          `Página ${paginaAtual} de ${paginasTotais}`,
           doc.internal.pageSize.width - 14,
           doc.internal.pageSize.height - 10,
           { align: "right" }
