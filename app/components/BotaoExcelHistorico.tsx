@@ -15,7 +15,6 @@ export default function BotaoExcelHistorico({
   mesFiltro,
 }: BotaoExcelHistoricoProps) {
   const exportarExcel = () => {
-    // Garante que pega a lista correta
     const lista = movimentacoes || historico || [];
 
     if (lista.length === 0) {
@@ -23,59 +22,140 @@ export default function BotaoExcelHistorico({
       return;
     }
 
-    // 1. Mapear e formatar os dados com colunas limpas e datas legíveis
+    // Mapear os dados verificando todas as variações de nomes vindos da BD
     const dadosFormatados = lista.map((item) => {
-      // Formata a data e hora para o padrão brasileiro (DD/MM/AAAA HH:MM)
+      // 1. Data e Hora
+      const rawData =
+        item.created_at ||
+        item.data ||
+        item.data_movimentacao ||
+        item.data_criacao ||
+        item.data_entrada ||
+        item.data_saida ||
+        item.createdAt ||
+        item.date;
+
       let dataFormatada = "-";
-      if (item.created_at) {
-        const data = new Date(item.created_at);
-        dataFormatada = data.toLocaleString("pt-BR", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
+      if (rawData) {
+        if (typeof rawData === "string" && rawData.includes("/")) {
+          dataFormatada = rawData;
+        } else {
+          const d = new Date(rawData);
+          if (!isNaN(d.getTime())) {
+            dataFormatada = d.toLocaleString("pt-BR", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+          } else {
+            dataFormatada = String(rawData);
+          }
+        }
       }
 
-      // Descobre o nome do produto (seja via relacionamento ou campo direto)
-      const nomeDoProduto =
-        item.produtos?.nome ||
-        item.produto?.nome ||
-        item.produto_nome ||
-        item.nome_produto ||
+      // 2. Nome do Produto
+      let nomeDoProduto = "-";
+      if (item.produtos) {
+        nomeDoProduto = Array.isArray(item.produtos)
+          ? item.produtos[0]?.nome
+          : item.produtos?.nome;
+      } else if (item.produto) {
+        nomeDoProduto =
+          typeof item.produto === "object"
+            ? Array.isArray(item.produto)
+              ? item.produto[0]?.nome
+              : item.produto?.nome
+            : item.produto;
+      }
+
+      if (!nomeDoProduto || nomeDoProduto === "-") {
+        nomeDoProduto =
+          item.produto_nome ||
+          item.nome_produto ||
+          item.nomeProduto ||
+          item.produtoNome ||
+          item.nome ||
+          "-";
+      }
+
+      // 3. Local / Origem / Destino
+      const localOrigem =
+        item.local_origem ||
+        item.origem ||
+        item.destino ||
+        item.local_destino ||
+        item.local ||
+        item.fornecedor ||
+        item.setor ||
+        item.cliente ||
+        "-";
+
+      // 4. Nota Fiscal
+      const notaFiscal =
+        item.nota_fiscal ||
+        item.nf ||
+        item.numero_nf ||
+        item.num_nota ||
+        item.notaFiscal ||
+        "-";
+
+      // 5. Contador
+      const contador =
+        item.contador ||
+        item.contador_impressora ||
+        item.contador_inicial ||
+        "-";
+
+      // 6. Observação
+      const observacao =
+        item.observacao ||
+        item.observacoes ||
+        item.obs ||
+        "-";
+
+      // 7. Realizado Por / Utilizador
+      const realizadoPor =
+        item.usuario ||
+        item.realizado_por ||
+        item.usuario_nome ||
+        item.nome_usuario ||
+        item.created_by ||
+        item.user ||
+        (typeof item.usuarios === "object" ? item.usuarios?.nome : item.usuarios) ||
+        (typeof item.profiles === "object" ? item.profiles?.nome : item.profiles) ||
         "-";
 
       return {
         "Data e Hora": dataFormatada,
         "Tipo": item.tipo ? String(item.tipo).toUpperCase() : "-",
         "Produto": nomeDoProduto,
-        "Qtd": item.quantidade || 0,
-        "Local / Origem": item.local_origem || item.origem || "-",
-        "NF": item.nota_fiscal || item.nf || "-",
-        "Contador": item.contador || "-",
-        "Observações": item.observacao || item.observacoes || "-",
-        "Realizado por": item.usuario || item.realizado_por || "-",
+        "Qtd": item.quantidade ?? 0,
+        "Local / Origem": localOrigem,
+        "NF": notaFiscal,
+        "Contador": contador,
+        "Observações": observacao,
+        "Realizado por": realizadoPor,
       };
     });
 
-    // 2. Criar a planilha
+    // Criar a folha do Excel
     const worksheet = XLSX.utils.json_to_sheet(dadosFormatados);
 
-    // 3. LARGURA DAS COLUNAS (impede que o texto fique espremido)
+    // Definir a largura ideal das colunas
     worksheet["!cols"] = [
       { wch: 18 }, // Data e Hora
       { wch: 12 }, // Tipo
-      { wch: 35 }, // Produto (bem espaçoso)
+      { wch: 35 }, // Produto
       { wch: 10 }, // Qtd
-      { wch: 25 }, // Local / Origem
+      { wch: 30 }, // Local / Origem
       { wch: 14 }, // NF
       { wch: 14 }, // Contador
-      { wch: 40 }, // Observações (bem espaçoso)
-      { wch: 20 }, // Realizado por
+      { wch: 35 }, // Observações
+      { wch: 18 }, // Realizado por
     ];
 
-    // 4. Salvar o arquivo Excel
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Histórico");
 
