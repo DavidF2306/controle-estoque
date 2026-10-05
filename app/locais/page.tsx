@@ -11,12 +11,19 @@ import {
   CheckCircle,
   Archive,
   Search,
+  Pencil,
+  Check,
+  X,
 } from "lucide-react";
 
 export default function Locais() {
   const [locais, setLocais] = useState<any[]>([]);
   const [nome, setNome] = useState("");
   const [busca, setBusca] = useState("");
+
+  // Estados para edição
+  const [editandoId, setEditandoId] = useState<number | null>(null);
+  const [nomeEditado, setNomeEditado] = useState("");
 
   useEffect(() => {
     buscarLocais();
@@ -90,6 +97,67 @@ export default function Locais() {
       return;
     }
 
+    buscarLocais();
+  }
+
+  // ---- FUNÇÕES DE EDIÇÃO ----
+
+  function iniciarEdicao(local: any) {
+    setEditandoId(local.id);
+    setNomeEditado(local.nome);
+  }
+
+  function cancelarEdicao() {
+    setEditandoId(null);
+    setNomeEditado("");
+  }
+
+  async function salvarEdicao(id: number) {
+    if (!nomeEditado.trim()) {
+      alert("O nome do local não pode ficar vazio.");
+      return;
+    }
+
+    const localOriginal = locais.find((l) => l.id === id);
+    if (localOriginal?.nome === nomeEditado.trim()) {
+      cancelarEdicao(); // Nenhuma alteração foi feita
+      return;
+    }
+
+    // Verifica se o novo nome já existe (evita duplicar nomes)
+    const { data: existente } = await supabase
+      .from("locais")
+      .select("id")
+      .eq("nome", nomeEditado.trim())
+      .neq("id", id) // Ignora o próprio local que estamos editando
+      .maybeSingle();
+
+    if (existente) {
+      alert("Já existe outro local cadastrado com este nome.");
+      return;
+    }
+
+    // 1. Atualiza o nome na tabela de locais
+    const { error } = await supabase
+      .from("locais")
+      .update({ nome: nomeEditado.trim() })
+      .eq("id", id);
+
+    if (error) {
+      alert("Erro ao atualizar local: " + error.message);
+      return;
+    }
+
+    // 2. Atualiza em cascata na tabela de impressoras que usavam o nome antigo
+    if (localOriginal) {
+      await supabase
+        .from("impressoras")
+        .update({ local: nomeEditado.trim() })
+        .eq("local", localOriginal.nome);
+    }
+
+    setEditandoId(null);
+    setNomeEditado("");
     buscarLocais();
   }
 
@@ -232,22 +300,66 @@ export default function Locais() {
                 {locaisFiltrados.map((local) => (
                   <div
                     key={local.id}
-                    className="flex items-center justify-between border border-slate-200 dark:border-slate-700 rounded-lg p-4 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm transition-all"
+                    className="flex items-center justify-between border border-slate-200 dark:border-slate-700 rounded-lg p-4 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm transition-all min-h-[74px]"
                   >
-                    <div>
-                      <h3 className="font-semibold text-slate-800 dark:text-slate-200">
-                        {local.nome}
-                      </h3>
-                      {/* O parágrafo com o ID foi removido daqui */}
-                    </div>
+                    {editandoId === local.id ? (
+                      // Modo de Edição
+                      <div className="flex items-center gap-3 w-full">
+                        <input
+                          type="text"
+                          value={nomeEditado}
+                          onChange={(e) => setNomeEditado(e.target.value)}
+                          className="flex-1 bg-slate-50 dark:bg-slate-950 border border-blue-500 rounded-lg px-3 py-2 text-sm outline-none text-slate-800 dark:text-slate-100"
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") salvarEdicao(local.id);
+                            if (e.key === "Escape") cancelarEdicao();
+                          }}
+                        />
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            onClick={() => salvarEdicao(local.id)}
+                            title="Salvar"
+                            className="p-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-md transition-colors"
+                          >
+                            <Check size={18} />
+                          </button>
+                          <button
+                            onClick={cancelarEdicao}
+                            title="Cancelar"
+                            className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors"
+                          >
+                            <X size={18} />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      // Modo de Visualização
+                      <>
+                        <div>
+                          <h3 className="font-semibold text-slate-800 dark:text-slate-200">
+                            {local.nome}
+                          </h3>
+                        </div>
 
-                    <button
-                      onClick={() => excluirLocal(local.id)}
-                      title="Excluir Local"
-                      className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-md transition-colors"
-                    >
-                      <Trash2 size={18} />
-                    </button>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            onClick={() => iniciarEdicao(local)}
+                            title="Editar Local"
+                            className="p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-md transition-colors"
+                          >
+                            <Pencil size={18} />
+                          </button>
+                          <button
+                            onClick={() => excluirLocal(local.id)}
+                            title="Excluir Local"
+                            className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-md transition-colors"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 ))}
               </div>
