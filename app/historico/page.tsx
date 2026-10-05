@@ -12,10 +12,9 @@ import {
   ArrowDownCircle,
   ArrowUpCircle,
   User,
-  MapPin,
-  FileText,
   Package,
   Archive,
+  FileText,
 } from "lucide-react";
 
 export default function Historico() {
@@ -57,24 +56,29 @@ export default function Historico() {
       return usuario?.nome || email;
     }
 
+    // 1. Atualizada a query para trazer também o tipo/classificação do produto
     const { data: entradas } = await supabase.from("entradas").select(`
         *,
         produtos (
-          nome
+          nome,
+          tipo
         )
       `);
 
     const { data: saidas } = await supabase.from("saidas").select(`
         *,
         produtos (
-          nome
+          nome,
+          tipo
         )
       `);
 
+    // 2. Adicionada a propriedade classificacaoProduto no mapeamento
     const todasMovimentacoes = [
       ...(entradas || []).map((entrada) => ({
         tipo: "Entrada",
         produto: entrada.produtos?.nome || "-",
+        classificacaoProduto: entrada.produtos?.tipo || "-", 
         quantidade: entrada.quantidade,
         local: entrada.origem || "-",
         notaFiscal: entrada.nota_fiscal || "-",
@@ -87,6 +91,7 @@ export default function Historico() {
       ...(saidas || []).map((saida) => ({
         tipo: "Saída",
         produto: saida.produtos?.nome || "-",
+        classificacaoProduto: saida.produtos?.tipo || "-",
         quantidade: saida.quantidade,
         local: saida.local || saida.destino || "-",
         notaFiscal: "-",
@@ -109,9 +114,11 @@ export default function Historico() {
     const filtroMes =
       mesFiltro === "" || mov.data.slice(0, 7) === mesFiltro;
 
+    // 3. Adicionada a classificaçãoProduto na busca por texto
     const textoBusca = `
       ${mov.tipo}
       ${mov.produto}
+      ${mov.classificacaoProduto}
       ${mov.local}
       ${mov.notaFiscal}
       ${mov.contador}
@@ -201,9 +208,9 @@ export default function Historico() {
                 />
                 
                 <BotaoExcelHistorico
-  movimentacoes={movimentacoesFiltradas}
-  mesFiltro={mesFiltro}
-/>
+                  movimentacoes={movimentacoesFiltradas}
+                  mesFiltro={mesFiltro}
+                />
               </div>
             </div>
           </div>
@@ -212,6 +219,7 @@ export default function Historico() {
 
       {/* Cards de Métricas */}
       <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        {/* ... (Cards mantidos iguais) ... */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div>
@@ -276,7 +284,7 @@ export default function Historico() {
               Filtros Avançados
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              Refine a busca por produto, local, usuário, ou período.
+              Refine a busca por produto, classificação, local, usuário, ou período.
             </p>
           </div>
         </div>
@@ -295,7 +303,7 @@ export default function Historico() {
                 type="text"
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                placeholder="Ex: Toner, Recepção, João, NF-123..."
+                placeholder="Ex: Toner, Original, Recepção, João..."
                 className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-slate-800 dark:text-slate-100"
               />
             </div>
@@ -356,6 +364,8 @@ export default function Historico() {
         <section className="xl:hidden space-y-4">
           {movimentacoesFiltradas.map((mov, index) => {
             const entrada = mov.tipo === "Entrada";
+            // Define a cor da badge consoante o tipo
+            const isOriginal = mov.classificacaoProduto?.toLowerCase() === "original";
 
             return (
               <div
@@ -384,9 +394,21 @@ export default function Historico() {
                       >
                         {mov.tipo}
                       </span>
-                      <h3 className="font-bold text-slate-800 dark:text-slate-100 leading-tight">
-                        {mov.produto}
-                      </h3>
+                      {/* 4. Título do produto com a Badge "Original/Compatível" em formato mobile */}
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 mt-0.5">
+                        <h3 className="font-bold text-slate-800 dark:text-slate-100 leading-tight">
+                          {mov.produto}
+                        </h3>
+                        {mov.classificacaoProduto !== "-" && (
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border w-fit ${
+                            isOriginal 
+                              ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800/50" 
+                              : "bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800/50"
+                          }`}>
+                            {mov.classificacaoProduto}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -452,11 +474,13 @@ export default function Historico() {
       {/* Tabela Desktop */}
       {movimentacoesFiltradas.length > 0 && (
         <section className="hidden xl:block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-x-auto">
-          <table className="w-full min-w-[1200px] text-sm text-left">
+          <table className="w-full min-w-[1300px] text-sm text-left">
             <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 font-medium border-b border-slate-200 dark:border-slate-700">
               <tr>
                 <th className="px-6 py-4">Tipo</th>
                 <th className="px-6 py-4">Produto</th>
+                {/* 5. Nova coluna na tabela Desktop */}
+                <th className="px-6 py-4">Classificação</th>
                 <th className="px-6 py-4">Qtd</th>
                 <th className="px-6 py-4">Local / Origem</th>
                 <th className="px-6 py-4">NF</th>
@@ -470,6 +494,7 @@ export default function Historico() {
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {movimentacoesFiltradas.map((mov, index) => {
                 const entrada = mov.tipo === "Entrada";
+                const isOriginal = mov.classificacaoProduto?.toLowerCase() === "original";
 
                 return (
                   <tr
@@ -490,6 +515,19 @@ export default function Historico() {
 
                     <td className="px-6 py-4 font-semibold text-slate-800 dark:text-slate-200">
                       {mov.produto}
+                    </td>
+
+                    {/* 6. Linha correspondente à classificação na Tabela Desktop */}
+                    <td className="px-6 py-4">
+                      {mov.classificacaoProduto !== "-" && (
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border ${
+                          isOriginal 
+                            ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800/50" 
+                            : "bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800/50"
+                        }`}>
+                          {mov.classificacaoProduto}
+                        </span>
+                      )}
                     </td>
 
                     <td
