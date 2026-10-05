@@ -40,7 +40,10 @@ export default function Entradas() {
 
     // Função para fechar o dropdown se o clique for fora dele
     function handleClickOutside(event: MouseEvent) {
-      if (produtoRef.current && !produtoRef.current.contains(event.target as Node)) {
+      if (
+        produtoRef.current &&
+        !produtoRef.current.contains(event.target as Node)
+      ) {
         setProdutoDropdownOpen(false);
       }
     }
@@ -138,23 +141,31 @@ export default function Entradas() {
     (produto) => produto.id === Number(produtoId)
   );
 
-  // Filtro em tempo real do produto
-  const produtosFiltrados = produtos.filter((produto) =>
-    produto.nome.toLowerCase().includes(buscaProduto.toLowerCase())
-  );
+  // Filtros em tempo real (Pesquisa por Nome, Tipo e Categoria)
+  const produtosFiltrados = produtos.filter((produto) => {
+    const termo = buscaProduto.toLowerCase();
+    const nome = produto.nome ? produto.nome.toLowerCase() : "";
+    const tipo = produto.tipo ? produto.tipo.toLowerCase() : "";
+    const categoria = produto.categoria ? produto.categoria.toLowerCase() : "";
+
+    return (
+      nome.includes(termo) ||
+      tipo.includes(termo) ||
+      categoria.includes(termo)
+    );
+  });
 
   return (
-    <div className="text-slate-800 w-full overflow-x-hidden space-y-6 pb-10">
-      
+    <div className="text-slate-100 w-full overflow-x-hidden space-y-6 pb-10">
       {/* Hero Section */}
       <section className="pt-14 md:pt-0">
-        <div className="relative overflow-hidden rounded-2xl bg-slate-900 text-white shadow-md">
+        <div className="relative overflow-hidden rounded-2xl bg-slate-900 border border-slate-800 text-white shadow-md">
           {/* Elementos de fundo sutis */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
-          
+
           <div className="relative p-6 md:p-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
             <div className="flex items-center gap-5">
-              <div className="w-16 h-16 rounded-xl bg-white/10 border border-white/10 backdrop-blur-sm flex items-center justify-center shrink-0">
+              <div className="w-16 h-16 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-center shrink-0">
                 <ArrowDownCircle size={32} className="text-emerald-400" />
               </div>
 
@@ -168,7 +179,8 @@ export default function Entradas() {
                 </h1>
 
                 <p className="text-slate-400 mt-2 text-sm md:text-base max-w-2xl">
-                  Registre novos suprimentos recebidos, atualize quantidades e mantenha o catálogo sempre atualizado.
+                  Registre novos suprimentos recebidos, atualize quantidades e
+                  mantenha o catálogo sempre atualizado.
                 </p>
               </div>
             </div>
@@ -200,46 +212,46 @@ export default function Entradas() {
 
       {/* Cards de Métricas */}
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start justify-between hover:shadow-md transition-shadow">
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex items-start justify-between">
           <div>
-            <p className="text-sm font-medium text-slate-500">Produtos</p>
-            <h2 className="text-3xl font-bold text-slate-800 mt-1">
+            <p className="text-sm font-medium text-slate-400">Produtos</p>
+            <h2 className="text-3xl font-bold text-slate-100 mt-1">
               {totalProdutos}
             </h2>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-500 mt-1">
               disponíveis no catálogo
             </p>
           </div>
-          <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
             <Package size={20} />
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start justify-between hover:shadow-md transition-shadow">
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex items-start justify-between">
           <div>
-            <p className="text-sm font-medium text-slate-500">Estoque Geral</p>
-            <h2 className="text-3xl font-bold text-slate-800 mt-1">
+            <p className="text-sm font-medium text-slate-400">Estoque Geral</p>
+            <h2 className="text-3xl font-bold text-slate-100 mt-1">
               {totalEstoque}
             </h2>
-            <p className="text-xs text-slate-400 mt-1">
-              unidades totais
-            </p>
+            <p className="text-xs text-slate-500 mt-1">unidades totais</p>
           </div>
-          <div className="w-10 h-10 rounded-lg bg-slate-50 text-slate-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 flex items-center justify-center">
             <Boxes size={20} />
           </div>
         </div>
 
-        <div className="bg-emerald-50 border border-emerald-200/60 rounded-xl p-5 shadow-sm flex items-start justify-between relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10 text-emerald-600">
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex items-start justify-between relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-5 text-emerald-500">
             <CheckCircle size={64} />
           </div>
           <div className="relative z-10">
-            <p className="text-sm font-medium text-emerald-800/70">Status do Módulo</p>
-            <h2 className="text-3xl font-bold text-emerald-700 mt-1">
+            <p className="text-sm font-medium text-slate-400">
+              Status do Módulo
+            </p>
+            <h2 className="text-3xl font-bold text-emerald-400 mt-1">
               Operante
             </h2>
-            <p className="text-xs text-emerald-600 font-medium mt-1">
+            <p className="text-xs text-slate-500 font-medium mt-1">
               pronto para registros
             </p>
           </div>
@@ -249,41 +261,75 @@ export default function Entradas() {
       {/* Formulário */}
       <form
         onSubmit={registrarEntrada}
-        className="bg-white border border-slate-200 rounded-xl p-5 md:p-6 shadow-sm space-y-6 w-full relative"
+        className="bg-slate-900 border border-slate-800 rounded-xl p-5 md:p-6 shadow-sm space-y-6 w-full relative"
       >
-        <div className="flex items-center gap-3 mb-4 border-b border-slate-100 pb-4">
-          <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+        <div className="flex items-center gap-3 mb-4 border-b border-slate-800 pb-4">
+          <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
             <ClipboardList size={20} />
           </div>
 
           <div>
-            <h2 className="text-lg font-bold text-slate-800">
+            <h2 className="text-lg font-bold text-slate-100">
               Dados da Entrada
             </h2>
-            <p className="text-sm text-slate-500">
-              Preencha os dados do suprimento recebido para adicionar ao estoque.
+            <p className="text-sm text-slate-400">
+              Preencha os dados do suprimento recebido para adicionar ao
+              estoque.
             </p>
           </div>
         </div>
 
         {/* Produto (Dropdown com Pesquisa Integrada) */}
-        <div className="bg-slate-50/50 border border-slate-200 rounded-lg p-4">
+        <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
           <div className="relative" ref={produtoRef}>
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-              Selecione o Produto <span className="text-rose-500">*</span>
+            <label className="block text-sm font-semibold text-slate-300 mb-1.5">
+              Selecione o Produto <span className="text-rose-400">*</span>
             </label>
 
             {/* Input Fake (Botão que abre o Select) */}
             <div
               onClick={() => setProdutoDropdownOpen(!produtoDropdownOpen)}
-              className={`w-full bg-white border ${
-                produtoDropdownOpen ? "border-emerald-500 ring-2 ring-emerald-100" : "border-slate-200"
-              } rounded-lg px-4 py-2.5 text-sm flex justify-between items-center cursor-pointer transition-shadow`}
+              className={`w-full bg-slate-900 border ${
+                produtoDropdownOpen
+                  ? "border-emerald-500 ring-2 ring-emerald-500/20"
+                  : "border-slate-700/80"
+              } rounded-lg px-4 py-2.5 text-sm flex justify-between items-center cursor-pointer transition-all`}
             >
-              <span className={produtoSelecionado ? "text-slate-800 font-medium" : "text-slate-400"}>
-                {produtoSelecionado
-                  ? `${produtoSelecionado.nome} — (Estoque Atual: ${produtoSelecionado.quantidade})`
-                  : "Selecione um produto cadastrado..."}
+              <span
+                className={
+                  produtoSelecionado
+                    ? "text-slate-100 font-medium flex items-center gap-2 flex-wrap"
+                    : "text-slate-500"
+                }
+              >
+                {produtoSelecionado ? (
+                  <>
+                    <span>{produtoSelecionado.nome}</span>
+                    {(produtoSelecionado.tipo || produtoSelecionado.categoria) && (
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded font-medium border ${
+                          (
+                            produtoSelecionado.tipo ||
+                            produtoSelecionado.categoria
+                          )
+                            ?.toString()
+                            .toLowerCase()
+                            .includes("original")
+                            ? "bg-blue-500/15 text-blue-400 border-blue-500/30"
+                            : "bg-purple-500/15 text-purple-300 border-purple-500/30"
+                        }`}
+                      >
+                        {produtoSelecionado.tipo ||
+                          produtoSelecionado.categoria}
+                      </span>
+                    )}
+                    <span className="text-slate-400 text-xs font-normal">
+                      — (Estoque Atual: {produtoSelecionado.quantidade})
+                    </span>
+                  </>
+                ) : (
+                  "Selecione um produto cadastrado..."
+                )}
               </span>
               <ChevronDown
                 size={16}
@@ -295,8 +341,8 @@ export default function Entradas() {
 
             {/* Painel da Lista com Busca (Abre ao clicar) */}
             {produtoDropdownOpen && (
-              <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden">
-                <div className="p-2 border-b border-slate-100 bg-slate-50">
+              <div className="absolute z-50 w-full mt-1 bg-slate-900 border border-slate-800 rounded-lg shadow-xl overflow-hidden">
+                <div className="p-2 border-b border-slate-800 bg-slate-950/50">
                   <div className="relative">
                     <Search
                       size={14}
@@ -307,31 +353,56 @@ export default function Entradas() {
                       autoFocus
                       value={buscaProduto}
                       onChange={(e) => setBuscaProduto(e.target.value)}
-                      placeholder="Pesquisar produto pelo nome..."
-                      className="w-full bg-white border border-slate-200 rounded-md pl-8 pr-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                      placeholder="Pesquisar por nome, variação (Original, Compatível)..."
+                      className="w-full bg-slate-900 border border-slate-700 text-slate-200 placeholder-slate-500 rounded-md pl-8 pr-3 py-2 text-sm outline-none focus:border-emerald-500"
                     />
                   </div>
                 </div>
                 <ul className="max-h-60 overflow-y-auto p-1">
                   {produtosFiltrados.length > 0 ? (
-                    produtosFiltrados.map((produto) => (
-                      <li
-                        key={produto.id}
-                        onClick={() => {
-                          setProdutoId(String(produto.id));
-                          setProdutoDropdownOpen(false);
-                          setBuscaProduto(""); 
-                        }}
-                        className="px-3 py-2.5 text-sm hover:bg-emerald-50 hover:text-emerald-700 cursor-pointer rounded-md flex justify-between items-center transition-colors"
-                      >
-                        <span className="font-medium">{produto.nome}</span>
-                        <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-medium border border-slate-200">
-                          Estoque: {produto.quantidade}
-                        </span>
-                      </li>
-                    ))
+                    produtosFiltrados.map((produto) => {
+                      const rotuloTipo = produto.tipo || produto.categoria;
+                      const isOriginal = rotuloTipo
+                        ?.toString()
+                        .toLowerCase()
+                        .includes("original");
+
+                      return (
+                        <li
+                          key={produto.id}
+                          onClick={() => {
+                            setProdutoId(String(produto.id));
+                            setProdutoDropdownOpen(false);
+                            setBuscaProduto("");
+                          }}
+                          className="px-3 py-2.5 text-sm hover:bg-slate-800/70 cursor-pointer rounded-md flex justify-between items-center transition-colors gap-2"
+                        >
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-medium text-slate-200">
+                              {produto.nome}
+                            </span>
+
+                            {rotuloTipo && (
+                              <span
+                                className={`text-xs px-2 py-0.5 rounded font-medium border ${
+                                  isOriginal
+                                    ? "bg-blue-500/15 text-blue-400 border-blue-500/30"
+                                    : "bg-purple-500/15 text-purple-300 border-purple-500/30"
+                                }`}
+                              >
+                                {rotuloTipo}
+                              </span>
+                            )}
+                          </div>
+
+                          <span className="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded font-medium border border-slate-700/80 shrink-0">
+                            Estoque: {produto.quantidade}
+                          </span>
+                        </li>
+                      );
+                    })
                   ) : (
-                    <li className="px-3 py-4 text-sm text-center text-slate-500">
+                    <li className="px-3 py-4 text-sm text-center text-slate-400">
                       Nenhum produto encontrado.
                     </li>
                   )}
@@ -343,34 +414,37 @@ export default function Entradas() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Quantidade */}
-          <div className="bg-slate-50/50 border border-slate-200 rounded-lg p-4">
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-              Quantidade Recebida <span className="text-rose-500">*</span>
+          <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
+            <label className="block text-sm font-semibold text-slate-300 mb-1.5">
+              Quantidade Recebida <span className="text-rose-400">*</span>
             </label>
             <input
               type="number"
               value={quantidade}
               onChange={(e) => setQuantidade(e.target.value)}
               min="1"
-              placeholder="0"
-              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-shadow"
+              placeholder="Ex: 10"
+              className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
               required
             />
           </div>
 
           {/* Origem */}
-          <div className="bg-slate-50/50 border border-slate-200 rounded-lg p-4">
-            <label className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
-              Origem da Entrada <span className="text-rose-500">*</span>
+          <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
+            <label className="text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
+              Origem da Entrada <span className="text-rose-400">*</span>
             </label>
             <div className="relative">
-              <Truck size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Truck
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              />
               <input
                 type="text"
                 value={origem}
                 onChange={(e) => setOrigem(e.target.value)}
-                placeholder="Fornecedor, compra corporativa, devolução..."
-                className="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-shadow"
+                placeholder="Fornecedor, devolução..."
+                className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg pl-9 pr-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
                 required
               />
             </div>
@@ -380,7 +454,7 @@ export default function Entradas() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Nota Fiscal */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+            <label className="block text-sm font-semibold text-slate-300 mb-1.5">
               Nota Fiscal (Opcional)
             </label>
             <input
@@ -388,13 +462,13 @@ export default function Entradas() {
               value={notaFiscal}
               onChange={(e) => setNotaFiscal(e.target.value)}
               placeholder="Número da NFe"
-              className="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-shadow"
+              className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
             />
           </div>
 
           {/* Contador */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+            <label className="block text-sm font-semibold text-slate-300 mb-1.5">
               Contador / Lote (Opcional)
             </label>
             <input
@@ -402,15 +476,15 @@ export default function Entradas() {
               value={contador}
               onChange={(e) => setContador(e.target.value)}
               placeholder="Referência extra"
-              className="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-shadow"
+              className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
             />
           </div>
         </div>
 
         {/* Observações */}
         <div>
-          <label className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
-            <FileText size={16} className="text-slate-500" />
+          <label className="text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
+            <FileText size={16} className="text-slate-400" />
             Observações Gerais
           </label>
           <textarea
@@ -418,24 +492,28 @@ export default function Entradas() {
             onChange={(e) => setObservacoes(e.target.value)}
             placeholder="Algum detalhe importante sobre essa entrada? (Opcional)"
             rows={3}
-            className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-shadow resize-none"
+            className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all resize-none"
           />
         </div>
 
         {/* Info Box */}
-        <div className="bg-blue-50 border border-blue-200/60 rounded-lg p-4 flex items-start gap-3 mt-2">
-          <CheckCircle className="text-blue-600 shrink-0 mt-0.5" size={18} />
+        <div className="bg-emerald-950/30 border border-emerald-800/40 rounded-lg p-4 flex items-start gap-3 mt-2">
+          <CheckCircle className="text-emerald-400 shrink-0 mt-0.5" size={18} />
           <div>
-            <p className="font-semibold text-blue-800 text-sm">Atualização Automática</p>
-            <p className="text-xs text-blue-700/80 mt-1 leading-relaxed">
-              Ao confirmar a entrada, o estoque do produto será somado automaticamente e a ação será gravada no histórico com seu usuário.
+            <p className="font-semibold text-emerald-300 text-sm">
+              Atualização Automática
+            </p>
+            <p className="text-xs text-emerald-400/80 mt-1 leading-relaxed">
+              Ao confirmar a entrada, o estoque do produto será somado
+              automaticamente e a ação será gravada no histórico com seu
+              usuário.
             </p>
           </div>
         </div>
 
         {/* Botões */}
-        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100">
-          <button 
+        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-800">
+          <button
             type="submit"
             className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
           >
@@ -446,7 +524,7 @@ export default function Entradas() {
           <button
             type="button"
             onClick={() => router.push("/produtos")}
-            className="bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
+            className="bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
           >
             <ArrowLeft size={18} />
             Cancelar e Voltar
