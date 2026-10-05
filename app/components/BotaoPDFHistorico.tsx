@@ -59,7 +59,7 @@ export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDF
     const colunas = [
       "Tipo",
       "Produto",
-      "Tipo Item",
+      "Classificação", // Renomeado para igualar à tela
       "Qtd",
       "Local / Origem",
       "NF",
@@ -80,10 +80,18 @@ export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDF
         minute: "2-digit",
       });
 
+      // Tenta pegar a classificação pelas possíveis nomenclaturas usadas no seu projeto
+      let classificacao = mov.classificacao || mov.tipoProduto || mov.tipo_produto || "-";
+      
+      // Formata para maiúsculo (ex: ORIGINAL / COMPATÍVEL) igual à sua UI
+      if (classificacao !== "-") {
+        classificacao = String(classificacao).toUpperCase();
+      }
+
       return [
-        mov.tipo || "-",
+        mov.tipo ? String(mov.tipo).toUpperCase() : "-",
         mov.produto || "-",
-        mov.tipoProduto || "-",
+        classificacao,
         mov.quantidade || 0,
         mov.local || "-",
         mov.notaFiscal || "-",
@@ -117,15 +125,15 @@ export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDF
       },
       columnStyles: {
         0: { cellWidth: 18, fontStyle: "bold" }, // Tipo (Entrada/Saída)
-        1: { cellWidth: 38 },                     // Produto
-        2: { cellWidth: 22 },                     // Tipo Item (Original/Compatível)
-        3: { cellWidth: 12, halign: "center" },   // Qtd
-        4: { cellWidth: 32 },                     // Local / Origem
-        5: { cellWidth: 18 },                     // NF
-        6: { cellWidth: 18 },                     // Contador
-        7: { cellWidth: 38 },                     // Observações
-        8: { cellWidth: 28 },                     // Realizado por
-        9: { cellWidth: 28 },                     // Data / Hora
+        1: { cellWidth: 42 },                     // Produto
+        2: { cellWidth: 22, fontStyle: "bold" }, // Classificação (Original/Compatível)
+        3: { cellWidth: 12, halign: "center", fontStyle: "bold" }, // Qtd
+        4: { cellWidth: 38 },                     // Local / Origem
+        5: { cellWidth: 16 },                     // NF
+        6: { cellWidth: 16 },                     // Contador
+        7: { cellWidth: 42 },                     // Observações
+        8: { cellWidth: 30 },                     // Realizado por
+        9: { cellWidth: 33 },                     // Data / Hora
       },
       // --- RODAPÉ AUTOMÁTICO EM CADA PÁGINA ---
       didDrawPage: () => {
