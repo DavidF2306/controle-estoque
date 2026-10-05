@@ -16,13 +16,13 @@ export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDF
       return;
     }
 
-    // "landscape" para caber perfeitamente todas as colunas deitado
+    // Orientação "landscape" (deitado) para A4
     const doc = new jsPDF("landscape", "mm", "a4");
 
-    // Cores padrão corporativas (RGB)
-    const corPrimaria = [30, 58, 138];   // Azul escuro (Slate/Blue)
-    const corTextoCinza = [100, 116, 139]; // Cinza elegante
-    const corLinhaBorda = [226, 232, 240]; // Borda clara
+    // Cores corporativas
+    const corPrimaria = [30, 58, 138];
+    const corTextoCinza = [100, 116, 139];
+    const corLinhaBorda = [226, 232, 240];
 
     // --- CABEÇALHO DO DOCUMENTO ---
     doc.setFont("helvetica", "bold");
@@ -31,10 +31,9 @@ export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDF
     doc.text("COPYSTAR", 14, 16);
 
     doc.setFontSize(12);
-    doc.setTextColor(51, 65, 85); // Slate 700
+    doc.setTextColor(51, 65, 85);
     doc.text("Relatório de Auditoria - Histórico de Movimentações", 14, 23);
 
-    // Subtítulo com informações de período e data de emissão
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
     doc.setTextColor(corTextoCinza[0], corTextoCinza[1], corTextoCinza[2]);
@@ -50,7 +49,7 @@ export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDF
     doc.text(periodoTexto, 14, 29);
     doc.text(dataEmissao, 283 - 14, 29, { align: "right" });
 
-    // Linha divisória sutil abaixo do cabeçalho
+    // Linha divisória
     doc.setDrawColor(corLinhaBorda[0], corLinhaBorda[1], corLinhaBorda[2]);
     doc.setLineWidth(0.5);
     doc.line(14, 33, 283 - 14, 33);
@@ -59,7 +58,7 @@ export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDF
     const colunas = [
       "Tipo",
       "Produto",
-      "Classificação", // Renomeado para igualar à tela
+      "Classificação",
       "Qtd",
       "Local / Origem",
       "NF",
@@ -80,18 +79,35 @@ export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDF
         minute: "2-digit",
       });
 
-      // Tenta pegar a classificação pelas possíveis nomenclaturas usadas no seu projeto
-      let classificacao = mov.classificacao || mov.tipoProduto || mov.tipo_produto || "-";
-      
-      // Formata para maiúsculo (ex: ORIGINAL / COMPATÍVEL) igual à sua UI
-      if (classificacao !== "-") {
-        classificacao = String(classificacao).toUpperCase();
+      // 1. Tenta extrair a classificação de qualquer propriedade possível
+      let classificacaoBruta = 
+        mov.classificacao || 
+        mov.tipoProduto || 
+        mov.tipo_produto || 
+        mov.tipoItem || 
+        mov.categoria || 
+        (mov.produtos && (mov.produtos.tipo || mov.produtos.classificacao)) ||
+        "";
+
+      let classificacaoFinal = "-";
+
+      // 2. Se encontrou um valor válido e diferente de "-", padroniza
+      if (classificacaoBruta && classificacaoBruta !== "-") {
+        classificacaoFinal = String(classificacaoBruta).toUpperCase();
+      } else {
+        // 3. Fallback inteligente: verifica se o nome do produto especifica "Compatível"
+        const nomeProduto = String(mov.produto || "").toLowerCase();
+        if (nomeProduto.includes("compativel") || nomeProduto.includes("compatível")) {
+          classificacaoFinal = "COMPATÍVEL";
+        } else if (nomeProduto) {
+          classificacaoFinal = "ORIGINAL";
+        }
       }
 
       return [
         mov.tipo ? String(mov.tipo).toUpperCase() : "-",
         mov.produto || "-",
-        classificacao,
+        classificacaoFinal,
         mov.quantidade || 0,
         mov.local || "-",
         mov.notaFiscal || "-",
@@ -111,43 +127,42 @@ export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDF
       styles: {
         font: "helvetica",
         fontSize: 8,
-        cellPadding: 4,
-        textColor: [51, 65, 85], // Texto cinza escuro legível
+        cellPadding: 3.5,
+        textColor: [51, 65, 85],
+        overflow: "linebreak",
       },
       headStyles: {
-        fillColor: [30, 58, 138], // Azul escuro corporativo
+        fillColor: [30, 58, 138],
         textColor: [255, 255, 255],
         fontStyle: "bold",
         halign: "left",
       },
       alternateRowStyles: {
-        fillColor: [248, 250, 252], // Fundo levemente zebrado (Slate 50)
+        fillColor: [248, 250, 252],
       },
+      // Larguras redimensionadas para evitar quebras estranhas (total: 269mm)
       columnStyles: {
-        0: { cellWidth: 18, fontStyle: "bold" }, // Tipo (Entrada/Saída)
-        1: { cellWidth: 42 },                     // Produto
-        2: { cellWidth: 22, fontStyle: "bold" }, // Classificação (Original/Compatível)
-        3: { cellWidth: 12, halign: "center", fontStyle: "bold" }, // Qtd
+        0: { cellWidth: 22, fontStyle: "bold" }, // Tipo (ENTRADA / SAÍDA)
+        1: { cellWidth: 44 },                     // Produto
+        2: { cellWidth: 28, fontStyle: "bold" }, // Classificação (ORIGINAL / COMPATÍVEL)
+        3: { cellWidth: 12, halign: "center" },   // Qtd
         4: { cellWidth: 38 },                     // Local / Origem
-        5: { cellWidth: 16 },                     // NF
-        6: { cellWidth: 16 },                     // Contador
-        7: { cellWidth: 42 },                     // Observações
-        8: { cellWidth: 30 },                     // Realizado por
-        9: { cellWidth: 33 },                     // Data / Hora
+        5: { cellWidth: 20 },                     // NF
+        6: { cellWidth: 20 },                     // Contador
+        7: { cellWidth: 36 },                     // Observações
+        8: { cellWidth: 24 },                     // Realizado por
+        9: { cellWidth: 25 },                     // Data / Hora
       },
-      // --- RODAPÉ AUTOMÁTICO EM CADA PÁGINA ---
       didDrawPage: () => {
         const paginasTotais = (doc as any).internal.getNumberOfPages();
         const paginaAtual = doc.getCurrentPageInfo().pageNumber;
 
         doc.setFont("helvetica", "normal");
         doc.setFontSize(8);
-        doc.setTextColor(148, 163, 184); // Slate 400
+        doc.setTextColor(148, 163, 184);
 
-        // Texto à esquerda no rodapé
         doc.text("Copystar Gestão de Estoque - Relatório Confidencial", 14, doc.internal.pageSize.height - 10);
 
-        // Numeração de página à direita
         doc.text(
           `Página ${paginaAtual} de ${paginasTotais}`,
           doc.internal.pageSize.width - 14,
@@ -157,7 +172,6 @@ export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDF
       },
     });
 
-    // Nome do arquivo dinâmico
     const nomeArquivo = mesFiltro
       ? `Relatorio_Historico_${mesFiltro}.pdf`
       : `Relatorio_Historico_Completo.pdf`;
