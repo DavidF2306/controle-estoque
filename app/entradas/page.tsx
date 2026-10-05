@@ -30,7 +30,6 @@ export default function Entradas() {
   const [contador, setContador] = useState("");
   const [observacoes, setObservacoes] = useState("");
 
-  // Estados e ref para o dropdown customizado de busca de produtos
   const [buscaProduto, setBuscaProduto] = useState("");
   const [produtoDropdownOpen, setProdutoDropdownOpen] = useState(false);
   const produtoRef = useRef<HTMLDivElement>(null);
@@ -38,7 +37,6 @@ export default function Entradas() {
   useEffect(() => {
     buscarDados();
 
-    // Função para fechar o dropdown se o clique for fora dele
     function handleClickOutside(event: MouseEvent) {
       if (
         produtoRef.current &&
@@ -141,7 +139,6 @@ export default function Entradas() {
     (produto) => produto.id === Number(produtoId)
   );
 
-  // Filtros em tempo real (Pesquisa por Nome, Tipo e Categoria)
   const produtosFiltrados = produtos.filter((produto) => {
     const termo = buscaProduto.toLowerCase();
     const nome = produto.nome ? produto.nome.toLowerCase() : "";
@@ -157,11 +154,11 @@ export default function Entradas() {
 
   return (
     <div className="text-slate-100 w-full overflow-x-hidden space-y-6 pb-10">
-      {/* Hero Section */}
+      {/* Hero Section - Fix do quadrado preto aplicado */}
       <section className="pt-14 md:pt-0">
         <div className="relative overflow-hidden rounded-2xl bg-slate-900 border border-slate-800 text-white shadow-md">
-          {/* Elementos de fundo sutis */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+          {/* Círculo de iluminação ajustado sem artefatos de GPU */}
+          <div className="pointer-events-none absolute -top-12 -right-12 w-80 h-80 bg-emerald-500/10 rounded-full blur-2xl" />
 
           <div className="relative p-6 md:p-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
             <div className="flex items-center gap-5">
@@ -241,7 +238,7 @@ export default function Entradas() {
         </div>
 
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex items-start justify-between relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-5 text-emerald-500">
+          <div className="pointer-events-none absolute top-0 right-0 p-4 opacity-10 text-emerald-500">
             <CheckCircle size={64} />
           </div>
           <div className="relative z-10">
@@ -279,14 +276,13 @@ export default function Entradas() {
           </div>
         </div>
 
-        {/* Produto (Dropdown com Pesquisa Integrada) */}
+        {/* Dropdown com Busca */}
         <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
           <div className="relative" ref={produtoRef}>
             <label className="block text-sm font-semibold text-slate-300 mb-1.5">
               Selecione o Produto <span className="text-rose-400">*</span>
             </label>
 
-            {/* Input Fake (Botão que abre o Select) */}
             <div
               onClick={() => setProdutoDropdownOpen(!produtoDropdownOpen)}
               className={`w-full bg-slate-900 border ${
@@ -339,7 +335,6 @@ export default function Entradas() {
               />
             </div>
 
-            {/* Painel da Lista com Busca (Abre ao clicar) */}
             {produtoDropdownOpen && (
               <div className="absolute z-50 w-full mt-1 bg-slate-900 border border-slate-800 rounded-lg shadow-xl overflow-hidden">
                 <div className="p-2 border-b border-slate-800 bg-slate-950/50">
@@ -413,7 +408,6 @@ export default function Entradas() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {/* Quantidade */}
           <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
             <label className="block text-sm font-semibold text-slate-300 mb-1.5">
               Quantidade Recebida <span className="text-rose-400">*</span>
@@ -429,7 +423,6 @@ export default function Entradas() {
             />
           </div>
 
-          {/* Origem */}
           <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
             <label className="text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
               Origem da Entrada <span className="text-rose-400">*</span>
@@ -452,7 +445,6 @@ export default function Entradas() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {/* Nota Fiscal */}
           <div>
             <label className="block text-sm font-semibold text-slate-300 mb-1.5">
               Nota Fiscal (Opcional)
@@ -466,7 +458,6 @@ export default function Entradas() {
             />
           </div>
 
-          {/* Contador */}
           <div>
             <label className="block text-sm font-semibold text-slate-300 mb-1.5">
               Contador / Lote (Opcional)
@@ -481,7 +472,6 @@ export default function Entradas() {
           </div>
         </div>
 
-        {/* Observações */}
         <div>
           <label className="text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
             <FileText size={16} className="text-slate-400" />
@@ -496,7 +486,6 @@ export default function Entradas() {
           />
         </div>
 
-        {/* Info Box */}
         <div className="bg-emerald-950/30 border border-emerald-800/40 rounded-lg p-4 flex items-start gap-3 mt-2">
           <CheckCircle className="text-emerald-400 shrink-0 mt-0.5" size={18} />
           <div>
@@ -511,7 +500,6 @@ export default function Entradas() {
           </div>
         </div>
 
-        {/* Botões */}
         <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-800">
           <button
             type="submit"

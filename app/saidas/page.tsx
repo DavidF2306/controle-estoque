@@ -8,39 +8,35 @@ import {
   Save,
   ArrowLeft,
   Package,
-  MapPin,
-  ClipboardList,
+  Boxes,
   FileText,
-  Gauge,
-  AlertTriangle,
+  ClipboardList,
+  MapPin,
   CheckCircle,
   Search,
   ChevronDown,
+  AlertTriangle,
+  User,
 } from "lucide-react";
 
 export default function Saidas() {
   const router = useRouter();
 
   const [produtos, setProdutos] = useState<any[]>([]);
-  const [locais, setLocais] = useState<any[]>([]);
   const [saidas, setSaidas] = useState<any[]>([]);
+  const [locais, setLocais] = useState<any[]>([]);
 
   const [produtoId, setProdutoId] = useState("");
   const [quantidade, setQuantidade] = useState("");
-  const [local, setLocal] = useState("");
+  const [destino, setDestino] = useState("");
+  const [solicitante, setSolicitante] = useState("");
   const [contador, setContador] = useState("");
   const [observacoes, setObservacoes] = useState("");
 
-  // Estados para busca e controle dos dropdowns customizados
+  // Estados e ref para o dropdown customizado de busca de produtos
   const [buscaProduto, setBuscaProduto] = useState("");
-  const [buscaLocal, setBuscaLocal] = useState("");
-
   const [produtoDropdownOpen, setProdutoDropdownOpen] = useState(false);
-  const [localDropdownOpen, setLocalDropdownOpen] = useState(false);
-
-  // Refs para fechar os dropdowns ao clicar fora
   const produtoRef = useRef<HTMLDivElement>(null);
-  const localRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     buscarDados();
@@ -51,12 +47,6 @@ export default function Saidas() {
         !produtoRef.current.contains(event.target as Node)
       ) {
         setProdutoDropdownOpen(false);
-      }
-      if (
-        localRef.current &&
-        !localRef.current.contains(event.target as Node)
-      ) {
-        setLocalDropdownOpen(false);
       }
     }
 
@@ -72,19 +62,19 @@ export default function Saidas() {
       .select("*")
       .order("nome");
 
-    const { data: locaisData } = await supabase
-      .from("locais")
-      .select("*")
-      .order("nome");
-
     const { data: saidasData } = await supabase
       .from("saidas")
       .select("*")
       .order("created_at", { ascending: false });
 
+    const { data: locaisData } = await supabase
+      .from("locais")
+      .select("*")
+      .order("nome");
+
     if (produtosData) setProdutos(produtosData);
-    if (locaisData) setLocais(locaisData);
     if (saidasData) setSaidas(saidasData);
+    if (locaisData) setLocais(locaisData);
   }
 
   async function registrarSaida(e: React.FormEvent) {
@@ -95,8 +85,21 @@ export default function Saidas() {
       return;
     }
 
-    if (!local) {
-      alert("Por favor, pesquise e selecione o local de destino.");
+    const produtoSelecionado = produtos.find(
+      (produto) => produto.id === Number(produtoId)
+    );
+
+    if (!produtoSelecionado) {
+      alert("Produto não encontrado no sistema.");
+      return;
+    }
+
+    const qtdSaida = Number(quantidade);
+
+    if (qtdSaida > Number(produtoSelecionado.quantidade)) {
+      alert(
+        `Quantidade insuficiente em estoque! Disponível: ${produtoSelecionado.quantidade}`
+      );
       return;
     }
 
@@ -106,27 +109,18 @@ export default function Saidas() {
 
     const emailUsuario = user?.email || "Usuário não identificado";
 
-    const produtoSelecionado = produtos.find(
-      (produto) => produto.id === Number(produtoId)
-    );
-
-    if (Number(quantidade) > Number(produtoSelecionado?.quantidade || 0)) {
-      alert("Quantidade maior que o estoque disponível.");
-      return;
-    }
-
     const novaQuantidade =
-      Number(produtoSelecionado.quantidade) - Number(quantidade);
+      Number(produtoSelecionado.quantidade) - qtdSaida;
 
     const { error: erroSaida } = await supabase.from("saidas").insert([
       {
         produto_id: Number(produtoId),
-        quantidade: Number(quantidade),
-        local,
+        quantidade: qtdSaida,
+        destino,
+        solicitante: solicitante || null,
         contador: contador || null,
         observacoes: observacoes || null,
         usuario_email: emailUsuario,
-        destino: local,
       },
     ]);
 
@@ -148,13 +142,17 @@ export default function Saidas() {
     }
 
     alert("Saída registrada com sucesso!");
-    router.push("/historico");
+    router.push("/produtos");
   }
+
+  const totalProdutos = produtos.length;
 
   const totalEstoque = produtos.reduce(
     (total, produto) => total + Number(produto.quantidade || 0),
     0
   );
+
+  const ultimaSaida = saidas[0];
 
   const produtoSelecionado = produtos.find(
     (produto) => produto.id === Number(produtoId)
@@ -174,16 +172,13 @@ export default function Saidas() {
     );
   });
 
-  const locaisFiltrados = locais.filter((item) =>
-    item.nome.toLowerCase().includes(buscaLocal.toLowerCase())
-  );
-
   return (
     <div className="text-slate-100 w-full overflow-x-hidden space-y-6 pb-10">
       {/* Hero Section */}
       <section className="pt-14 md:pt-0">
         <div className="relative overflow-hidden rounded-2xl bg-slate-900 border border-slate-800 text-white shadow-md">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+          {/* Círculo de iluminação ajustado sem artefatos de GPU (GPU Fix) */}
+          <div className="pointer-events-none absolute -top-12 -right-12 w-80 h-80 bg-rose-500/10 rounded-full blur-2xl" />
 
           <div className="relative p-6 md:p-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
             <div className="flex items-center gap-5">
@@ -201,8 +196,7 @@ export default function Saidas() {
                 </h1>
 
                 <p className="text-slate-400 mt-2 text-sm md:text-base max-w-2xl">
-                  Registre as entregas para locais, controle a retirada de
-                  suprimentos e mantenha o inventário atualizado.
+                  Registre a baixa de suprimentos, envie materiais para setores ou impressoras e mantenha o histórico atualizado.
                 </p>
               </div>
             </div>
@@ -213,14 +207,18 @@ export default function Saidas() {
               </p>
 
               <div className="flex items-end gap-2 mt-2">
-                <p className="text-3xl font-bold text-white">{saidas.length}</p>
+                <p className="text-3xl font-bold text-white">
+                  {saidas.length}
+                </p>
                 <p className="text-slate-400 text-sm mb-1">registros</p>
               </div>
 
               <div className="mt-4 pt-4 border-t border-slate-700">
                 <p className="text-xs font-medium text-rose-400 flex items-center gap-1.5">
                   <CheckCircle size={14} />
-                  Sincronizado com o histórico
+                  {ultimaSaida
+                    ? "Sistema operacional e sincronizado."
+                    : "Nenhuma saída registrada ainda."}
                 </p>
               </div>
             </div>
@@ -234,9 +232,11 @@ export default function Saidas() {
           <div>
             <p className="text-sm font-medium text-slate-400">Produtos</p>
             <h2 className="text-3xl font-bold text-slate-100 mt-1">
-              {produtos.length}
+              {totalProdutos}
             </h2>
-            <p className="text-xs text-slate-500 mt-1">itens disponíveis</p>
+            <p className="text-xs text-slate-500 mt-1">
+              disponíveis no catálogo
+            </p>
           </div>
           <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
             <Package size={20} />
@@ -245,27 +245,31 @@ export default function Saidas() {
 
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex items-start justify-between">
           <div>
-            <p className="text-sm font-medium text-slate-400">Estoque Físico</p>
+            <p className="text-sm font-medium text-slate-400">Estoque Geral</p>
             <h2 className="text-3xl font-bold text-slate-100 mt-1">
               {totalEstoque}
             </h2>
-            <p className="text-xs text-slate-500 mt-1">unidades no sistema</p>
+            <p className="text-xs text-slate-500 mt-1">unidades totais</p>
           </div>
           <div className="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 flex items-center justify-center">
-            <Gauge size={20} />
+            <Boxes size={20} />
           </div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex items-start justify-between">
-          <div>
-            <p className="text-sm font-medium text-slate-400">Destinos</p>
-            <h2 className="text-3xl font-bold text-slate-100 mt-1">
-              {locais.length}
-            </h2>
-            <p className="text-xs text-slate-500 mt-1">locais cadastrados</p>
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex items-start justify-between relative overflow-hidden">
+          <div className="pointer-events-none absolute top-0 right-0 p-4 opacity-10 text-rose-500">
+            <CheckCircle size={64} />
           </div>
-          <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
-            <MapPin size={20} />
+          <div className="relative z-10">
+            <p className="text-sm font-medium text-slate-400">
+              Status do Módulo
+            </p>
+            <h2 className="text-3xl font-bold text-rose-400 mt-1">
+              Operante
+            </h2>
+            <p className="text-xs text-slate-500 font-medium mt-1">
+              pronto para registros
+            </p>
           </div>
         </div>
       </section>
@@ -281,26 +285,28 @@ export default function Saidas() {
           </div>
 
           <div>
-            <h2 className="text-lg font-bold text-slate-100">Dados da Saída</h2>
+            <h2 className="text-lg font-bold text-slate-100">
+              Dados da Saída
+            </h2>
             <p className="text-sm text-slate-400">
-              Preencha os detalhes da entrega para o local de destino.
+              Selecione o produto e informe o destino para registrar a baixa.
             </p>
           </div>
         </div>
 
-        {/* Produto (Dropdown com Pesquisa) */}
+        {/* Produto (Dropdown com Pesquisa Integrada) */}
         <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
           <div className="relative" ref={produtoRef}>
             <label className="block text-sm font-semibold text-slate-300 mb-1.5">
               Selecione o Produto <span className="text-rose-400">*</span>
             </label>
 
-            {/* Input Fake (Botão do Select) */}
+            {/* Input Fake (Botão que abre o Select) */}
             <div
               onClick={() => setProdutoDropdownOpen(!produtoDropdownOpen)}
               className={`w-full bg-slate-900 border ${
                 produtoDropdownOpen
-                  ? "border-blue-500 ring-2 ring-blue-500/20"
+                  ? "border-rose-500 ring-2 ring-rose-500/20"
                   : "border-slate-700/80"
               } rounded-lg px-4 py-2.5 text-sm flex justify-between items-center cursor-pointer transition-all`}
             >
@@ -317,7 +323,10 @@ export default function Saidas() {
                     {(produtoSelecionado.tipo || produtoSelecionado.categoria) && (
                       <span
                         className={`text-xs px-2 py-0.5 rounded font-medium border ${
-                          (produtoSelecionado.tipo || produtoSelecionado.categoria)
+                          (
+                            produtoSelecionado.tipo ||
+                            produtoSelecionado.categoria
+                          )
                             ?.toString()
                             .toLowerCase()
                             .includes("original")
@@ -325,15 +334,22 @@ export default function Saidas() {
                             : "bg-purple-500/15 text-purple-300 border-purple-500/30"
                         }`}
                       >
-                        {produtoSelecionado.tipo || produtoSelecionado.categoria}
+                        {produtoSelecionado.tipo ||
+                          produtoSelecionado.categoria}
                       </span>
                     )}
-                    <span className="text-slate-400 text-xs font-normal">
-                      — (Em Estoque: {produtoSelecionado.quantidade})
+                    <span
+                      className={`text-xs font-semibold px-2 py-0.5 rounded ${
+                        Number(produtoSelecionado.quantidade) > 0
+                          ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                          : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                      }`}
+                    >
+                      Estoque: {produtoSelecionado.quantidade}
                     </span>
                   </>
                 ) : (
-                  "Selecione um item do estoque..."
+                  "Selecione um produto cadastrado..."
                 )}
               </span>
               <ChevronDown
@@ -344,7 +360,7 @@ export default function Saidas() {
               />
             </div>
 
-            {/* Painel da Lista (Abre ao clicar) */}
+            {/* Painel da Lista com Busca */}
             {produtoDropdownOpen && (
               <div className="absolute z-50 w-full mt-1 bg-slate-900 border border-slate-800 rounded-lg shadow-xl overflow-hidden">
                 <div className="p-2 border-b border-slate-800 bg-slate-950/50">
@@ -359,7 +375,7 @@ export default function Saidas() {
                       value={buscaProduto}
                       onChange={(e) => setBuscaProduto(e.target.value)}
                       placeholder="Pesquisar por nome, variação (Original, Compatível)..."
-                      className="w-full bg-slate-900 border border-slate-700 text-slate-200 placeholder-slate-500 rounded-md pl-8 pr-3 py-2 text-sm outline-none focus:border-blue-500"
+                      className="w-full bg-slate-900 border border-slate-700 text-slate-200 placeholder-slate-500 rounded-md pl-8 pr-3 py-2 text-sm outline-none focus:border-rose-500"
                     />
                   </div>
                 </div>
@@ -371,6 +387,7 @@ export default function Saidas() {
                         ?.toString()
                         .toLowerCase()
                         .includes("original");
+                      const temEstoque = Number(produto.quantidade) > 0;
 
                       return (
                         <li
@@ -400,7 +417,13 @@ export default function Saidas() {
                             )}
                           </div>
 
-                          <span className="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded font-medium border border-slate-700/80 shrink-0">
+                          <span
+                            className={`text-xs px-2 py-1 rounded font-medium border shrink-0 ${
+                              temEstoque
+                                ? "bg-slate-800 text-slate-300 border-slate-700/80"
+                                : "bg-rose-950/40 text-rose-400 border-rose-800/40"
+                            }`}
+                          >
                             Estoque: {produto.quantidade}
                           </span>
                         </li>
@@ -415,13 +438,6 @@ export default function Saidas() {
               </div>
             )}
           </div>
-
-          {produtoSelecionado && (
-            <p className="text-sm text-blue-400 mt-3 font-medium flex items-center gap-1.5">
-              <CheckCircle size={14} />
-              Estoque atual liberado para retirada: {produtoSelecionado.quantidade} un.
-            </p>
-          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -435,137 +451,96 @@ export default function Saidas() {
               value={quantidade}
               onChange={(e) => setQuantidade(e.target.value)}
               min="1"
-              placeholder="Ex: 5"
+              max={produtoSelecionado ? produtoSelecionado.quantidade : undefined}
+              placeholder="Ex: 1"
               className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 transition-all"
               required
             />
-            {produtoSelecionado &&
-              Number(quantidade) > Number(produtoSelecionado.quantidade) && (
-                <p className="text-sm text-rose-400 mt-2 font-medium flex items-center gap-1.5">
-                  <AlertTriangle size={14} />
-                  Atenção: Quantidade superior ao estoque.
-                </p>
-              )}
           </div>
 
-          {/* Local (Dropdown com Pesquisa) */}
+          {/* Destino (Com Datalist para autocompletar os locais) */}
           <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
-            <div className="relative" ref={localRef}>
-              <label className="text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <MapPin size={16} className="text-slate-400" />
-                Local de Destino <span className="text-rose-400">*</span>
-              </label>
-
-              {/* Input Fake (Botão do Select) */}
-              <div
-                onClick={() => setLocalDropdownOpen(!localDropdownOpen)}
-                className={`w-full bg-slate-900 border ${
-                  localDropdownOpen
-                    ? "border-blue-500 ring-2 ring-blue-500/20"
-                    : "border-slate-700/80"
-                } rounded-lg px-4 py-2.5 text-sm flex justify-between items-center cursor-pointer transition-all`}
-              >
-                <span
-                  className={
-                    local ? "text-slate-100 font-medium" : "text-slate-500"
-                  }
-                >
-                  {local || "Selecione para onde vai..."}
-                </span>
-                <ChevronDown
-                  size={16}
-                  className={`text-slate-400 transition-transform ${
-                    localDropdownOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </div>
-
-              {/* Painel da Lista (Abre ao clicar) */}
-              {localDropdownOpen && (
-                <div className="absolute z-50 w-full mt-1 bg-slate-900 border border-slate-800 rounded-lg shadow-xl overflow-hidden">
-                  <div className="p-2 border-b border-slate-800 bg-slate-950/50">
-                    <div className="relative">
-                      <Search
-                        size={14}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                      />
-                      <input
-                        type="text"
-                        autoFocus
-                        value={buscaLocal}
-                        onChange={(e) => setBuscaLocal(e.target.value)}
-                        placeholder="Pesquisar local..."
-                        className="w-full bg-slate-900 border border-slate-700 text-slate-200 placeholder-slate-500 rounded-md pl-8 pr-3 py-2 text-sm outline-none focus:border-blue-500"
-                      />
-                    </div>
-                  </div>
-                  <ul className="max-h-60 overflow-y-auto p-1">
-                    {locaisFiltrados.length > 0 ? (
-                      locaisFiltrados.map((item) => (
-                        <li
-                          key={item.id}
-                          onClick={() => {
-                            setLocal(item.nome);
-                            setLocalDropdownOpen(false);
-                            setBuscaLocal("");
-                          }}
-                          className="px-3 py-2.5 text-sm hover:bg-slate-800/70 text-slate-200 cursor-pointer rounded-md font-medium transition-colors"
-                        >
-                          {item.nome}
-                        </li>
-                      ))
-                    ) : (
-                      <li className="px-3 py-4 text-sm text-center text-slate-400">
-                        Nenhum local encontrado.
-                      </li>
-                    )}
-                  </ul>
-                </div>
-              )}
+            <label className="text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
+              Destino / Setor / Local <span className="text-rose-400">*</span>
+            </label>
+            <div className="relative">
+              <MapPin
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                type="text"
+                list="locais-list"
+                value={destino}
+                onChange={(e) => setDestino(e.target.value)}
+                placeholder="Selecione ou digite o local/setor..."
+                className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg pl-9 pr-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 transition-all"
+                required
+              />
+              <datalist id="locais-list">
+                {locais.map((local) => (
+                  <option key={local.id} value={local.nome} />
+                ))}
+              </datalist>
             </div>
           </div>
         </div>
 
-        {/* Contador e Observações */}
-        <div className="space-y-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Solicitante */}
+          <div>
+            <label className="text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
+              <User size={16} className="text-slate-400" />
+              Solicitante / Técnico (Opcional)
+            </label>
+            <input
+              type="text"
+              value={solicitante}
+              onChange={(e) => setSolicitante(e.target.value)}
+              placeholder="Nome da pessoa que solicitou"
+              className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 transition-all"
+            />
+          </div>
+
+          {/* Contador */}
           <div>
             <label className="block text-sm font-semibold text-slate-300 mb-1.5">
-              Contador / Ordem de Serviço (Opcional)
+              Contador / Impressora (Opcional)
             </label>
             <input
               type="text"
               value={contador}
               onChange={(e) => setContador(e.target.value)}
-              placeholder="Ex: OS-1029 ou Referência do equipamento"
-              className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-              <FileText size={16} className="text-slate-400" />
-              Observações Gerais
-            </label>
-            <textarea
-              value={observacoes}
-              onChange={(e) => setObservacoes(e.target.value)}
-              placeholder="Algum detalhe importante sobre essa saída? (Opcional)"
-              rows={3}
-              className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all resize-none"
+              placeholder="Ex: Contador de páginas ou equipamento"
+              className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 transition-all"
             />
           </div>
         </div>
 
+        {/* Observações */}
+        <div>
+          <label className="text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
+            <FileText size={16} className="text-slate-400" />
+            Observações Gerais
+          </label>
+          <textarea
+            value={observacoes}
+            onChange={(e) => setObservacoes(e.target.value)}
+            placeholder="Motivo da troca, defeito do toner antigo, etc. (Opcional)"
+            rows={3}
+            className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 transition-all resize-none"
+          />
+        </div>
+
         {/* Info Box */}
-        <div className="bg-emerald-950/30 border border-emerald-800/40 rounded-lg p-4 flex items-start gap-3 mt-2">
-          <CheckCircle className="text-emerald-400 shrink-0 mt-0.5" size={18} />
+        <div className="bg-rose-950/30 border border-rose-800/40 rounded-lg p-4 flex items-start gap-3 mt-2">
+          <AlertTriangle className="text-rose-400 shrink-0 mt-0.5" size={18} />
           <div>
-            <p className="font-semibold text-emerald-300 text-sm">
-              Controle Preciso
+            <p className="font-semibold text-rose-300 text-sm">
+              Baixa Automática no Estoque
             </p>
-            <p className="text-xs text-emerald-400/80 mt-1 leading-relaxed">
-              Ao registrar, o estoque do produto será atualizado automaticamente,
-              garantindo que o sistema sempre exiba os valores reais disponíveis.
+            <p className="text-xs text-rose-400/80 mt-1 leading-relaxed">
+              Ao confirmar a saída, a quantidade informada será subtraída do estoque do produto imediatamente e vinculada ao seu usuário.
             </p>
           </div>
         </div>
