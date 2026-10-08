@@ -22,7 +22,6 @@ export default function BotaoExcelHistorico({
       return;
     }
 
-    // Mapear os dados verificando todas as variações de nomes vindos da BD
     const dadosFormatados = lista.map((item) => {
       // 1. Data e Hora
       const rawData =
@@ -80,7 +79,7 @@ export default function BotaoExcelHistorico({
           "-";
       }
 
-      // 3. Classificação (Original / Compatível)
+      // 3. Classificação
       let classificacaoBruta =
         item.classificacao ||
         item.tipoProduto ||
@@ -91,11 +90,9 @@ export default function BotaoExcelHistorico({
         "";
 
       let classificacaoFinal = "-";
-
       if (classificacaoBruta && classificacaoBruta !== "-") {
         classificacaoFinal = String(classificacaoBruta).toUpperCase();
       } else {
-        // Fallback inteligente baseando-se no nome do produto
         const nomeProdLower = String(nomeDoProduto || "").toLowerCase();
         if (nomeProdLower.includes("compativel") || nomeProdLower.includes("compatível")) {
           classificacaoFinal = "COMPATÍVEL";
@@ -116,7 +113,14 @@ export default function BotaoExcelHistorico({
         item.cliente ||
         "-";
 
-      // 5. Nota Fiscal
+      // 5. Solicitante (Novo Campo)
+      const solicitante =
+        item.solicitante ||
+        item.solicitado_por ||
+        item.nome_solicitante ||
+        "-";
+
+      // 6. Nota Fiscal
       const notaFiscal =
         item.nota_fiscal ||
         item.nf ||
@@ -125,21 +129,21 @@ export default function BotaoExcelHistorico({
         item.notaFiscal ||
         "-";
 
-      // 6. Contador
+      // 7. Contador
       const contador =
         item.contador ||
         item.contador_impressora ||
         item.contador_inicial ||
         "-";
 
-      // 7. Observação
+      // 8. Observação
       const observacao =
         item.observacao ||
         item.observacoes ||
         item.obs ||
         "-";
 
-      // 8. Realizado Por / Utilizador
+      // 9. Realizado Por / Utilizador
       const realizadoPor =
         item.usuario ||
         item.realizado_por ||
@@ -156,7 +160,8 @@ export default function BotaoExcelHistorico({
         "Produto": nomeDoProduto,
         "Classificação": classificacaoFinal,
         "Qtd": item.quantidade ?? 0,
-        "Local / Origem": localOrigem,
+        "Local / Destino": localOrigem,
+        "Solicitante": solicitante,
         "NF": notaFiscal,
         "Contador": contador,
         "Observações": observacao,
@@ -165,16 +170,16 @@ export default function BotaoExcelHistorico({
       };
     });
 
-    // Criar a folha do Excel
     const worksheet = XLSX.utils.json_to_sheet(dadosFormatados);
 
-    // Definir a largura ideal das colunas
+    // Larguras das colunas
     worksheet["!cols"] = [
       { wch: 12 }, // Tipo
       { wch: 38 }, // Produto
       { wch: 16 }, // Classificação
       { wch: 10 }, // Qtd
-      { wch: 32 }, // Local / Origem
+      { wch: 32 }, // Local / Destino
+      { wch: 22 }, // Solicitante
       { wch: 14 }, // NF
       { wch: 14 }, // Contador
       { wch: 35 }, // Observações

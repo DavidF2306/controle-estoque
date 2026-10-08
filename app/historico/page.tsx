@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import BotaoPDFHistorico from "../components/BotaoPDFHistorico";
 import BotaoExcelHistorico from "../components/BotaoExcelHistorico";
@@ -12,6 +12,7 @@ import {
   ArrowDownCircle,
   ArrowUpCircle,
   User,
+  UserCheck,
   Package,
   Archive,
   FileText,
@@ -23,7 +24,14 @@ export default function Historico() {
   const [busca, setBusca] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // Refs e largura para a barra de rolagem superior sincronizada
+  const topScrollRef = useRef<HTMLDivElement>(null);
+  const bottomScrollRef = useRef<HTMLDivElement>(null);
+  const tableRef = useRef<HTMLTableElement>(null);
+  const [tableWidth, setTableWidth] = useState<number>(1450);
+
   function formatarDataHora(data: string) {
+    if (!data) return "-";
     const dataCorrigida = new Date(data);
     dataCorrigida.setHours(dataCorrigida.getHours() - 3);
 
@@ -39,6 +47,25 @@ export default function Historico() {
   useEffect(() => {
     buscarMovimentacoes();
   }, []);
+
+  // Sincroniza a largura da barra superior com a tabela ao carregar ou filtrar
+  useEffect(() => {
+    if (tableRef.current) {
+      setTableWidth(tableRef.current.scrollWidth);
+    }
+  }, [movimentacoes, busca, mesFiltro]);
+
+  const handleTopScroll = () => {
+    if (topScrollRef.current && bottomScrollRef.current) {
+      bottomScrollRef.current.scrollLeft = topScrollRef.current.scrollLeft;
+    }
+  };
+
+  const handleBottomScroll = () => {
+    if (topScrollRef.current && bottomScrollRef.current) {
+      topScrollRef.current.scrollLeft = bottomScrollRef.current.scrollLeft;
+    }
+  };
 
   async function buscarMovimentacoes() {
     setLoading(true);
@@ -56,7 +83,6 @@ export default function Historico() {
       return usuario?.nome || email;
     }
 
-    // 1. Atualizada a query para trazer também o tipo/classificação do produto
     const { data: entradas } = await supabase.from("entradas").select(`
         *,
         produtos (
@@ -73,16 +99,16 @@ export default function Historico() {
         )
       `);
 
-    // 2. Adicionada a propriedade classificacaoProduto no mapeamento
     const todasMovimentacoes = [
       ...(entradas || []).map((entrada) => ({
         tipo: "Entrada",
         produto: entrada.produtos?.nome || "-",
-        classificacaoProduto: entrada.produtos?.tipo || "-", 
+        classificacaoProduto: entrada.produtos?.tipo || "-",
         quantidade: entrada.quantidade,
         local: entrada.origem || "-",
         notaFiscal: entrada.nota_fiscal || "-",
         contador: entrada.contador || "-",
+        solicitante: entrada.solicitante || "-",
         observacoes: entrada.observacoes || "-",
         usuario: buscarNomeUsuario(entrada.usuario_email),
         data: entrada.created_at,
@@ -96,6 +122,7 @@ export default function Historico() {
         local: saida.local || saida.destino || "-",
         notaFiscal: "-",
         contador: saida.contador || "-",
+        solicitante: saida.solicitante || "-",
         observacoes: saida.observacoes || "-",
         usuario: buscarNomeUsuario(saida.usuario_email),
         data: saida.created_at,
@@ -114,7 +141,6 @@ export default function Historico() {
     const filtroMes =
       mesFiltro === "" || mov.data.slice(0, 7) === mesFiltro;
 
-    // 3. Adicionada a classificaçãoProduto na busca por texto
     const textoBusca = `
       ${mov.tipo}
       ${mov.produto}
@@ -122,6 +148,7 @@ export default function Historico() {
       ${mov.local}
       ${mov.notaFiscal}
       ${mov.contador}
+      ${mov.solicitante}
       ${mov.observacoes}
       ${mov.usuario}
     `.toLowerCase();
@@ -219,7 +246,6 @@ export default function Historico() {
 
       {/* Cards de Métricas */}
       <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {/* ... (Cards mantidos iguais) ... */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div>
@@ -284,7 +310,7 @@ export default function Historico() {
               Filtros Avançados
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              Refine a busca por produto, classificação, local, usuário, ou período.
+              Refine a busca por produto, classificação, local, solicitante, usuário ou período.
             </p>
           </div>
         </div>
@@ -303,7 +329,7 @@ export default function Historico() {
                 type="text"
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                placeholder="Ex: Toner, Original, Recepção, João..."
+                placeholder="Ex: Toner, Original, Recepção, Solicitante, João..."
                 className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-slate-800 dark:text-slate-100"
               />
             </div>
@@ -364,7 +390,6 @@ export default function Historico() {
         <section className="xl:hidden space-y-4">
           {movimentacoesFiltradas.map((mov, index) => {
             const entrada = mov.tipo === "Entrada";
-            // Define a cor da badge consoante o tipo
             const isOriginal = mov.classificacaoProduto?.toLowerCase() === "original";
 
             return (
@@ -394,7 +419,6 @@ export default function Historico() {
                       >
                         {mov.tipo}
                       </span>
-                      {/* 4. Título do produto com a Badge "Original/Compatível" em formato mobile */}
                       <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 mt-0.5">
                         <h3 className="font-bold text-slate-800 dark:text-slate-100 leading-tight">
                           {mov.produto}
@@ -431,6 +455,11 @@ export default function Historico() {
                   <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 rounded-lg p-3">
                     <p className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 dark:text-slate-500 mb-0.5">Local / Origem</p>
                     <p className="font-semibold text-slate-700 dark:text-slate-300">{mov.local}</p>
+                  </div>
+
+                  <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 rounded-lg p-3">
+                    <p className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 dark:text-slate-500 mb-0.5">Solicitante</p>
+                    <p className="font-semibold text-slate-700 dark:text-slate-300">{mov.solicitante}</p>
                   </div>
 
                   <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 rounded-lg p-3">
@@ -471,104 +500,124 @@ export default function Historico() {
         </section>
       )}
 
-      {/* Tabela Desktop */}
+      {/* Tabela Desktop com Barra Dupla de Rolagem */}
       {movimentacoesFiltradas.length > 0 && (
-        <section className="hidden xl:block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-x-auto">
-          <table className="w-full min-w-[1300px] text-sm text-left">
-            <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 font-medium border-b border-slate-200 dark:border-slate-700">
-              <tr>
-                <th className="px-6 py-4">Tipo</th>
-                <th className="px-6 py-4">Produto</th>
-                {/* 5. Nova coluna na tabela Desktop */}
-                <th className="px-6 py-4">Classificação</th>
-                <th className="px-6 py-4">Qtd</th>
-                <th className="px-6 py-4">Local / Origem</th>
-                <th className="px-6 py-4">NF</th>
-                <th className="px-6 py-4">Contador</th>
-                <th className="px-6 py-4">Observações</th>
-                <th className="px-6 py-4">Realizado por</th>
-                <th className="px-6 py-4">Data / Hora</th>
-              </tr>
-            </thead>
+        <section className="hidden xl:block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden">
+          
+          {/* Barra de rolagem superior sincronizada */}
+          <div
+            ref={topScrollRef}
+            onScroll={handleTopScroll}
+            className="overflow-x-auto overflow-y-hidden border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/40"
+          >
+            <div style={{ width: `${tableWidth}px`, height: "10px" }} />
+          </div>
 
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {movimentacoesFiltradas.map((mov, index) => {
-                const entrada = mov.tipo === "Entrada";
-                const isOriginal = mov.classificacaoProduto?.toLowerCase() === "original";
+          {/* Container principal da tabela com barra inferior */}
+          <div
+            ref={bottomScrollRef}
+            onScroll={handleBottomScroll}
+            className="overflow-x-auto"
+          >
+            <table ref={tableRef} className="w-full min-w-[1450px] text-sm text-left">
+              <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 font-medium border-b border-slate-200 dark:border-slate-700">
+                <tr>
+                  <th className="px-6 py-4">Tipo</th>
+                  <th className="px-6 py-4">Produto</th>
+                  <th className="px-6 py-4">Classificação</th>
+                  <th className="px-6 py-4">Qtd</th>
+                  <th className="px-6 py-4">Local / Origem</th>
+                  <th className="px-6 py-4">Solicitante</th>
+                  <th className="px-6 py-4">NF</th>
+                  <th className="px-6 py-4">Contador</th>
+                  <th className="px-6 py-4">Observações</th>
+                  <th className="px-6 py-4">Realizado por</th>
+                  <th className="px-6 py-4">Data / Hora</th>
+                </tr>
+              </thead>
 
-                return (
-                  <tr
-                    key={index}
-                    className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors"
-                  >
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${
-                          entrada
-                            ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/50"
-                            : "bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-800/50"
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                {movimentacoesFiltradas.map((mov, index) => {
+                  const entrada = mov.tipo === "Entrada";
+                  const isOriginal = mov.classificacaoProduto?.toLowerCase() === "original";
+
+                  return (
+                    <tr
+                      key={index}
+                      className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors"
+                    >
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${
+                            entrada
+                              ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/50"
+                              : "bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-800/50"
+                          }`}
+                        >
+                          {mov.tipo}
+                        </span>
+                      </td>
+
+                      <td className="px-6 py-4 font-semibold text-slate-800 dark:text-slate-200">
+                        {mov.produto}
+                      </td>
+
+                      <td className="px-6 py-4">
+                        {mov.classificacaoProduto !== "-" && (
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border ${
+                            isOriginal 
+                              ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800/50" 
+                              : "bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800/50"
+                          }`}>
+                            {mov.classificacaoProduto}
+                          </span>
+                        )}
+                      </td>
+
+                      <td
+                        className={`px-6 py-4 font-bold ${
+                          entrada ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
                         }`}
                       >
-                        {mov.tipo}
-                      </span>
-                    </td>
+                        {entrada ? "+" : "-"}
+                        {mov.quantidade}
+                      </td>
 
-                    <td className="px-6 py-4 font-semibold text-slate-800 dark:text-slate-200">
-                      {mov.produto}
-                    </td>
+                      <td className="px-6 py-4 text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                        {mov.local}
+                      </td>
 
-                    {/* 6. Linha correspondente à classificação na Tabela Desktop */}
-                    <td className="px-6 py-4">
-                      {mov.classificacaoProduto !== "-" && (
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border ${
-                          isOriginal 
-                            ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800/50" 
-                            : "bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800/50"
-                        }`}>
-                          {mov.classificacaoProduto}
+                      <td className="px-6 py-4 text-slate-600 dark:text-slate-400 whitespace-nowrap font-medium">
+                        {mov.solicitante}
+                      </td>
+
+                      <td className="px-6 py-4 text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                        {mov.notaFiscal}
+                      </td>
+
+                      <td className="px-6 py-4 text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                        {mov.contador}
+                      </td>
+
+                      <td className="px-6 py-4 text-slate-500 dark:text-slate-500 max-w-[260px]">
+                        <span className="line-clamp-2" title={mov.observacoes}>
+                          {mov.observacoes}
                         </span>
-                      )}
-                    </td>
+                      </td>
 
-                    <td
-                      className={`px-6 py-4 font-bold ${
-                        entrada ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
-                      }`}
-                    >
-                      {entrada ? "+" : "-"}
-                      {mov.quantidade}
-                    </td>
+                      <td className="px-6 py-4 text-slate-600 dark:text-slate-400 max-w-[200px] truncate" title={mov.usuario}>
+                        {mov.usuario}
+                      </td>
 
-                    <td className="px-6 py-4 text-slate-600 dark:text-slate-400 whitespace-nowrap">
-                      {mov.local}
-                    </td>
-
-                    <td className="px-6 py-4 text-slate-600 dark:text-slate-400 whitespace-nowrap">
-                      {mov.notaFiscal}
-                    </td>
-
-                    <td className="px-6 py-4 text-slate-600 dark:text-slate-400 whitespace-nowrap">
-                      {mov.contador}
-                    </td>
-
-                    <td className="px-6 py-4 text-slate-500 dark:text-slate-500 max-w-[260px]">
-                      <span className="line-clamp-2" title={mov.observacoes}>
-                        {mov.observacoes}
-                      </span>
-                    </td>
-
-                    <td className="px-6 py-4 text-slate-600 dark:text-slate-400 max-w-[200px] truncate" title={mov.usuario}>
-                      {mov.usuario}
-                    </td>
-
-                    <td className="px-6 py-4 text-slate-500 dark:text-slate-500 font-medium whitespace-nowrap">
-                      {formatarDataHora(mov.data)}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      <td className="px-6 py-4 text-slate-500 dark:text-slate-500 font-medium whitespace-nowrap">
+                        {formatarDataHora(mov.data)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </section>
       )}
     </div>
