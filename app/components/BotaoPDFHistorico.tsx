@@ -61,6 +61,7 @@ export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDF
       "Classificação",
       "Qtd",
       "Local / Origem",
+      "Solicitante", // <--- Nova coluna adicionada
       "NF",
       "Contador",
       "Observações",
@@ -110,6 +111,7 @@ export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDF
         classificacaoFinal,
         mov.quantidade || 0,
         mov.local || "-",
+        mov.solicitante || "-", // <--- Novo dado puxado do objeto
         mov.notaFiscal || "-",
         mov.contador || "-",
         mov.observacoes || "-",
@@ -140,18 +142,19 @@ export default function BotaoPDFHistorico({ movimentacoes, mesFiltro }: BotaoPDF
       alternateRowStyles: {
         fillColor: [248, 250, 252],
       },
-      // Larguras redimensionadas para evitar quebras estranhas (total: 269mm)
+      // Larguras reajustadas para comportar a nova coluna "Solicitante" (Total mantido: 269mm)
       columnStyles: {
-        0: { cellWidth: 22, fontStyle: "bold" }, // Tipo (ENTRADA / SAÍDA)
-        1: { cellWidth: 44 },                     // Produto
-        2: { cellWidth: 28, fontStyle: "bold" }, // Classificação (ORIGINAL / COMPATÍVEL)
-        3: { cellWidth: 12, halign: "center" },   // Qtd
-        4: { cellWidth: 38 },                     // Local / Origem
-        5: { cellWidth: 20 },                     // NF
-        6: { cellWidth: 20 },                     // Contador
-        7: { cellWidth: 36 },                     // Observações
-        8: { cellWidth: 24 },                     // Realizado por
-        9: { cellWidth: 25 },                     // Data / Hora
+        0: { cellWidth: 20, fontStyle: "bold" }, // Tipo 
+        1: { cellWidth: 40 },                    // Produto
+        2: { cellWidth: 26, fontStyle: "bold" }, // Classificação 
+        3: { cellWidth: 12, halign: "center" },  // Qtd
+        4: { cellWidth: 28 },                    // Local / Origem
+        5: { cellWidth: 25 },                    // Solicitante <-- Adicionado aqui
+        6: { cellWidth: 18 },                    // NF
+        7: { cellWidth: 18 },                    // Contador
+        8: { cellWidth: 34 },                    // Observações
+        9: { cellWidth: 24 },                    // Realizado por
+        10: { cellWidth: 24 },                   // Data / Hora
       },
       didDrawPage: () => {
         const paginasTotais = (doc as any).internal.getNumberOfPages();

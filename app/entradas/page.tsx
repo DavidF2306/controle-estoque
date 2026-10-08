@@ -153,49 +153,49 @@ export default function Entradas() {
   });
 
   return (
-    <div className="text-slate-100 w-full overflow-x-hidden space-y-6 pb-10">
-      {/* Hero Section - Fix do quadrado preto aplicado */}
+    <div className="text-slate-900 dark:text-slate-100 w-full overflow-x-hidden space-y-6 pb-10">
+      {/* Hero Section */}
       <section className="pt-14 md:pt-0">
-        <div className="relative overflow-hidden rounded-2xl bg-slate-900 border border-slate-800 text-white shadow-md">
-          {/* Círculo de iluminação ajustado sem artefatos de GPU */}
+        <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-sm">
+          {/* Círculo de iluminação */}
           <div className="pointer-events-none absolute -top-12 -right-12 w-80 h-80 bg-emerald-500/10 rounded-full blur-2xl" />
 
           <div className="relative p-6 md:p-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
             <div className="flex items-center gap-5">
-              <div className="w-16 h-16 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-center shrink-0">
-                <ArrowDownCircle size={32} className="text-emerald-400" />
+              <div className="w-16 h-16 rounded-xl bg-emerald-50 dark:bg-slate-800/80 border border-emerald-100 dark:border-slate-700/80 flex items-center justify-center shrink-0">
+                <ArrowDownCircle size={32} className="text-emerald-600 dark:text-emerald-400" />
               </div>
 
               <div>
-                <p className="text-slate-400 text-sm font-medium mb-1 tracking-wide uppercase">
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1 tracking-wide uppercase">
                   Movimentação
                 </p>
 
-                <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+                <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
                   Entrada de Estoque
                 </h1>
 
-                <p className="text-slate-400 mt-2 text-sm md:text-base max-w-2xl">
+                <p className="text-slate-600 dark:text-slate-400 mt-2 text-sm md:text-base max-w-2xl">
                   Registre novos suprimentos recebidos, atualize quantidades e
                   mantenha o catálogo sempre atualizado.
                 </p>
               </div>
             </div>
 
-            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5 min-w-[240px]">
-              <p className="text-slate-400 text-sm font-medium">
+            <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-5 min-w-[240px]">
+              <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
                 Total de entradas
               </p>
 
               <div className="flex items-end gap-2 mt-2">
-                <p className="text-3xl font-bold text-white">
+                <p className="text-3xl font-bold text-slate-900 dark:text-white">
                   {entradas.length}
                 </p>
-                <p className="text-slate-400 text-sm mb-1">registros</p>
+                <p className="text-slate-500 dark:text-slate-400 text-sm mb-1">registros</p>
               </div>
 
-              <div className="mt-4 pt-4 border-t border-slate-700">
-                <p className="text-xs font-medium text-emerald-400 flex items-center gap-1.5">
+              <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                   <CheckCircle size={14} />
                   {ultimaEntrada
                     ? "Sistema operacional e sincronizado."
@@ -209,43 +209,43 @@ export default function Entradas() {
 
       {/* Cards de Métricas */}
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex items-start justify-between">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm flex items-start justify-between">
           <div>
-            <p className="text-sm font-medium text-slate-400">Produtos</p>
-            <h2 className="text-3xl font-bold text-slate-100 mt-1">
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Produtos</p>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mt-1">
               {totalProdutos}
             </h2>
             <p className="text-xs text-slate-500 mt-1">
               disponíveis no catálogo
             </p>
           </div>
-          <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center">
             <Package size={20} />
           </div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex items-start justify-between">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm flex items-start justify-between">
           <div>
-            <p className="text-sm font-medium text-slate-400">Estoque Geral</p>
-            <h2 className="text-3xl font-bold text-slate-100 mt-1">
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Estoque Geral</p>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mt-1">
               {totalEstoque}
             </h2>
             <p className="text-xs text-slate-500 mt-1">unidades totais</p>
           </div>
-          <div className="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center">
             <Boxes size={20} />
           </div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex items-start justify-between relative overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm flex items-start justify-between relative overflow-hidden">
           <div className="pointer-events-none absolute top-0 right-0 p-4 opacity-10 text-emerald-500">
             <CheckCircle size={64} />
           </div>
           <div className="relative z-10">
-            <p className="text-sm font-medium text-slate-400">
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
               Status do Módulo
             </p>
-            <h2 className="text-3xl font-bold text-emerald-400 mt-1">
+            <h2 className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
               Operante
             </h2>
             <p className="text-xs text-slate-500 font-medium mt-1">
@@ -258,18 +258,18 @@ export default function Entradas() {
       {/* Formulário */}
       <form
         onSubmit={registrarEntrada}
-        className="bg-slate-900 border border-slate-800 rounded-xl p-5 md:p-6 shadow-sm space-y-6 w-full relative"
+        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 md:p-6 shadow-sm space-y-6 w-full relative"
       >
-        <div className="flex items-center gap-3 mb-4 border-b border-slate-800 pb-4">
-          <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+        <div className="flex items-center gap-3 mb-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+          <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
             <ClipboardList size={20} />
           </div>
 
           <div>
-            <h2 className="text-lg font-bold text-slate-100">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
               Dados da Entrada
             </h2>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Preencha os dados do suprimento recebido para adicionar ao
               estoque.
             </p>
@@ -277,25 +277,25 @@ export default function Entradas() {
         </div>
 
         {/* Dropdown com Busca */}
-        <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
+        <div className="bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 rounded-lg p-4">
           <div className="relative" ref={produtoRef}>
-            <label className="block text-sm font-semibold text-slate-300 mb-1.5">
-              Selecione o Produto <span className="text-rose-400">*</span>
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              Selecione o Produto <span className="text-rose-500 dark:text-rose-400">*</span>
             </label>
 
             <div
               onClick={() => setProdutoDropdownOpen(!produtoDropdownOpen)}
-              className={`w-full bg-slate-900 border ${
+              className={`w-full bg-white dark:bg-slate-900 border ${
                 produtoDropdownOpen
                   ? "border-emerald-500 ring-2 ring-emerald-500/20"
-                  : "border-slate-700/80"
+                  : "border-slate-300 dark:border-slate-700/80"
               } rounded-lg px-4 py-2.5 text-sm flex justify-between items-center cursor-pointer transition-all`}
             >
               <span
                 className={
                   produtoSelecionado
-                    ? "text-slate-100 font-medium flex items-center gap-2 flex-wrap"
-                    : "text-slate-500"
+                    ? "text-slate-900 dark:text-slate-100 font-medium flex items-center gap-2 flex-wrap"
+                    : "text-slate-400 dark:text-slate-500"
                 }
               >
                 {produtoSelecionado ? (
@@ -311,15 +311,15 @@ export default function Entradas() {
                             ?.toString()
                             .toLowerCase()
                             .includes("original")
-                            ? "bg-blue-500/15 text-blue-400 border-blue-500/30"
-                            : "bg-purple-500/15 text-purple-300 border-purple-500/30"
+                            ? "bg-blue-50 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/30"
+                            : "bg-purple-50 dark:bg-purple-500/15 text-purple-600 dark:text-purple-300 border-purple-200 dark:border-purple-500/30"
                         }`}
                       >
                         {produtoSelecionado.tipo ||
                           produtoSelecionado.categoria}
                       </span>
                     )}
-                    <span className="text-slate-400 text-xs font-normal">
+                    <span className="text-slate-500 dark:text-slate-400 text-xs font-normal">
                       — (Estoque Atual: {produtoSelecionado.quantidade})
                     </span>
                   </>
@@ -336,8 +336,8 @@ export default function Entradas() {
             </div>
 
             {produtoDropdownOpen && (
-              <div className="absolute z-50 w-full mt-1 bg-slate-900 border border-slate-800 rounded-lg shadow-xl overflow-hidden">
-                <div className="p-2 border-b border-slate-800 bg-slate-950/50">
+              <div className="absolute z-50 w-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-xl overflow-hidden">
+                <div className="p-2 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50">
                   <div className="relative">
                     <Search
                       size={14}
@@ -349,7 +349,7 @@ export default function Entradas() {
                       value={buscaProduto}
                       onChange={(e) => setBuscaProduto(e.target.value)}
                       placeholder="Pesquisar por nome, variação (Original, Compatível)..."
-                      className="w-full bg-slate-900 border border-slate-700 text-slate-200 placeholder-slate-500 rounded-md pl-8 pr-3 py-2 text-sm outline-none focus:border-emerald-500"
+                      className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 rounded-md pl-8 pr-3 py-2 text-sm outline-none focus:border-emerald-500"
                     />
                   </div>
                 </div>
@@ -370,10 +370,10 @@ export default function Entradas() {
                             setProdutoDropdownOpen(false);
                             setBuscaProduto("");
                           }}
-                          className="px-3 py-2.5 text-sm hover:bg-slate-800/70 cursor-pointer rounded-md flex justify-between items-center transition-colors gap-2"
+                          className="px-3 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800/70 cursor-pointer rounded-md flex justify-between items-center transition-colors gap-2"
                         >
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-medium text-slate-200">
+                            <span className="font-medium text-slate-800 dark:text-slate-200">
                               {produto.nome}
                             </span>
 
@@ -381,8 +381,8 @@ export default function Entradas() {
                               <span
                                 className={`text-xs px-2 py-0.5 rounded font-medium border ${
                                   isOriginal
-                                    ? "bg-blue-500/15 text-blue-400 border-blue-500/30"
-                                    : "bg-purple-500/15 text-purple-300 border-purple-500/30"
+                                    ? "bg-blue-50 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/30"
+                                    : "bg-purple-50 dark:bg-purple-500/15 text-purple-600 dark:text-purple-300 border-purple-200 dark:border-purple-500/30"
                                 }`}
                               >
                                 {rotuloTipo}
@@ -390,14 +390,14 @@ export default function Entradas() {
                             )}
                           </div>
 
-                          <span className="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded font-medium border border-slate-700/80 shrink-0">
+                          <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-1 rounded font-medium border border-slate-200 dark:border-slate-700/80 shrink-0">
                             Estoque: {produto.quantidade}
                           </span>
                         </li>
                       );
                     })
                   ) : (
-                    <li className="px-3 py-4 text-sm text-center text-slate-400">
+                    <li className="px-3 py-4 text-sm text-center text-slate-500 dark:text-slate-400">
                       Nenhum produto encontrado.
                     </li>
                   )}
@@ -408,9 +408,9 @@ export default function Entradas() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
-            <label className="block text-sm font-semibold text-slate-300 mb-1.5">
-              Quantidade Recebida <span className="text-rose-400">*</span>
+          <div className="bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 rounded-lg p-4">
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              Quantidade Recebida <span className="text-rose-500 dark:text-rose-400">*</span>
             </label>
             <input
               type="number"
@@ -418,14 +418,14 @@ export default function Entradas() {
               onChange={(e) => setQuantidade(e.target.value)}
               min="1"
               placeholder="Ex: 10"
-              className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
+              className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
               required
             />
           </div>
 
-          <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
-            <label className="text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-              Origem da Entrada <span className="text-rose-400">*</span>
+          <div className="bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 rounded-lg p-4">
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1.5">
+              Origem da Entrada <span className="text-rose-500 dark:text-rose-400">*</span>
             </label>
             <div className="relative">
               <Truck
@@ -437,7 +437,7 @@ export default function Entradas() {
                 value={origem}
                 onChange={(e) => setOrigem(e.target.value)}
                 placeholder="Fornecedor, devolução..."
-                className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg pl-9 pr-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
+                className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-lg pl-9 pr-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
                 required
               />
             </div>
@@ -446,7 +446,7 @@ export default function Entradas() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label className="block text-sm font-semibold text-slate-300 mb-1.5">
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Nota Fiscal (Opcional)
             </label>
             <input
@@ -454,12 +454,12 @@ export default function Entradas() {
               value={notaFiscal}
               onChange={(e) => setNotaFiscal(e.target.value)}
               placeholder="Número da NFe"
-              className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
+              className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-300 mb-1.5">
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Contador / Lote (Opcional)
             </label>
             <input
@@ -467,13 +467,13 @@ export default function Entradas() {
               value={contador}
               onChange={(e) => setContador(e.target.value)}
               placeholder="Referência extra"
-              className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
+              className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
             />
           </div>
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
+          <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1.5">
             <FileText size={16} className="text-slate-400" />
             Observações Gerais
           </label>
@@ -482,17 +482,17 @@ export default function Entradas() {
             onChange={(e) => setObservacoes(e.target.value)}
             placeholder="Algum detalhe importante sobre essa entrada? (Opcional)"
             rows={3}
-            className="w-full bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all resize-none"
+            className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all resize-none"
           />
         </div>
 
-        <div className="bg-emerald-950/30 border border-emerald-800/40 rounded-lg p-4 flex items-start gap-3 mt-2">
-          <CheckCircle className="text-emerald-400 shrink-0 mt-0.5" size={18} />
+        <div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/40 rounded-lg p-4 flex items-start gap-3 mt-2">
+          <CheckCircle className="text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" size={18} />
           <div>
-            <p className="font-semibold text-emerald-300 text-sm">
+            <p className="font-semibold text-emerald-800 dark:text-emerald-300 text-sm">
               Atualização Automática
             </p>
-            <p className="text-xs text-emerald-400/80 mt-1 leading-relaxed">
+            <p className="text-xs text-emerald-700 dark:text-emerald-400/80 mt-1 leading-relaxed">
               Ao confirmar a entrada, o estoque do produto será somado
               automaticamente e a ação será gravada no histórico com seu
               usuário.
@@ -500,7 +500,7 @@ export default function Entradas() {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-800">
+        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
           <button
             type="submit"
             className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
@@ -512,7 +512,7 @@ export default function Entradas() {
           <button
             type="button"
             onClick={() => router.push("/produtos")}
-            className="bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
+            className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
           >
             <ArrowLeft size={18} />
             Cancelar e Voltar
