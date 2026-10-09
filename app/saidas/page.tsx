@@ -17,6 +17,7 @@ import {
   ChevronDown,
   AlertTriangle,
   User,
+  CalendarClock,
 } from "lucide-react";
 
 export default function Saidas() {
@@ -32,6 +33,7 @@ export default function Saidas() {
   const [solicitante, setSolicitante] = useState("");
   const [contador, setContador] = useState("");
   const [observacoes, setObservacoes] = useState("");
+  const [dataSaida, setDataSaida] = useState("");
 
   // Estados e ref para o dropdown customizado de busca de produtos
   const [buscaProduto, setBuscaProduto] = useState("");
@@ -40,6 +42,11 @@ export default function Saidas() {
 
   useEffect(() => {
     buscarDados();
+
+    // Define a data/hora inicial como o momento atual no fuso horário local
+    const agora = new Date();
+    agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset());
+    setDataSaida(agora.toISOString().slice(0, 16));
 
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -109,8 +116,7 @@ export default function Saidas() {
 
     const emailUsuario = user?.email || "Usuário não identificado";
 
-    const novaQuantidade =
-      Number(produtoSelecionado.quantidade) - qtdSaida;
+    const novaQuantidade = Number(produtoSelecionado.quantidade) - qtdSaida;
 
     const { error: erroSaida } = await supabase.from("saidas").insert([
       {
@@ -121,6 +127,7 @@ export default function Saidas() {
         contador: contador || null,
         observacoes: observacoes || null,
         usuario_email: emailUsuario,
+        created_at: dataSaida ? new Date(dataSaida).toISOString() : new Date().toISOString(),
       },
     ]);
 
@@ -158,7 +165,6 @@ export default function Saidas() {
     (produto) => produto.id === Number(produtoId)
   );
 
-  // Filtros em tempo real (Pesquisa por Nome, Tipo e Categoria)
   const produtosFiltrados = produtos.filter((produto) => {
     const termo = buscaProduto.toLowerCase();
     const nome = produto.nome ? produto.nome.toLowerCase() : "";
@@ -177,7 +183,6 @@ export default function Saidas() {
       {/* Hero Section */}
       <section className="pt-14 md:pt-0">
         <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-sm">
-          {/* Círculo de iluminação */}
           <div className="pointer-events-none absolute -top-12 -right-12 w-80 h-80 bg-rose-500/10 rounded-full blur-2xl" />
 
           <div className="relative p-6 md:p-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
@@ -234,7 +239,7 @@ export default function Saidas() {
             <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mt-1">
               {totalProdutos}
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">
+            <p className="text-xs text-slate-500 mt-1">
               disponíveis no catálogo
             </p>
           </div>
@@ -249,7 +254,7 @@ export default function Saidas() {
             <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mt-1">
               {totalEstoque}
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">unidades totais</p>
+            <p className="text-xs text-slate-500 mt-1">unidades totais</p>
           </div>
           <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center">
             <Boxes size={20} />
@@ -267,7 +272,7 @@ export default function Saidas() {
             <h2 className="text-3xl font-bold text-rose-600 dark:text-rose-400 mt-1">
               Operante
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-500 font-medium mt-1">
+            <p className="text-xs text-slate-500 font-medium mt-1">
               pronto para registros
             </p>
           </div>
@@ -289,7 +294,7 @@ export default function Saidas() {
               Dados da Saída
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              Selecione o produto e informe o destino para registrar a baixa.
+              Selecione o produto, informe o destino e confirme a data/hora para registrar a baixa.
             </p>
           </div>
         </div>
@@ -301,7 +306,6 @@ export default function Saidas() {
               Selecione o Produto <span className="text-rose-500 dark:text-rose-400">*</span>
             </label>
 
-            {/* Input Fake (Botão que abre o Select) */}
             <div
               onClick={() => setProdutoDropdownOpen(!produtoDropdownOpen)}
               className={`w-full bg-white dark:bg-slate-900 border ${
@@ -354,13 +358,12 @@ export default function Saidas() {
               </span>
               <ChevronDown
                 size={16}
-                className={`text-slate-400 dark:text-slate-400 transition-transform ${
+                className={`text-slate-400 transition-transform ${
                   produtoDropdownOpen ? "rotate-180" : ""
                 }`}
               />
             </div>
 
-            {/* Painel da Lista com Busca */}
             {produtoDropdownOpen && (
               <div className="absolute z-50 w-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-xl overflow-hidden">
                 <div className="p-2 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50">
@@ -440,7 +443,7 @@ export default function Saidas() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* Quantidade */}
           <div className="bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 rounded-lg p-4">
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
@@ -458,23 +461,20 @@ export default function Saidas() {
             />
           </div>
 
-          {/* Destino (Com Datalist para autocompletar os locais) */}
+          {/* Destino */}
           <div className="bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 rounded-lg p-4">
             <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1.5">
-              Destino / Setor / Local <span className="text-rose-500 dark:text-rose-400">*</span>
+              <MapPin size={16} className="text-slate-400" />
+              Destino / Setor <span className="text-rose-500 dark:text-rose-400">*</span>
             </label>
             <div className="relative">
-              <MapPin
-                size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-              />
               <input
                 type="text"
                 list="locais-list"
                 value={destino}
                 onChange={(e) => setDestino(e.target.value)}
-                placeholder="Selecione ou digite o local/setor..."
-                className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-lg pl-9 pr-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 transition-all"
+                placeholder="Selecione ou digite..."
+                className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 transition-all"
                 required
               />
               <datalist id="locais-list">
@@ -483,6 +483,21 @@ export default function Saidas() {
                 ))}
               </datalist>
             </div>
+          </div>
+
+          {/* Data e Hora */}
+          <div className="bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 rounded-lg p-4">
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1.5">
+              <CalendarClock size={16} className="text-rose-500 dark:text-rose-400" />
+              Data / Hora da Saída <span className="text-rose-500 dark:text-rose-400">*</span>
+            </label>
+            <input
+              type="datetime-local"
+              value={dataSaida}
+              onChange={(e) => setDataSaida(e.target.value)}
+              className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 transition-all"
+              required
+            />
           </div>
         </div>
 
@@ -534,13 +549,13 @@ export default function Saidas() {
 
         {/* Info Box */}
         <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/40 rounded-lg p-4 flex items-start gap-3 mt-2">
-          <AlertTriangle className="text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" size={18} />
+          <AlertTriangle size={18} className="text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
           <div>
             <p className="font-semibold text-rose-800 dark:text-rose-300 text-sm">
               Baixa Automática no Estoque
             </p>
             <p className="text-xs text-rose-700 dark:text-rose-400/80 mt-1 leading-relaxed">
-              Ao confirmar a saída, a quantidade informada será subtraída do estoque do produto imediatamente e vinculada ao seu usuário.
+              Ao confirmar a saída, a quantidade informada será subtraída do estoque do produto imediatamente e vinculada ao seu usuário com a data selecionada.
             </p>
           </div>
         </div>
